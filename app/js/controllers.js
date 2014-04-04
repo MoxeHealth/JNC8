@@ -3,11 +3,11 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-  .controller('MyCtrl1', ['substrate', function(substrate) {
-    substrate.getPatientDemographics(3230000);
-    // substrate.getVitals(3230000);
-    // substrate.getLabs(3230000);
+  .controller('dataEntryCtrl', ['$rootScope', 'substrate',  function($rootScope, substrate) {
+    substrate.getPatientDemographics($rootScope.patientId);
+    substrate.getLabs($rootScope.patientId);
+    substrate.getVitals($rootScope.patientId);
   }])
-  .controller('MyCtrl2', [function() {
 
+  .controller('MyCtrl2', [function() {
   }]);
