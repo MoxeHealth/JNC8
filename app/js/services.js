@@ -135,6 +135,11 @@ angular.module('myApp.services', [])
       fourthVisit: "Add additional medication class(eg, &#914;-blocker, aldosterone antagonist, or others) and/or refer to physician with expertise in hypertension management."
     };
 
+    var recommendation = {
+      status: '',
+      message: ''
+    };
+
     if(pt.hasBPGoal()){
       if(pt.isAtBPGoal()){
           // meeting goal -- move to data viz to reinforce success and show BP graphs
@@ -159,53 +164,32 @@ angular.module('myApp.services', [])
           }
         }
       } else {
-        // TODO: Patient is under 18. 
+        // TODO: Patient is under 18.
+        console.warn("Patient is under 18.");
+      }
+
+      if(pt.isAtBPGoal()) {
+        recommendation.message = recMessages.continueTreatment;
+        return recommendation;
       }
 
       if(!pt.hasCKD) {
         if(pt.race !== "Black or African American") {
-
-        } else {
-
+          // TODO: pt.selectDrugTreatmentStrategy();
+          recommendation.message = recMessages.firstVisit.nonBlackNoCKD;
+          return recommendation;
+        } else if(pt.race === "Black or African American") {
+          recommendation.message = recMessages.firstVisit.blackNoCKD;
+          return recommendation;
         }
       } else if(pt.hasCKD) {
-
+        recommendation.message = recMessages.firstVisit.CKD;
+        return recommendation;
       }
-    }
-    //
-    // if patient is 18 or over
-    //   if no diabetes or CKD
-    //     if patient is 60 or older
-    //       patient.targetBP = [150, 90]
-    //     else if under 60
-    //       patient.targetBP = [140,90]
-    //   else if diabetes or CKD
-    //     if diabetes and not CKD
-    //       patient.targetBP = [140,90]
-    //     else if CKD
-    //       patient.targetBP = [140,90]
-    //
-    //   if !CKD
-    //     if nonblack
-    //      
-    //     else if black
-    //
-    //   else if CKD
-    //
-    // else
-    //   console log: patient is under 18!
-
-
-    if(patient.age >= 18) {
-
     }
 
     // collect additional information where needed
 
-    return {
-      // patient
-      // recommendation based on algo
-      //
-    };
+    console.warn("Reached the bottom of the algorithm logic; this shouldn't happen.");
   }])
   ;
