@@ -22,15 +22,16 @@ run(['$rootScope','substrate', 'db', function($rootScope, substrate, db) {
     console.log('Into getPD callback...');
     substrate.patientData = patientData;
     console.log(substrate.patientData);
-
-    db.addEncounter($rootScope.patientId, {
-      bloodPressure: {systolic: 120, diastolic: 60},
-      medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-    },
-    function(data, status){
-      console.log(data, status);
-    });
   });
 
+  db.getEncounters($rootScope.patientId, function(data) {
+    console.log(data);
+  });
+  // db.addEncounter($rootScope.patientId, {
+  //   bloodPressure: {systolic: 120, diastolic: 60},
+  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+  // },
+  // function(data, status){
+  // });
   // algorithmSvc($rootScope.patientData, 'JNC8');
 }]);
