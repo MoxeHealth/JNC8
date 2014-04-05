@@ -6,10 +6,11 @@ angular.module('myApp.services', [])
   .value('version', '0.1')
   .factory('db', ['$http', '$q', function($http, $q) {
     var getEncounters = function(ptId, callback) {
+      console.log("ptId in getEcounters:" + ptId);
       $http({
         url: '/db/encounters',
         method: 'GET',
-        data: {
+        params: {
           ptId: ptId
         }
       }).success(function(data, status) {
@@ -32,8 +33,6 @@ angular.module('myApp.services', [])
         }
       }).success(function(data, status) {
         console.log('db addEncounter success');
-        console.log('status', status);
-        console.log('data added to db: ', data);
         callback(data, status);
       }).error(function(data, status){
         console.log('db addEncounter error');

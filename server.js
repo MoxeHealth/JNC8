@@ -23,7 +23,7 @@ app.use(bodyParser());
 
 app.get('/db/encounters',  function(req, res){
   console.log('get db/encounters');
-  var ptId = req.body.ptId;
+  var ptId = req.query.ptId;
 
   db.connection.query('SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId, function(err, data){
     if(err){
@@ -42,11 +42,6 @@ app.post('/db/encounters',  function(req, res){
   var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
   var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure));
   var medicationsPrescribed = db.connection.escape(JSON.stringify(req.body.encounter.medicationsPrescribed));
-
-  console.log('ptId', ptId);
-  console.log('encounterDate', encounterDate);
-  console.log('bloodPressure', bloodPressure);
-  console.log('medicationsPrescribed', medicationsPrescribed);
 
   db.connection.query('INSERT INTO `encounters` (patient_id, encounter_date, blood_pressure, medications_prescribed) VALUES (' + ptId + ',' + encounterDate + ',' + bloodPressure + ',' +medicationsPrescribed + ')', function(err, data){
     if(err){
