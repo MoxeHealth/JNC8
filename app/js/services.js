@@ -4,6 +4,48 @@
 
 angular.module('myApp.services', [])
   .value('version', '0.1')
+  .factory('db', ['$http', '$q', function($http, $q) {
+    var getEncounters = function(ptId, callback) {
+      $http({
+        url: '/db/encounters',
+        method: 'GET',
+        data: {
+          ptId: ptId
+        }
+      }).success(function(data, status) {
+        console.log('db getEncounters success');
+        callback(data);
+      }).error(function(data, status){
+        console.log('db getEncounters error');
+        callback(data, status);
+      });
+    };
+
+    var addEncounter = function(ptId, encounter, callback) {
+      $http({
+        url: '/db/encounters',
+        method: 'POST',
+        data: {
+          ptId: ptId,
+          //encounter object expects two values: bloodPressure and medicationsPrescribed
+          encounter: encounter
+        }
+      }).success(function(data, status) {
+        console.log('db addEncounter success');
+        console.log('status', status);
+        console.log('data added to db: ', data);
+        callback(data, status);
+      }).error(function(data, status){
+        console.log('db addEncounter error');
+        callback(data, status);
+      });
+    };
+
+    return {
+      getEncounters: getEncounters,
+      addEncounter: addEncounter
+    };
+  }])
   .factory('substrate', ['$http', '$q', function($http, $q) {
     var apiPaths = {
       demographics: '/patient/demographics',

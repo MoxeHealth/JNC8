@@ -14,7 +14,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: 'MyCtrl2'});
   $routeProvider.otherwise({redirectTo: '/view1'});
 }]).
-run(['$rootScope','substrate', function($rootScope, substrate) {
+run(['$rootScope','substrate', 'db', function($rootScope, substrate, db) {
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';
 
@@ -22,6 +22,14 @@ run(['$rootScope','substrate', function($rootScope, substrate) {
     console.log('Into getPD callback...');
     substrate.patientData = patientData;
     console.log(substrate.patientData);
+
+    db.addEncounter($rootScope.patientId, {
+      bloodPressure: {systolic: 120, diastolic: 60},
+      medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+    },
+    function(data, status){
+      console.log(data, status);
+    });
   });
 
   // algorithmSvc($rootScope.patientData, 'JNC8');
