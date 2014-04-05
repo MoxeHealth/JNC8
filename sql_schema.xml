@@ -37,25 +37,13 @@
     <type label="SET" length="1" sql="SET" quote=""/>
     <type label="Bit" length="0" sql="bit" quote=""/>
   </group>
-</datatypes><table x="199" y="100" name="patients">
+</datatypes><table x="399" y="100" name="encounters">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="patientId" null="0" autoincrement="0">
-<datatype>INTEGER(20)</datatype>
+<row name="patient_id" null="1" autoincrement="0">
+<datatype>VARCHAR(200)</datatype>
 <default>NULL</default></row>
-<key type="PRIMARY" name="">
-<part>id</part>
-</key>
-</table>
-<table x="399" y="100" name="encounters">
-<row name="id" null="1" autoincrement="1">
-<datatype>INTEGER</datatype>
-<default>NULL</default></row>
-<row name="id_patients" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="patients" row="id" />
-</row>
 <row name="encounter_date" null="1" autoincrement="0">
 <datatype>DATETIME</datatype>
 <default>NULL</default></row>
