@@ -72,29 +72,41 @@ angular.module('myApp.services', [])
     };
 
   }])
-  .factory('algorithmSvc', ['$rootScope', function($rootScope) {
-    //returns recommendation string and status
-    //3 possible statuses: 'bad', 'ok', 'good'
-    var patient = {
+  .factory('pt', ['$rootScope', function($rootScope) {
+
+    return {
       race: $rootScope.patientData.demographics.Race.Text,
-      age: parseInt($rootScope.patientData.demographics.Age.substring(0,$rootScope.patientData.demographics.Age.length-1)),
-      bp: ,
-      hasDiabetes: (bool),
-      hasCKD (bool),
-      onMedication (bool),
-      medications = {
+      age: parseInt($rootScope.patientData.demographics.Age.substring(0,$rootScope.patientData.demographics.Age.length-1), 10),
+      bp: [parseInt($rootScope.patientData.vitals.BloodPressure.Systolic.Value, 10), parseInt($rootScope.patientData.vitals.BloodPressure.Diastolic.Value, 10)],
+      hasDiabetes: true,
+      hasCKD: true,
+      onMedication: true,
+      medications: {
        medName : {
-         dose: num,
-         maxDose: bool,
-         unit: 'str' (ml, mg, etc)
+         dose: 10,
+         maxDose: 50,
+         unit: 'mg'
+        }
+      },
+      targetBP: '',
+      isAtBPGoal: function() {
+        if(this.hasTargetBP()) {
+          if(this.bp[0] >= this.targetBP[0] || this.bp[1] >= this.targetBP[1]) {
+            return false;
+          }
+          return true;
+        } else {
+          throw new Error ("Patient's target BP hasn't been set.");
         }
       }
-      targetBP: [systolic, diastolic]
-      isAtBPGoal: bool
     };
+  }])
+  .factory('algorithmSvc', ['pt', function(pt) {
+    //returns recommendation string and status
+    //3 possible statuses: 'bad', 'ok', 'good'
 
     var recMessages = {
-      continue: "Continue current treatment and monitoring.",
+      continueTreatment: "Continue current treatment and monitoring.",
       firstVisit: {
         nonBlackNoCKD: "Initiate thiazide-type diuretic or ACEI or ARB or CCB, alone or in combination. ACEIs and ARBs should not be used in combination.",
         blackNoCKD: "Initiate thiazide-type diuretic or CCB, alone or in combination.",
