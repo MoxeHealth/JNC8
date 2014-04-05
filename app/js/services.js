@@ -11,7 +11,6 @@ angular.module('myApp.services', [])
       labs: '/patient/labs'
     };
 
-
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
@@ -68,16 +67,17 @@ angular.module('myApp.services', [])
     };
 
     return {
-      getPatientData: getPatientData
+      getPatientData: getPatientData,
+      patientData: {}
     };
-
   }])
-  .factory('pt', ['$rootScope', function($rootScope) {
+
+  .factory('pt', ['substrate', function(substrate) {
 
     return {
-      race: $rootScope.patientData.demographics.Race.Text,
-      age: parseInt($rootScope.patientData.demographics.Age.substring(0,$rootScope.patientData.demographics.Age.length-1), 10),
-      bp: [parseInt($rootScope.patientData.vitals.BloodPressure.Systolic.Value, 10), parseInt($rootScope.patientData.vitals.BloodPressure.Diastolic.Value, 10)],
+      race: substrate.patientData.demographics.Race.Text,
+      age: parseInt(substrate.patientData.demographics.Age.substring(0,substrate.patientData.demographics.Age.length-1), 10),
+      bp: [parseInt(substrate.patientData.vitals.BloodPressure.Systolic.Value, 10), parseInt(substrate.patientData.vitals.BloodPressure.Diastolic.Value, 10)],
       hasDiabetes: true,
       hasCKD: true,
       onMedication: true,
@@ -89,6 +89,14 @@ angular.module('myApp.services', [])
         }
       },
       targetBP: '',
+      hasBPGoal: function(){
+        if(this.targetBP){
+          if(this.targetBP.length > 0){
+            return true;
+          }
+        }
+        return false;
+      },
       isAtBPGoal: function() {
         if(this.hasTargetBP()) {
           if(this.bp[0] >= this.targetBP[0] || this.bp[1] >= this.targetBP[1]) {
@@ -101,6 +109,7 @@ angular.module('myApp.services', [])
       }
     };
   }])
+
   .factory('algorithmSvc', ['pt', function(pt) {
     //returns recommendation string and status
     //3 possible statuses: 'bad', 'ok', 'good'
@@ -126,56 +135,42 @@ angular.module('myApp.services', [])
       fourthVisit: "Add additional medication class(eg, &#914;-blocker, aldosterone antagonist, or others) and/or refer to physician with expertise in hypertension management."
     };
 
-    var hasBPGoal = function(patient){
-      if(patient.targetBP){
-        if(patient.targetBP.length > 0){
-          return true;
-        }
-      }
-      return false;
-    };
-
-    var isAtBPGoal = function(currentBP, targetBP) {
-      if(currentBP[0] >= targetBP[0] || currentBP[1] >= targetBP[1]) {
-        return false;
-      }
-      return true;
-    };
-
-    var recommendations = {
-
-    };
-
-    if(hasBPGoal(patient)){
-      if(isAtBPGoal(patient.currentBP, patient.targetBP)){
-        return {
+    if(pt.hasBPGoal()){
+      if(pt.isAtBPGoal()){
           // meeting goal -- move to data viz to reinforce success and show BP graphs
-        }
+        return {};
       } else { // not at BP goals
 
       }
     } else {
-      if(patient.age >= 18) {
+      if(pt.age >= 18) {
         // set targetBP by age and diabetes/CKD logic
-        if(!patient.hasDiabetes && !patient.hasCKD) {
-          if(patient.age >= 60) {
-            patient.targetBP = [150, 90];
-            patient.has
-          } else if (patient.age < 60) {
-            patient.targetBP = [140, 90];
+        if(!pt.hasDiabetes && !pt.hasCKD) {
+          if(pt.age >= 60) {
+            pt.targetBP = [150, 90];
+          } else if (pt.age < 60) {
+            pt.targetBP = [140, 90];
           }
-        } else if(patient.hasDiabetes || patient.hasCKD) {
-          if(patient.hasDiabetes && !patient.hasCKD) {
-            patient.targetBP = [140, 90];
-          } else if (patient.hasCKD) {
-            patient.targetBP = [140, 90];
+        } else if(pt.hasDiabetes || pt.hasCKD) {
+          if(pt.hasDiabetes && !pt.hasCKD) {
+            pt.targetBP = [140, 90];
+          } else if (pt.hasCKD) {
+            pt.targetBP = [140, 90];
           }
         }
+      } else {
+        // TODO: Patient is under 18. 
       }
 
-        if(!patient.hasCKD) {
-          
+      if(!pt.hasCKD) {
+        if(pt.race !== "Black or African American") {
+
+        } else {
+
         }
+      } else if(pt.hasCKD) {
+
+      }
     }
     //
     // if patient is 18 or over
