@@ -1,6 +1,7 @@
 var express = require('express');
 var request = require('request');
 var bodyParser = require('body-parser');
+var db = require('./db-config')
 var app = express();
 
 
@@ -30,6 +31,8 @@ app.post('/*',  function(req, res){
 app.get('/', function(req,res){
   res.redirect('/app/index.html');
 });
+
+
 
 var port = process.env.PORT || 8000;
 
