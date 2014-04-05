@@ -18,6 +18,11 @@ run(['$rootScope','algorithmSvc','substrate', function($rootScope, algorithmSvc,
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';
 
-  // all calculator logic would live in algorithmSvc
-  // algorithmSvc(substrate.getPatientData($rootScope.patientId), 'JNC8');
+  substrate.getPatientData($rootScope.patientId, function(patientData) {
+    console.log('Into getPD callback...');
+    $rootScope.patientData = patientData;
+    console.log($rootScope.patientData);
+  });
+
+  // algorithmSvc($rootScope.patientData, 'JNC8');
 }]);
