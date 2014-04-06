@@ -49,12 +49,10 @@ app.post('/db/encounters',  function(req, res){
       console.log(err);
       res.send(err);
     }else{
-      res.send(data)
+      res.send(data);
     }
   });
 });
-
-//SELECT '3430000' FROM `patients` LEFT JOIN (`encounters`) ON (`encounters`.id_patients = `patients`.id)
 
 app.post('/*',  function(req, res){
   console.log("Serving app.post...");
@@ -72,8 +70,6 @@ app.get('/db',  function(req, res){
 app.get('/', function(req,res){
   res.redirect('/app/index.html');
 });
-
-
 
 var port = process.env.PORT || 8000;
 
