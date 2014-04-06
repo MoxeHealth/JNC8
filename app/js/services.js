@@ -4,26 +4,49 @@
 
 angular.module('myApp.services', [])
   .value('version', '0.1')
-  .factory('db', ['$http', '$q', function($http, $q) {
+  .factory('initializer', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
+
+    var initialize = function(){
+      console.log('initialize called');
+    //TODO - wrap following code in post request from Epic
+      var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters($rootScope.patientId)
+      ]);
+
+      return result.then(function(response) {
+        console.log('promise response', response);
+        substrate.patientData = response.patientData;
+        db.patientData = response.patientData;
+      });
+
+      // substrate.getPatientData($rootScope.patientId, function(patientData) {
+      //   console.log('Into getPD callback...');
+      //   substrate.patientData = patientData;
+      //   console.log(substrate.patientData);
+      // });
+
+      // db.getEncounters($rootScope.patientId, function(data) {
+      //   console.log(data);
+      // });
+    };
+
+    return {
+      initialize: initialize
+    };
+  }])
+  .factory('db', ['$http', function($http) {
     var getEncounters = function(ptId, callback) {
       console.log("ptId in getEcounters:" + ptId);
-      $http({
+      return $http({
         url: '/db/encounters',
         method: 'GET',
         params: {
           ptId: ptId
         }
-      }).success(function(data, status) {
-        console.log('db getEncounters success');
-        callback(data);
-      }).error(function(data, status){
-        console.log('db getEncounters error');
-        callback(data, status);
       });
     };
 
     var addEncounter = function(ptId, encounter, callback) {
-      $http({
+      return $http({
         url: '/db/encounters',
         method: 'POST',
         data: {
@@ -31,12 +54,6 @@ angular.module('myApp.services', [])
           //encounter object expects two values: bloodPressure and medicationsPrescribed
           encounter: encounter
         }
-      }).success(function(data, status) {
-        console.log('db addEncounter success');
-        callback(data, status);
-      }).error(function(data, status){
-        console.log('db addEncounter error');
-        callback(data, status);
       });
     };
 
@@ -61,14 +78,15 @@ angular.module('myApp.services', [])
         lab: getLabs(patientId)
       });
 
-      return result.then(function(response) {
-        var patientData = {
-          demographics: response.demographics.data,
-          vitals: response.vitals.data,
-          lab: response.lab.data
-        };
-        return callback(patientData);
-      });
+      return result;
+      // .then(function(response) {
+      //   var patientData = {
+      //     demographics: response.demographics.data,
+      //     vitals: response.vitals.data,
+      //     lab: response.lab.data
+      //   };
+      //   return callback(patientData);
+      // });
     };
 
     var getPatientDemographics = function(patientId) {
