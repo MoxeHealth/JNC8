@@ -4,29 +4,23 @@
 
 angular.module('myApp.services', [])
   .value('version', '0.1')
-  .factory('initializer', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
+  .service('initializer', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
 
     var initialize = function(){
       console.log('initialize called');
+
     //TODO - wrap following code in post request from Epic
       var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters($rootScope.patientId)
       ]);
 
       return result.then(function(response) {
-        console.log('promise response', response);
-        substrate.patientData = response.patientData;
-        db.patientData = response.patientData;
+        $rootScope.showSplash = false;
+
+        return {
+          substrateData: response[0],
+          dbData: response[1].data
+        }
       });
-
-      // substrate.getPatientData($rootScope.patientId, function(patientData) {
-      //   console.log('Into getPD callback...');
-      //   substrate.patientData = patientData;
-      //   console.log(substrate.patientData);
-      // });
-
-      // db.getEncounters($rootScope.patientId, function(data) {
-      //   console.log(data);
-      // });
     };
 
     return {
@@ -79,14 +73,6 @@ angular.module('myApp.services', [])
       });
 
       return result;
-      // .then(function(response) {
-      //   var patientData = {
-      //     demographics: response.demographics.data,
-      //     vitals: response.vitals.data,
-      //     lab: response.lab.data
-      //   };
-      //   return callback(patientData);
-      // });
     };
 
     var getPatientDemographics = function(patientId) {
