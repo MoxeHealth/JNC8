@@ -8,5 +8,5 @@ Shane Keller and Ian Lyons.
 
 Stack:
 ==========
-- AngularJS
+- AngularJS: 1.2.x (IE 8 support dropped in later versions)
 - Ionic

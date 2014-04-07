@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
+  <div class="splash" ng-init="showSplash=true" ng-show="showSplash" >
+    One momement while your patient's data is retrieved...
+  </div>
+
   <div ng-view class="container"></div>
 
   <!-- In production use:

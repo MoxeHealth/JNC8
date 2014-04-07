@@ -12,33 +12,27 @@ angular.module('myApp', [
 .config(['$routeProvider', function($routeProvider) {
   console.log('config called');
 
-  $routeProvider.when('/dataEntry', {
-    templateUrl: 'partials/dataEntry.html',
+  $routeProvider.when('/', {
+    templateUrl: 'partials/.html',
     resolve: {
-      substrateData: function($rootScope, substrate) {
-        return substrate.getPatientData($rootScope.patientId);
-      },
-      dbData: function($rootScope, db) {
-        return db.getEncounters($rootScope.patientId);
+      initializedData: function($rootScope, initializer){
+          return initializer.initialize();
       }
     },
-    controller: 'dataEntryCtrl'
+    controller: 'MainController'
   });
 
-  $routeProvider.when('/view2', {
-    templateUrl: 'partials/partial2.html', controller: 'MyCtrl2'
+  $routeProvider.when('/dataViz', {
+    templateUrl: 'partials/dataViz.html', controller: 'dataVizCtrl'
   });
   $routeProvider.otherwise({
-    redirectTo: '/view1'
+    redirectTo: '/'
   });
 }])
-.run(['$rootScope','substrate', 'db', function($rootScope, substrate, db) {
+.run(['$rootScope','substrate', 'db', 'initializer', function($rootScope, substrate, db, initializer) {
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';
-
-  console.log(substrate.patientData);
-  console.log(db.patientData);
 
   // db.addEncounter($rootScope.patientId, {
   //   bloodPressure: {systolic: 120, diastolic: 60},
