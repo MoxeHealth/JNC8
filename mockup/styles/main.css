@@ -1,5 +1,5 @@
-
 /* App structure styling */
+
 body {
   background-color: #eee;
 }
@@ -14,6 +14,55 @@ body {
   border: solid #d7d7d7 1px;
   background-color: #fff;
 }
+
+.container label {
+  display: block; 
+}
+
+.container .input-wrapper {
+  margin: 8px 0px;
+}
+
+.container .field-label {
+  font-size: 12px;
+  display: block;
+  font-weight: bold;
+}
+
+
+/* Menu styling */
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid black;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: "[";
+}
+
+.menu:after {
+  content: "]";
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li:before {
+  content: "|";
+  padding-right: 0.3em;
+}
+
+.menu > li:nth-child(1):before {
+  content: "";
+  padding: 0;
+}
+
+
+/* Form styling */
 
 form section {
   margin-bottom: 16px;
@@ -48,21 +97,9 @@ form section.medications {
   display: none;
 }
 
-.container label {
-  display: block; 
-}
-
-.container .input-wrapper {
-  margin: 8px 0px;
-}
-
-.container .field-label {
-  font-size: 12px;
-  display: block;
-  font-weight: bold;
-}
 
 /* Typography and coloring */
+
 h1 {
   color: #2C3E50;
   font-weight: bold;
