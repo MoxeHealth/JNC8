@@ -16,7 +16,7 @@ body {
 }
 
 .container label {
-  display: block; 
+  display: block;
 }
 
 .container .input-wrapper {
@@ -65,9 +65,9 @@ body {
 /* Form styling */
 
 form section {
-  margin-bottom: 16px;
-  border-top: solid #f0f0f0 1px;
-  padding:10px 0 0;
+  margin: 16px;
+  border-bottom: solid #f0f0f0 1px;
+  padding:10px 0;
 }
 
 form input[type=submit] {
@@ -77,6 +77,10 @@ form input[type=submit] {
 form .radio-wrapper {
   display: block;
   margin-bottom:5px;
+}
+
+form [type='radio'] {
+  margin-right: 6px;
 }
 
 form tr.header td {
@@ -90,11 +94,15 @@ form tr.inactive td {
 }
 
 form tr td {
-  padding-top: 8px;
+  padding: 8px;
 }
 
-form section.medications {
-  display: none;
+form td.info-column {
+  text-align: center;
+}
+
+form select {
+  min-width:200px;
 }
 
 
