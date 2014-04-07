@@ -28,3 +28,16 @@
   content: "";
   padding: 0;
 }
+
+/*[ng-cloak].splash {
+  background: green;
+}
+
+.splash {
+  background: blue;
+  color: white;
+}
+.splash h2 {
+  font-size: 2.1em;
+  font-weight: 500;
+}*/
