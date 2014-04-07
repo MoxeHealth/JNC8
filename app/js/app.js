@@ -13,13 +13,13 @@ angular.module('myApp', [
   console.log('config called');
 
   $routeProvider.when('/', {
-    templateUrl: 'partials/.html',
+    templateUrl: 'partials/dataEntry.html',
     resolve: {
       initializedData: function($rootScope, initializer){
           return initializer.initialize();
       }
     },
-    controller: 'MainController'
+    controller: 'dataEntryCtrl'
   });
 
   $routeProvider.when('/dataViz', {
