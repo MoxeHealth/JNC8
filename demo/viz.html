@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Results</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <ul class="menu">
+    <li><a href="#/dataEntry">Edit Patient Data</a></li>
+    <li><a href="#">Exit Calculator</a></li>
+  </ul>
+  <ul>
+  Choose titration strategy:
+    <li>Maximize first medication before adding second.</li>
+    <li>Add second medication before reaching maximum dose of first medication.</li>
+    <li>Start with two medication classes, separately or as fixed-dose combination.</li>
+  </ul>
+
+  <div>Recommendation: "Initiate thiazide-type diuretic or ACEI or ARB or CCB, alone or in combination. ACEIs and ARBs should not be used in combination."</div>
+  <br>
+
+  <table>
+    <tr>
+      <td>Goals</td>
+      <td>Current BP</td>
+    </tr>
+    <tr>
+      <td><input type="text" value="140"/></td>
+      <td>160</td>
+    </tr>
+    <tr>
+      <td><input type="text" value="90"/></td>
+      <td>100</td>
+    </tr>
+  </table>
+  <br>
+  <br>
+  <table>
+    Drugs Being Taken
+    <tr>
+      <td>Drug</td>
+      <td>Dose</td>
+      <td>Max Reached?</td>
+    </tr>
+    <tr>
+      <td><input type="text" value="thiazide"/></td>
+      <td>20mg</td>
+      <td>No</td>
+    </tr>
+  </table>
+  <button>Save patient information</button>
+</body>
+</html>
