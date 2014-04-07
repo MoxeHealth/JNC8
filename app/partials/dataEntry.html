@@ -1,78 +1,73 @@
-<form id="data-entry" ng-model="data-entry">
+<form>
+
 	<section>
 	  <label for="age">Patient's age:</label>
 	  <div class="input-wrapper">
-	    <input type="number" id="age" />
+	    <input type="number" ng-model="pt.age" id="age" />
 	  </div>
 	</section>
 
 	<section>
 	  <label for="race">Patient's race:</label>
 	  <div class="input-wrapper">
-	    <input type="text" id="race" />
+	    <select name="race" ng-model="pt.race" ng-options="race for race in races"></select>
 	  </div>
 	</section>
 
 	<section>
 	  <label for="blood-pressure">Patient's blood pressure:</label>
 	  <div class="input-wrapper">
-	    <span class="field-label">Systolic:</span><input type="number" name="blood-pressure" id="blood-pressure-syst" />
+	    <span class="field-label">Systolic:</span>
+	    <input type="number" name="blood-pressure" ng-model="pt.BloodPressure.Systolic" id="blood-pressure-syst" />
 	  </div>
 	  <div class="input-wrapper">
-	    <span class="field-label">Diastolic:</span><input type="number" name="blood-pressure" id="blood-pressure-diast" />
+	    <span class="field-label">Diastolic:</span>
+	    <input type="number" name="blood-pressure" ng-model="pt.BloodPressure.Diastolic" id="blood-pressure-diast" />
 	  </div>
 	</section>
 
 	<section>
 	  <label for="diabetes">Does the patient have diabetes?</label>
 	  <div class="input-wrapper">
-	    <span class="radio-wrapper"><input type="radio" name="diabetes" value="diabetes-y"> Yes</span>
-	    <span class="radio-wrapper"><input type="radio" name="diabetes" value="diabetes-n" checked> No</span>
+	    <span class="radio-wrapper"><input type="radio" ng-model="pt.diabetes" name="diabetes" value="1"> Yes</span>
+	    <span class="radio-wrapper"><input type="radio" ng-model="pt.diabetes" name="diabetes" value="0" checked> No</span>
 	  </div>
 	</section>
 
 	<section>
 	  <label for="blood-pressure">Does the patient have CKD?</label>
 	  <div class="input-wrapper">
-	    <span class="radio-wrapper"><input type="radio" name="ckd" value="ckd-y"> Yes</span>
-	    <span class="radio-wrapper"><input type="radio" name="ckd" value="ckd-n" checked> No</span>
+	    <span class="radio-wrapper"><input type="radio" ng-model="pt.CKD" name="ckd" value="1"> Yes</span>
+	    <span class="radio-wrapper"><input type="radio" ng-model="pt.CKD" name="ckd" value="0" checked> No</span>
 	  </div>
 	</section>
 
 	<section>
 	  <label for="blood-pressure">Is the patient on medication?</label>
 	  <div class="input-wrapper">
-	    <span class="radio-wrapper"><input type="radio" name="meds" id="med-y"> Yes</span>
-	    <span class="radio-wrapper"><input type="radio" name="meds" id="med-n" checked> No</span>
+	    <span class="radio-wrapper"><input type="radio" ng-model="pt.medication.isOnMedication" name="meds" value="1"> Yes</span>
+	    <span class="radio-wrapper"><input type="radio" ng-model="pt.medication.isOnMedication" name="meds" value="0" checked> No</span>
 	  </div>
 	</section>
-	<section class="medications">
+
+
+	<section class="medications" ng-show="pt.medication.isOnMedication">
 	  <table id="medications" width="100%">
 	    <tr class="header">
 	      <td width="40%">Drug name</td>
-	      <td width="30%">Dosage</td>
-	      <td width="15%">Max?</td>
-	      <td width="15%">Remove</td>
+	      <td class="info-column" width="30%">Dosage</td>
+	      <td class="info-column" width="15%">Max dosage</td>
+	      <td class="info-column" width="15%">Remove</td>
 	    </tr>
-	    <tr>
-	      <td width="40%">Thiazine</td>
-	      <td width="30%">40ml</td>
-	      <td width="15%"><input type="checkbox" name="thiazine" value="max-reached"></td>
-	      <td width="15%"><span class="x-med">x</span></td>
-	    </tr>
-	    <tr>
-	      <td width="40%">ACEI</td>
-	      <td width="30%">30mg</td>
-	      <td width="15%"><input type="checkbox" name="ACEI" value="max-reached"></td>
-	      <td width="15%"><span class="x-med">x</span></td>
-	    </tr>
-	    <tr class="inactive">
-	      <td width="40%">ARB</td>
-	      <td width="30%">40ml</td>
-	      <td width="15%"><input type="checkbox" name="ARB" value="max-reached"></td>
-	      <td width="15%"><span class="x-med">x</span></td>
+	    <tr ng-repeat="drug in pt.medication.medicationDetail">
+	      <td width="30%">{{ drug.name }}</td>
+	      <td width="25%" class="info-column">{{ drug.currentDose }}{{ drug.doseUnit }}</td>
+	      <td width="25%" class="info-column">{{ drug.maxDose }}{{ drug.doseUnit }}</td>
+	      <td width="20%" class="info-column"><span class="x-med">x</span></td>
 	    </tr>
 	  </table>
 	</section>
+
 	<input type="submit" value="Get recommendations">
+
 </form>
