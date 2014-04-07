@@ -5,6 +5,8 @@
 angular.module('myApp.services', [])
   .value('version', '0.1')
   .service('initializer', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
+
+    var initializedData = {};
     
     var initialize = function(){
       console.log('initialize called');
@@ -14,43 +16,18 @@ angular.module('myApp.services', [])
       ]);
 
       return result.then(function(response) {
-        // substrate.patientData = response.patientData;
-        // db.patientData = response.patientData;
-
-        var deferred = $q.defer();
         $rootScope.showSplash = false;
 
-        console.log(response);
-
-        deferred.resolve(response);
-
-        deferred.reject('initializer reject'); 
-
-        return deferred.promise;
-
-        // return {
-        //   substrateData: response.patientData
-        // };
+        return {
+          substrateData: response[0],
+          dbData: response[1].data
+        }
       });
 
-      // substrate.getPatientData($rootScope.patientId, function(patientData) {
-      //   console.log('Into getPD callback...');
-      //   substrate.patientData = patientData;
-      //   console.log(substrate.patientData);
-      // });
-
-      // db.getEncounters($rootScope.patientId, function(data) {
-      //   console.log(data);
-      // });
     };
 
-    var showSplash = function(){
-      return showSplash;
-    }
-
     return {
-      initialize: initialize,
-      showSplash: showSplash
+      initialize: initialize
     };
   }])
   .factory('db', ['$http', function($http) {
