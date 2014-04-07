@@ -16,9 +16,7 @@ angular.module('myApp', [
     templateUrl: 'partials/dataEntry.html',
     resolve: {
       initializedData: function($rootScope, initializer){
-          var result = initializer.initialize();
-          console.log(result);
-          return result; 
+          return initializer.initialize();
       }
     },
     controller: 'MainController'

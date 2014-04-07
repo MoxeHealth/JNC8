@@ -5,9 +5,11 @@
 angular.module('myApp.controllers', [
   ])
 
-.controller('MainController', function($scope, initializer) {
+.controller('MainController', function($scope, initializedData) {
 
-  // console.log('substrate', substrateData);
+  $scope.initializedData = initializedData;
+  console.log($scope.initializedData);
+
 })
 .controller('dataEntryCtrl', ['$rootScope', '$q',
 function($rootScope, $q) {
