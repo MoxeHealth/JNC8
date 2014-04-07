@@ -12,17 +12,16 @@ angular.module('myApp', [
 .config(['$routeProvider', function($routeProvider) {
   console.log('config called');
 
-  $routeProvider.when('/dataEntry', {
+  $routeProvider.when('/', {
     templateUrl: 'partials/dataEntry.html',
     resolve: {
-      substrateData: function($rootScope, substrate) {
-        return substrate.getPatientData($rootScope.patientId);
-      },
-      dbData: function($rootScope, db) {
-        return db.getEncounters($rootScope.patientId);
+      initializedData: function($rootScope, initializer){
+          var result = initializer.initialize();
+          console.log(result);
+          return result; 
       }
     },
-    controller: 'dataEntryCtrl'
+    controller: 'MainController'
   });
 
   $routeProvider.when('/view2', {
@@ -32,13 +31,10 @@ angular.module('myApp', [
     redirectTo: '/view1'
   });
 }])
-.run(['$rootScope','substrate', 'db', function($rootScope, substrate, db) {
+.run(['$rootScope','substrate', 'db', 'initializer', function($rootScope, substrate, db, initializer) {
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';
-
-  console.log(substrate.patientData);
-  console.log(db.patientData);
 
   // db.addEncounter($rootScope.patientId, {
   //   bloodPressure: {systolic: 120, diastolic: 60},

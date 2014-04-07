@@ -6,10 +6,9 @@
   <link rel="stylesheet" href="css/app.css"/>
 </head>
 <body>
-  <ul class="menu">
-    <li><a href="#/dataEntry">Data Entry</a></li>
-    <li><a href="#/view2">view2</a></li>
-  </ul>
+  <div class="splash" ng-init="showSplash=true" ng-show="showSplash" >
+    One momement while your patient's data is retrieved...
+  </div>
 
   <div ng-view></div>
 
