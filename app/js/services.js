@@ -6,8 +6,6 @@ angular.module('myApp.services', [])
   .value('version', '0.1')
   .service('initializer', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
 
-    var initializedData = {};
-    
     var initialize = function(){
       console.log('initialize called');
 
@@ -23,7 +21,6 @@ angular.module('myApp.services', [])
           dbData: response[1].data
         }
       });
-
     };
 
     return {
@@ -76,14 +73,6 @@ angular.module('myApp.services', [])
       });
 
       return result;
-      // .then(function(response) {
-      //   var patientData = {
-      //     demographics: response.demographics.data,
-      //     vitals: response.vitals.data,
-      //     lab: response.lab.data
-      //   };
-      //   return callback(patientData);
-      // });
     };
 
     var getPatientDemographics = function(patientId) {

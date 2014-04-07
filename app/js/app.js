@@ -13,7 +13,7 @@ angular.module('myApp', [
   console.log('config called');
 
   $routeProvider.when('/', {
-    templateUrl: 'partials/dataEntry.html',
+    templateUrl: 'partials/.html',
     resolve: {
       initializedData: function($rootScope, initializer){
           return initializer.initialize();
@@ -22,11 +22,11 @@ angular.module('myApp', [
     controller: 'MainController'
   });
 
-  $routeProvider.when('/view2', {
-    templateUrl: 'partials/partial2.html', controller: 'MyCtrl2'
+  $routeProvider.when('/dataViz', {
+    templateUrl: 'partials/dataViz.html', controller: 'dataVizCtrl'
   });
   $routeProvider.otherwise({
-    redirectTo: '/view1'
+    redirectTo: '/'
   });
 }])
 .run(['$rootScope','substrate', 'db', 'initializer', function($rootScope, substrate, db, initializer) {
