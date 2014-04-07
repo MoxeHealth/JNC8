@@ -12,11 +12,54 @@ body {
   padding: 18px;
   margin: 50px auto;
   border: solid #d7d7d7 1px;
-  background-color: #f0f0f0;
+  background-color: #fff;
+}
+
+form section {
+  margin-bottom: 16px;
+  border-top: solid #f0f0f0 1px;
+  padding:10px 0 0;
+}
+
+form input[type=submit] {
+  margin-top: 16px;
+}
+
+form .radio-wrapper {
+  display: block;
+  margin-bottom:5px;
+}
+
+form tr.header td {
+  font-weight: bold;
+  padding-bottom: 6px;
+  border-bottom: dashed #f0f0f0 1px;
+}
+
+form tr.inactive td {
+  color: #d7d7d7;
+}
+
+form tr td {
+  padding-top: 8px;
+}
+
+form section.medications {
+  display: none;
 }
 
 .container label {
   display: block; 
+}
+
+.container .input-wrapper {
+  margin: 8px 0px;
+}
+
+.container .field-label {
+  font-size: 12px;
+  display: block;
+  font-weight: bold;
 }
 
 /* Typography and coloring */

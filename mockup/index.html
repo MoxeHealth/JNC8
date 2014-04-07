@@ -3,20 +3,91 @@
 <head>
   <link rel="stylesheet" type="text/css" href="styles/normalize.css">
   <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
   <title>JNC8 Risk Calculator</title>
+  <script>
+    $(function() {
+      $('#med-y').on('click', function(e) {
+        $('.medications').css('display', 'block');
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="container">
     <h1>JNC8 Risk Calculator</h1>
-    <p>This is the data entry view.</p>
     <form id="data-entry" ng-model="data-entry">
-      <label for="blood-pressure">Patient blood pressure</label>
+    <section>
+      <label for="blood-pressure">Age:</label>
       <div class="input-wrapper">
-        Systolic: <input type="text" id="blood-pressure-syst" />
+        <input type="number" id="age" />
+      </div>
+    </section>
+    <section>
+      <label for="blood-pressure">Race:</label>
+      <div class="input-wrapper">
+        <input type="text" id="blood-pressure-syst" />
+      </div>
+    </section>
+    <section>
+      <label for="blood-pressure">Blood pressure:</label>
+      <div class="input-wrapper">
+        <span class="field-label">Systolic:</span><input type="number" id="blood-pressure-syst" />
       </div>
       <div class="input-wrapper">
-        Diastolic: <input type="text" id="blood-pressure-diast" />
+        <span class="field-label">Diastolic:</span><input type="number" id="blood-pressure-diast" />
       </div>
+    </section>
+    <section>
+      <label for="blood-pressure">Diabetes:</label>
+      <div class="input-wrapper">
+        <span class="radio-wrapper"><input type="radio" value="diabetes-y"> Yes</span>
+        <span class="radio-wrapper"><input type="radio" value="diabetes-n" default> No</span>
+      </div>
+    </section>
+    <section>
+      <label for="blood-pressure">CKD:</label>
+      <div class="input-wrapper">
+        <span class="radio-wrapper"><input type="radio" name="ckd" value="ckd-y"> Yes</span>
+        <span class="radio-wrapper"><input type="radio" name="ckd" value="ckd-n"> No</span>
+      </div>
+    </section>
+    <section>
+      <label for="blood-pressure">Is the patient on medication?</label>
+      <div class="input-wrapper">
+        <span class="radio-wrapper"><input type="radio" name="meds" id="med-y"> Yes</span>
+        <span class="radio-wrapper"><input type="radio" name="meds"> No</span>
+      </div>
+    </section>
+    <section class="medications">
+      <table id="medications" width="100%">
+        <tr class="header">
+          <td width="40%">Drug name</td>
+          <td width="30%">Dosage</td>
+          <td width="15%">Max?</td>
+          <td width="15%">Remove</td>
+        </tr>
+        <tr>
+          <td width="40%">Thiazine</td>
+          <td width="30%">40ml</td>
+          <td width="15%"><input type="checkbox" name="thiazine" value="max-reached"></td>
+          <td width="15%"><span class="x-med">x</span></td>
+        </tr>
+        <tr>
+          <td width="40%">ACEI</td>
+          <td width="30%">30mg</td>
+          <td width="15%"><input type="checkbox" name="ACEI" value="max-reached"></td>
+          <td width="15%"><span class="x-med">x</span></td>
+        </tr>
+        <tr class="inactive">
+          <td width="40%">ARB</td>
+          <td width="30%">40ml</td>
+          <td width="15%"><input type="checkbox" name="ARB" value="max-reached"></td>
+          <td width="15%"><span class="x-med">x</span></td>
+        </tr>
+      </table>
+    </section>
+    <input type="submit" value="Get recommendations">
     </form>
   </div>
 </body>
