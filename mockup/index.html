@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="styles/normalize.css">
+  <link rel="stylesheet" type="text/css" href="styles/main.css">
+  <title>JNC8 Risk Calculator</title>
+</head>
+<body>
+  <div class="container">
+    <h1>JNC8 Risk Calculator</h1>
+    <p>This is the data entry view.</p>
+    <form id="data-entry" ng-model="data-entry">
+      <label for="blood-pressure">Patient blood pressure</label>
+      <div class="input-wrapper">
+        Systolic: <input type="text" id="blood-pressure-syst" />
+      </div>
+      <div class="input-wrapper">
+        Diastolic: <input type="text" id="blood-pressure-diast" />
+      </div>
+    </form>
+  </div>
+</body>
+</html>
