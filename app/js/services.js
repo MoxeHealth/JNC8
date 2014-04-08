@@ -5,11 +5,12 @@
 angular.module('myApp.services', [])
   .value('version', '0.1')
   .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
-
+    console.log("into startup");
     var ptData = {};
 
     var initialize = function(){
       console.log('Initialize called');
+
 
     //TODO - wrap following code in post request from Epic
       var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters($rootScope.patientId)
@@ -118,11 +119,14 @@ angular.module('myApp.services', [])
   }])
 
   .factory('pt', ['startup', function(startup) {
+    console.log('pt factory called');
+    console.log(startup);
+
 
     return {
       race: startup.ptData.substrate.demographics.data.Race.Text,
       age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
-      bp: {
+      currentBP: {
         Systolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Systolic.Value, 10),
         Diastolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Diastolic.Value, 10)
       },
@@ -162,6 +166,34 @@ angular.module('myApp.services', [])
         return false;
       }
     };
+  }])
+
+  .factory('graphData', ['startup', function(startup) {
+
+    var parseBPData = function(bpDataArr, targetBP) {
+      var results = [];
+      var targetSys = 120;
+      var targetDias = 80;
+
+      for(var i = 0; i < bpDataArr.length; i++) {
+        var bp = JSON.parse(bpDataArr[i].blood_pressure);
+        var date = new Date(bpDataArr[i].encounter_date);
+
+        results.push({
+          date: date,
+          systolic: bp.systolic,
+          diastolic: bp.diastolic,
+          targetDias: targetDias,
+          targetSys: targetSys
+        });
+      }
+      return results;
+    };
+
+    //debugging purposes
+    var result = parseBPData(startup.ptData.db);
+    return result;
+
   }])
 
   .factory('algorithmSvc', ['pt', function(pt) {
