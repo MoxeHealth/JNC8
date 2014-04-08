@@ -22,6 +22,8 @@ function($scope, $q, $location, pt) {
   $scope.pt = pt;
   $scope.data = graphData;
 
+  console.log($scope.data);
+
   $scope.options = {
     axes: {
       x: {
@@ -36,8 +38,8 @@ function($scope, $q, $location, pt) {
         },
         type: 'date',
         tooltipFormatter: function(date) {
-          console.log('tooltip ',date);
-          return date;
+          var datestring = ("0" + (date.getMonth() + 1).toString()).substr(-2) + "/" + ("0" + date.getDate().toString()).substr(-2)  + "/" + (date.getFullYear().toString()).substr(2);
+          return datestring;
         }
       },
       y: {type: 'linear'},
@@ -46,10 +48,10 @@ function($scope, $q, $location, pt) {
       y4: {type: 'linear'}
     },
     series: [
-      {y: 'systolic', color: '#DBE2FF', thickness: '3px', label: 'Patient Systolic'},
+      {y: 'systolic', color: '#2E4087', thickness: '3px', label: 'Patient Systolic'},
       {y: 'diastolic', color: '#872E44', thickness: '3px', label: 'Patient Diastolic'},
       {y: 'targetDias', color: '#EBB9C6', thickness: '1px', label: 'Target Diastolic'},
-      {y: 'targetSys', axis: 'y2',  thickness: '1px', color: '#2E4087', label: 'Target Systolic'}
+      {y: 'targetSys', thickness: '1px', color: '#DBE2FF', label: 'Target Systolic'}
     ],
     lineMode: 'linear',
     tension: 0.7
