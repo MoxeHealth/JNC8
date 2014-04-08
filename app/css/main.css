@@ -65,7 +65,7 @@ body {
 /* Form styling */
 
 form section {
-  margin: 16px;
+  margin: 0;
   border-bottom: solid #f0f0f0 1px;
   padding:10px 0;
 }
@@ -115,17 +115,17 @@ div.patient-status {
   border-radius: 3px;
 }
 
-.patient-status .good {
+.good {
   background-color: #dff0d8;
   color: #3c763d;
 }
 
-.patient-status .okay {
+.okay {
   background-color: #fcf8e3;
   color: #8a6d3b;
 }
 
-.patient-status .bad {
+.bad {
   background-color: #f2dede;
   color: #a94442;
 }
@@ -139,6 +139,11 @@ section.bp-goal-comparison td {
 section.bp-goal-comparison td:nth-child(1) {
   font-size: 14px;
   font-weight: normal;
+}
+
+#chart {
+  height: 350px;
+  width: 400px;
 }
 
 /* Typography and coloring */
