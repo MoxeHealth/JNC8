@@ -117,23 +117,26 @@ angular.module('myApp.services', [])
     };
   }])
 
-  .factory('pt', ['initialize', function(initialize) {
+  .factory('pt', ['startup', function(startup) {
 
     return {
-      race: substrate.patientData.demographics.Race.Text,
-      age: parseInt(substrate.patientData.demographics.Age.substring(0,substrate.patientData.demographics.Age.length-1), 10),
-      bp: [parseInt(substrate.patientData.vitals.BloodPressure.Systolic.Value, 10), parseInt(substrate.patientData.vitals.BloodPressure.Diastolic.Value, 10)],
-      hasDiabetes: true,
-      hasCKD: true,
-      onMedication: true,
-      medications: {
-       medName : {
-         dose: 10,
-         maxDose: 50,
-         unit: 'mg'
-        }
+      race: startup.ptData.substrate.demographics.data.Race.Text,
+      age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
+      bp: {
+        Systolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Systolic.Value, 10),
+        Diastolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Diastolic.Value, 10)
       },
+      hasDiabetes: true,
+      isOnMedication: true,
+      hasCKD: true,
+      medication: [{
+        name: 'Advil',
+        dose: 10,
+        maxDose: 50,
+        unit: 'mg'
+      }],
       targetBP: '',
+      races: ['Black or African American', 'Asian', 'Caucasian'],
       hasBPGoal: function(){
         if(this.targetBP){
           if(this.targetBP.length > 0){
@@ -151,6 +154,12 @@ angular.module('myApp.services', [])
         } else {
           throw new Error ("Patient's target BP hasn't been set.");
         }
+      },
+      onMedication: function() {
+        if(this.medication.length > 0) {
+          return true;
+        }
+        return false;
       }
     };
   }])
