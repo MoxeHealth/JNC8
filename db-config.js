@@ -6,7 +6,7 @@ exports.connection = mysql.createConnection({
   host: host,
   database: 'JNC8',
   user: 'root',
-  password: 'Kiter25'
+  password: ''
 });
 
 exports.connection.connect();
