@@ -16,6 +16,7 @@ angular.module('myApp', [
     templateUrl: 'partials/dataEntry.html',
     resolve: {
       setUpApp: function(startup){
+        console.log("setUpApp");
         return startup.initialize();
       }
     },
@@ -23,22 +24,27 @@ angular.module('myApp', [
   });
 
   $routeProvider.when('/dataViz', {
-    templateUrl: 'partials/dataViz.html', controller: 'dataVizCtrl'
+    templateUrl: 'partials/dataViz.html',
+    controller: 'dataVizCtrl'
   });
   $routeProvider.otherwise({
     redirectTo: '/'
   });
 }])
-.run(['$rootScope','substrate', 'db', 'startup', function($rootScope, substrate, db, startup) {
+.run(['$rootScope', 'db', function($rootScope, db) {
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';
 
+
+
   // db.addEncounter($rootScope.patientId, {
-  //   bloodPressure: {systolic: 120, diastolic: 60},
+  //   bloodPressure: {systolic: 130, diastolic: 68},
   //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  // },
-  // function(data, status){
   // });
-  // algorithmSvc($rootScope.patientData, 'JNC8');
+
+  // db.addEncounter($rootScope.patientId, {
+  //   bloodPressure: {systolic: 115, diastolic: 90},
+  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+  // });
 }]);
