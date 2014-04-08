@@ -4,10 +4,12 @@
 
 angular.module('myApp.services', [])
   .value('version', '0.1')
-  .service('initializer', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
+  .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
+
+    var ptData = {};
 
     var initialize = function(){
-      console.log('initialize called');
+      console.log('Initialize called');
 
     //TODO - wrap following code in post request from Epic
       var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters($rootScope.patientId)
@@ -15,16 +17,14 @@ angular.module('myApp.services', [])
 
       return result.then(function(response) {
         $rootScope.showSplash = false;
-
-        return {
-          substrateData: response[0],
-          dbData: response[1].data
-        }
+        ptData.substrate = response[0];
+        ptData.db = response[1].data;
       });
     };
 
     return {
-      initialize: initialize
+      initialize: initialize,
+      ptData: ptData
     };
   }])
   .factory('db', ['$http', function($http) {
@@ -117,7 +117,7 @@ angular.module('myApp.services', [])
     };
   }])
 
-  .factory('pt', ['substrate', function(substrate) {
+  .factory('pt', ['initialize', function(initialize) {
 
     return {
       race: substrate.patientData.demographics.Race.Text,

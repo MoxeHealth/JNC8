@@ -15,8 +15,8 @@ angular.module('myApp', [
   $routeProvider.when('/', {
     templateUrl: 'partials/dataEntry.html',
     resolve: {
-      initializedData: function($rootScope, initializer){
-          return initializer.initialize();
+      setUpApp: function(startup){
+        return startup.initialize();
       }
     },
     controller: 'dataEntryCtrl'
@@ -29,7 +29,7 @@ angular.module('myApp', [
     redirectTo: '/'
   });
 }])
-.run(['$rootScope','substrate', 'db', 'initializer', function($rootScope, substrate, db, initializer) {
+.run(['$rootScope','substrate', 'db', 'startup', function($rootScope, substrate, db, startup) {
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';

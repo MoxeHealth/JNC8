@@ -4,11 +4,11 @@
 
 angular.module('myApp.controllers', [
 ])
-.controller('MainController', ['$scope', 'initializedData', function($scope, initializedData) {
-  // console.log($scope.initializedData);
+.controller('dataEntryCtrl', ['$scope', '$q', 'startup',
+function($scope, $q, startup) {
+  console.log("ptData:");
+  console.log(startup.ptData);
 }])
-.controller('dataEntryCtrl', ['$scope', '$q', 'initializedData',
-function($scope, $q, initializedData) {
-  $scope.initializedData = initializedData;
-  console.log($scope.initializedData);
+.controller('dataVizCtrl', ['$scope', function($scope) {
+
 }]);
