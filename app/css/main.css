@@ -171,3 +171,12 @@ img.loading {
 .data-form input.ng-valid.ng-dirty {
   background-color: #78FA89;
 }
+
+.submit-button { 
+  opacity: 1;
+}
+
+.submit-button[disabled] { 
+  opacity: .5;
+}
+
