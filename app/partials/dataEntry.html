@@ -2,14 +2,14 @@
 	<section>
 	  <label for="age">Patient's age:</label>
 	  <div class="input-wrapper">
-	    <input type="number" ng-model="pt.age" id="age" required name="age" min="0" max="200" />
+	    <input type="number" ng-model="pt.age" id="age" required name="age" min="18" max="200" />
 	  </div>	 
 	  <div ng-show="dataForm.age.$dirty && dataForm.age.$invalid">
 	  	<span class="error" ng-show="dataForm.age.$error.required">
-		  Please input a number between 0-200.
+		  Please input a number between 18-200.
 	  	</span>
 	    <span class="error" ng-show="dataForm.age.$error.min || dataForm.age.$error.max">
-		  Number outside age range. Age must be a number between 0-200. 
+		  Number outside age range. Age must be a number between 18-200. 
 	  	</span>
 	  </div> 
 	</section>
@@ -17,7 +17,7 @@
 	  <label for="race">Patient's race:</label>
 	  <div class="input-wrapper">
 	    <select name="race" required ng-model="pt.race" ng-options="race for race in pt.races">
-	    	<option>black</option>
+	    <option style="display:none" value="">Select a Race</option>
 	    </select>
 	  </div>
 
@@ -96,6 +96,6 @@
 	  </table>
 	</section>
 
-<input type="submit" value="Get recommendations" ng-disabled="data-form.$invalid">
+<input class="submit-button" type="submit" value="Get recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 
 </form>
