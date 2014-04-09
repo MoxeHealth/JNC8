@@ -163,3 +163,11 @@ img.loading {
   margin: 26px auto;
   display: block;
 }
+
+.data-form input.ng-invalid.ng-dirty {
+  background-color: #FA787E;
+}
+
+.data-form input.ng-valid.ng-dirty {
+  background-color: #78FA89;
+}
