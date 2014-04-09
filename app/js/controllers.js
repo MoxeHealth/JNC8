@@ -2,59 +2,21 @@
 
 /* Controllers */
 
-angular.module('myApp.controllers', [
-  'n3-charts.linechart'
-])
+angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
 function($scope, $q, $location, pt) {
-
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
 
-  console.log('ptData:');
   $scope.pt = pt;
-
-
 }])
-.controller('dataVizCtrl', ['$scope', 'pt', 'graphData', function($scope, pt, graphData) {
-
+.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'algorithm', function($scope, pt, startup, algorithm) {
+  console.log(algorithm);
+  $scope.recommendationMsg = algorithm.recommendation;
+  $scope.graphData = startup;
+  $scope.targetDias = algorithm.targetBP.diastolic;
+  $scope.targetSys = algorithm.targetBP.systolic;
   $scope.pt = pt;
-  $scope.data = graphData;
-
-  console.log($scope.data);
-
-  $scope.options = {
-    axes: {
-      x: {
-        key: 'date',
-        labelFunction: function(value) {
-          console.log('value', value);
-          var date =  value;
-          // console.log('date=value', date);
-          var datestring = ("0" + (date.getMonth() + 1).toString()).substr(-2) + "/" + ("0" + date.getDate().toString()).substr(-2)  + "/" + (date.getFullYear().toString()).substr(2);
-          // return datestring;
-          return datestring;
-        },
-        type: 'date',
-        tooltipFormatter: function(date) {
-          var datestring = ("0" + (date.getMonth() + 1).toString()).substr(-2) + "/" + ("0" + date.getDate().toString()).substr(-2)  + "/" + (date.getFullYear().toString()).substr(2);
-          return datestring;
-        }
-      },
-      y: {type: 'linear'},
-      y2: {type: 'linear'},
-      y3: {type: 'linear'},
-      y4: {type: 'linear'}
-    },
-    series: [
-      {y: 'systolic', color: '#2E4087', thickness: '3px', label: 'Patient Systolic'},
-      {y: 'diastolic', color: '#872E44', thickness: '3px', label: 'Patient Diastolic'},
-      {y: 'targetDias', color: '#EBB9C6', thickness: '1px', label: 'Target Diastolic'},
-      {y: 'targetSys', thickness: '1px', color: '#DBE2FF', label: 'Target Systolic'}
-    ],
-    lineMode: 'linear',
-    tension: 0.7
-  };
 
 }]);

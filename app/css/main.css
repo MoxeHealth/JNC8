@@ -106,6 +106,7 @@ form select {
 }
 
 
+
 /* Data visualization styling */
 div.patient-status {
   width: 70%;
@@ -141,9 +142,60 @@ section.bp-goal-comparison td:nth-child(1) {
   font-weight: normal;
 }
 
-#chart {
-  height: 350px;
-  width: 400px;
+.bp-goal-comparison input {
+  width: 60px;
+  text-align: center;
+}
+
+/* Graph styling */
+
+#bp-graph path {
+  stroke-width: 3px;
+  fill: none;
+}
+
+#bp-graph path.targetLine {
+  stroke-opacity: 0.5;
+  stroke-width:1px;
+}
+
+#bp-graph path.diasLine {
+  stroke: red;
+}
+
+#bp-graph path.sysLine {
+  stroke: steelblue;
+}
+
+#bp-graph.axis {
+  shape-rendering: crispEdges;
+}
+
+#bp-graph.x.axis line {
+      stroke: lightgrey;
+}
+
+#bp-graph.x.axis .minor {
+  stroke-opacity: .5;
+}
+
+#bp-graph.x.axis path {
+  /*display: none;*/
+}
+
+#bp-graph .y.axis line, #bp-graph .y.axis path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+/*#bp-graph path.plotline {
+  fill: none;
+  stroke: steelblue;
+}*/
+
+#bp-graph path.domain {
+  fill: none;
 }
 
 /* Typography and coloring */

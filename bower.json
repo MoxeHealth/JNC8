@@ -12,7 +12,8 @@
     "angular-mocks": "~1.2.15",
     "aight": "~1.2.2",
     "d3": "~3.4.4",
-    "angular-charts": "~0.0.1"
+    "angular-charts": "~0.0.1",
+    "r2d3": "~0.2.0"
   },
   "resolutions": {
     "d3": "~3.3.10"

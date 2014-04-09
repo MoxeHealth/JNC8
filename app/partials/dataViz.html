@@ -4,14 +4,18 @@
 
 </div>
 
-<div>Recommendation: "Initiate thiazide-type diuretic or ACEI or ARB or CCB, alone or in combination. ACEIs and ARBs should not be used in combination."</div>
+<div>Recommendation: {{ recommendationMsg }}</div>
 
 <section class="bp-goal-comparison">
   <table>
     <tr>
       <td width="32%">Goal Blood Pressure:</td>
-      <td class="info-column" width="20%">120</td>
-      <td class="info-column" width="20%">80</td>
+      <td class="info-column" width="20%">
+        <input type="number" ng-model="targetSys" id="goal-systolic" value="120">
+      </td>
+      <td class="info-column" width="20%">
+        <input type="number" id="goal-diastolic" ng-model="targetDias">
+      </td>
       <td class="info-column" width="27%"></td>
     </tr>
     <tr>
@@ -23,7 +27,7 @@
 </section>
 
 <section>
-  <linechart data="data" id="chart" options="options" mode="" height="300" width="500"></linechart>
+  <bp-graph graph-data="graphData"></bp-graph>
 </section>
 <button>Save patient information</button>
 
