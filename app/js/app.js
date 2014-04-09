@@ -38,12 +38,12 @@ angular.module('myApp', [
 
 
 
-  // db.addEncounter($rootScope.patientId, {
-  //   bloodPressure: {systolic: 130, diastolic: 68},
-  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  // });
+  db.addEncounter(3230000, {
+    bloodPressure: {systolic: 115, diastolic: 80},
+    medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+  });
 
-  // db.addEncounter($rootScope.patientId, {
+  // db.addEncounter(3230001, {
   //   bloodPressure: {systolic: 115, diastolic: 90},
   //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
   // });

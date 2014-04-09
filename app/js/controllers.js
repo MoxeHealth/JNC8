@@ -14,9 +14,9 @@ function($scope, $q, $location, pt) {
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'algorithm', function($scope, pt, startup, algorithm) {
   console.log(algorithm);
   $scope.recommendationMsg = algorithm.recommendation;
-  $scope.graphData = startup;
+  $scope.dbData = startup; // refactor to only expose db data and not substrate data
   $scope.targetDias = algorithm.targetBP.diastolic;
   $scope.targetSys = algorithm.targetBP.systolic;
   $scope.pt = pt;
-
+  console.log('controller scope', $scope);
 }]);

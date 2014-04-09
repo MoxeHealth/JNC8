@@ -143,8 +143,44 @@ section.bp-goal-comparison td:nth-child(1) {
 }
 
 .bp-goal-comparison input {
-  width: 60px;
+  width: 50px;
   text-align: center;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button,
+ { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+tr.header td {
+  padding: 0px 0 6px 0;
+}
+
+tr.info-row td {
+  padding: 12px 0;
+}
+
+tr.current td.systolic {
+  background-color: rgba(70, 130, 180, 1);
+}
+
+tr.current td {
+  text-align: left;
+  padding-left: 12px;
+}
+
+tr.goal td.systolic {
+  background-color: rgba(70, 130, 180, 0.5);
+}
+
+tr.current td.diastolic {
+  background-color: rgba(255, 0, 0, 1);
+}
+
+tr.goal td.diastolic {
+  background-color: rgba(255, 0, 0, 0.5);
 }
 
 /* Graph styling */
@@ -167,23 +203,24 @@ section.bp-goal-comparison td:nth-child(1) {
   stroke: steelblue;
 }
 
-#bp-graph.axis {
+#bp-graph .axis {
   shape-rendering: crispEdges;
 }
 
-#bp-graph.x.axis line {
+/*#bp-graph .x .axis line {
       stroke: lightgrey;
 }
 
-#bp-graph.x.axis .minor {
+#bp-graph .x .axis .minor {
   stroke-opacity: .5;
 }
 
-#bp-graph.x.axis path {
-  /*display: none;*/
-}
+#bp-graph .x .axis path {
+}*/
 
-#bp-graph .y.axis line, #bp-graph .y.axis path {
+
+#bp-graph .axis line, 
+#bp-graph .axis path {
   fill: none;
   stroke: #000;
   stroke-width: 1px;
@@ -196,6 +233,11 @@ section.bp-goal-comparison td:nth-child(1) {
 
 #bp-graph path.domain {
   fill: none;
+}
+
+bp-graph {
+  height:450px;
+  display: block;
 }
 
 /* Typography and coloring */
