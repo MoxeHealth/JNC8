@@ -13,13 +13,7 @@ function($scope, $q, $location, pt) {
   };
 
   $scope.pt = pt;
-
-  races: [
-    "Black or African American",
-    "Asian",
-    "Caucasian"
-  ];
-
+  
   $scope.buttonsSelected = function() {
     if($scope.pt.hasCKD && $scope.pt.isOnMedication && $scope.pt.hasDiabetes){
       return true;
