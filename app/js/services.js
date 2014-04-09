@@ -420,7 +420,6 @@ angular.module('myApp.services', [])
       if(graph.children.length > 1){
         graph.removeChild(graph.firstChild);
       }
-      return results;
     };
 
     return {
