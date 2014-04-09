@@ -5,48 +5,20 @@
 angular.module('myApp.controllers', [
   'n3-charts.linechart'
 ])
-//sk change - delete pt
-.controller('dataEntryCtrl', ['$scope', '$q','$location',
-function($scope, $q, $location) {
+.controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
+function($scope, $q, $location, pt) {
 
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
 
-  console.log('ptData:');
+  $scope.pt = pt;
 
-  //sk change- $scope.pt = pt;
-  //sk addition-
-  $scope.pt = {
-    age: 38,
-    currentBP: {
-      Diastolic: 60,
-      Systolic: 122
-    },
-    // hasCKD: true,
-    hasDiabetes: true,
-    isOnMedication: true,
-    medication: [
-      {
-        dose: 10,
-        maxDose: 50,
-        name: "Advil",
-        unit: "mg"
-      },
-      {
-        dose: 10,
-        maxDose: 40,
-        name: "ACEI",
-        unit: "mg"
-      }
-    ],
-    // race: "Black or African American",
-    races: [
-      "Black or African American",
-      "Asian",
-      "Caucasian"
-    ]
-  };
+  races: [
+    "Black or African American",
+    "Asian",
+    "Caucasian"
+  ];
 
   $scope.buttonsSelected = function() {
     if($scope.pt.hasCKD && $scope.pt.isOnMedication && $scope.pt.hasDiabetes){
