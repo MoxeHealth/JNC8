@@ -4,26 +4,40 @@
 
 </div>
 
-<div>Recommendation: "Initiate thiazide-type diuretic or ACEI or ARB or CCB, alone or in combination. ACEIs and ARBs should not be used in combination."</div>
+<div>Recommendation: {{ recommendationMsg }}</div>
 
 <section class="bp-goal-comparison">
   <table>
-    <tr>
-      <td width="32%">Goal Blood Pressure:</td>
-      <td class="info-column" width="20%">120</td>
-      <td class="info-column" width="20%">80</td>
+    <tr class="header">
+      <td width="37%">&nbsp;</td>
+      <td class="info-column" width="15%" height="15">
+          <span class="field-label">Systolic</span>
+      </td>
+      <td class="info-column" width="15%" height="15">
+          <span class="field-label">Diastolic</span>
+      </td>
       <td class="info-column" width="27%"></td>
     </tr>
-    <tr>
+    <tr class="info-row current">
       <td>Current Blood Pressure:</td>
-      <td class="info-column">140</td>
-      <td class="info-column">80</td>
+      <td class="info-column systolic">140</td>
+      <td class="info-column diastolic">80</td>
+    </tr>
+    <tr class="info-row goal">
+      <td width="37%">Goal Blood Pressure:</td>
+      <td class="info-column systolic" width="15%">
+          <input type="number" ng-model="targetSys" id="goal-systolic" value="120">
+      </td>
+      <td class="info-column diastolic" width="15%">
+          <input type="number" id="goal-diastolic" ng-model="targetDias">
+      </td>
+      <td class="info-column" width="27%"></td>
     </tr>
   </table>
 </section>
 
 <section>
-  <linechart data="data" id="chart" options="options" mode="" height="300" width="500"></linechart>
+  <bp-graph data="dbData" target-sys="targetSys" target-dias="targetDias"></bp-graph>
 </section>
 <button>Save patient information</button>
 

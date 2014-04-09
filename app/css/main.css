@@ -141,9 +141,85 @@ section.bp-goal-comparison td:nth-child(1) {
   font-weight: normal;
 }
 
-#chart {
-  height: 350px;
-  width: 400px;
+.bp-goal-comparison input {
+  width: 50px;
+  text-align: center;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button,
+ { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+tr.header td {
+  padding: 0px 0 6px 0;
+}
+
+tr.info-row td {
+  padding: 12px 0;
+}
+
+tr.current td.systolic {
+  background-color: rgba(70, 130, 180, 1);
+}
+
+tr.current td {
+  text-align: left;
+  padding-left: 12px;
+}
+
+tr.goal td.systolic {
+  background-color: rgba(70, 130, 180, 0.5);
+}
+
+tr.current td.diastolic {
+  background-color: rgba(255, 0, 0, 1);
+}
+
+tr.goal td.diastolic {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+
+/* Graph styling */
+
+#bp-graph path {
+  stroke-width: 3px;
+  fill: none;
+}
+
+#bp-graph path.targetLine {
+  stroke-opacity: 0.5;
+  stroke-width:1px;
+}
+
+#bp-graph path.diasLine {
+  stroke: red;
+}
+
+#bp-graph path.sysLine {
+  stroke: steelblue;
+}
+
+#bp-graph .axis {
+  shape-rendering: crispEdges;
+}
+
+#bp-graph .axis line, 
+#bp-graph .axis path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+#bp-graph path.domain {
+  fill: none;
+}
+
+bp-graph {
+  height:450px;
+  display: block;
 }
 
 /* Typography and coloring */
@@ -164,6 +240,9 @@ img.loading {
   display: block;
 }
 
+
+/* Form validation */
+
 .data-form input.ng-invalid.ng-dirty {
   background-color: #FA787E;
 }
@@ -179,4 +258,3 @@ img.loading {
 .submit-button[disabled] { 
   opacity: .5;
 }
-

@@ -43,8 +43,4 @@ angular.module('myApp', [
   //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
   // });
 
-  // db.addEncounter($rootScope.patientId, {
-  //   bloodPressure: {systolic: 115, diastolic: 90},
-  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  // });
 }]);

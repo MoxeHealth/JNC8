@@ -1,3 +1,4 @@
+/* global d3 */
 'use strict';
 
 /* Services */
@@ -28,8 +29,9 @@ angular.module('myApp.services', [])
       ptData: ptData
     };
   }])
-  .factory('db', ['$http', function($http) {
-    var getEncounters = function(ptId, callback) {
+
+  .service('db', ['$http', function($http) {
+    this.getEncounters = function(ptId, callback) {
       console.log("ptId in getEcounters:" + ptId);
       return $http({
         url: '/db/encounters',
@@ -40,7 +42,7 @@ angular.module('myApp.services', [])
       });
     };
 
-    var addEncounter = function(ptId, encounter, callback) {
+    this.addEncounter = function(ptId, encounter, callback) {
       return $http({
         url: '/db/encounters',
         method: 'POST',
@@ -51,12 +53,8 @@ angular.module('myApp.services', [])
         }
       });
     };
-
-    return {
-      getEncounters: getEncounters,
-      addEncounter: addEncounter
-    };
   }])
+
   .factory('substrate', ['$http', '$q', function($http, $q) {
     var apiPaths = {
       demographics: '/patient/demographics',
@@ -122,7 +120,6 @@ angular.module('myApp.services', [])
     console.log('pt factory called');
     console.log(startup);
 
-
     return {
       race: startup.ptData.substrate.demographics.data.Race.Text,
       age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
@@ -168,9 +165,25 @@ angular.module('myApp.services', [])
     };
   }])
 
-  .factory('graphData', ['startup', function(startup) {
+  .service('graphHelpers', [function() {
 
-    var parseBPData = function(bpDataArr, targetBP) {
+    this.getBPExtreme = function(array, keyName) {
+      var numArray = [];
+
+      for(var i = 0; i < array.length; i++) {
+        numArray.push(array[i].blood_pressure[keyName]);
+      }
+
+      if(keyName === 'systolic') {
+        return Math.max.apply(Math, numArray);
+      } else if (keyName === 'diastolic') {
+        return Math.min.apply(Math, numArray);
+      } else {
+        throw new Error("getBPExtreme requires either 'systolic' or 'diastolic' as a key name.");
+      }
+    };
+
+    this.parseBPData = function(bpDataArr, targetBP) {
       var results = [];
       var targetSys = 120;
       var targetDias = 80;
@@ -190,13 +203,28 @@ angular.module('myApp.services', [])
       return results;
     };
 
-    //debugging purposes
-    var result = parseBPData(startup.ptData.db);
-    return result;
+    this.parseArray = function(array) {
+      var results = [];
+      for(var i = 0; i < array.length; i++) {
+        var obj = array[i];
+        for(var key in obj) {
+          if(typeof obj[key] === "string") {
+            try{
+              obj[key] = JSON.parse(obj[key]);
+            }
+            catch (e) {
+              obj[key] = new Date(obj[key]);
+            }
+          }
+        }
+        results.push(array[i]);
+      }
+      return results;
+    };
 
   }])
 
-  .factory('algorithmSvc', ['pt', function(pt) {
+  .factory('algorithm', ['pt', function(pt) {
     //returns recommendation string and status
     //3 possible statuses: 'bad', 'ok', 'good'
 
@@ -221,61 +249,202 @@ angular.module('myApp.services', [])
       fourthVisit: "Add additional medication class(eg, &#914;-blocker, aldosterone antagonist, or others) and/or refer to physician with expertise in hypertension management."
     };
 
+    //for the moment, return a stub object:
+    return {
+      targetBP: {
+        systolic: 120,
+        diastolic: 80
+      },
+      recommendation: recMessages.firstVisit.blackNoCKD
+    };
+
     var recommendation = {
       status: '',
       message: ''
     };
 
-    if(pt.hasBPGoal()){
-      if(pt.isAtBPGoal()){
-          // meeting goal -- move to data viz to reinforce success and show BP graphs
-        return {};
-      } else { // not at BP goals
-
-      }
-    } else {
-      if(pt.age >= 18) {
-        // set targetBP by age and diabetes/CKD logic
-        if(!pt.hasDiabetes && !pt.hasCKD) {
-          if(pt.age >= 60) {
-            pt.targetBP = [150, 90];
-          } else if (pt.age < 60) {
-            pt.targetBP = [140, 90];
-          }
-        } else if(pt.hasDiabetes || pt.hasCKD) {
-          if(pt.hasDiabetes && !pt.hasCKD) {
-            pt.targetBP = [140, 90];
-          } else if (pt.hasCKD) {
-            pt.targetBP = [140, 90];
-          }
+    var generateRec = function() {
+      if(pt.hasBPGoal()){
+        if(pt.isAtBPGoal()){
+            // meeting goal -- move to data viz to reinforce success and show BP graphs
+          return {};
+        } else { // not at BP goals
+          console.log("Not at BP goals.");
         }
       } else {
-        // TODO: Patient is under 18.
-        console.warn("Patient is under 18.");
-      }
+        if(pt.age >= 18) {
+          // set targetBP by age and diabetes/CKD logic
+          if(!pt.hasDiabetes && !pt.hasCKD) {
+            if(pt.age >= 60) {
+              pt.targetBP = [150, 90];
+            } else if (pt.age < 60) {
+              pt.targetBP = [140, 90];
+            }
+          } else if(pt.hasDiabetes || pt.hasCKD) {
+            if(pt.hasDiabetes && !pt.hasCKD) {
+              pt.targetBP = [140, 90];
+            } else if (pt.hasCKD) {
+              pt.targetBP = [140, 90];
+            }
+          }
+        } else {
+          // TODO: Patient is under 18.
+          console.warn("Patient is under 18.");
+        }
 
-      if(pt.isAtBPGoal()) {
-        recommendation.message = recMessages.continueTreatment;
-        return recommendation;
-      }
-
-      if(!pt.hasCKD) {
-        if(pt.race !== "Black or African American") {
-          // TODO: pt.selectDrugTreatmentStrategy();
-          recommendation.message = recMessages.firstVisit.nonBlackNoCKD;
-          return recommendation;
-        } else if(pt.race === "Black or African American") {
-          recommendation.message = recMessages.firstVisit.blackNoCKD;
+        if(pt.isAtBPGoal()) {
+          recommendation.message = recMessages.continueTreatment;
           return recommendation;
         }
-      } else if(pt.hasCKD) {
-        recommendation.message = recMessages.firstVisit.CKD;
-        return recommendation;
+
+        if(!pt.hasCKD) {
+          if(pt.race !== "Black or African American") {
+            // TODO: pt.selectDrugTreatmentStrategy();
+            recommendation.message = recMessages.firstVisit.nonBlackNoCKD;
+            return recommendation;
+          } else if(pt.race === "Black or African American") {
+            recommendation.message = recMessages.firstVisit.blackNoCKD;
+            return recommendation;
+          }
+        } else if(pt.hasCKD) {
+          recommendation.message = recMessages.firstVisit.CKD;
+          return recommendation;
+        }
       }
-    }
+    };
 
     // collect additional information where needed
 
     console.warn("Reached the bottom of the algorithm logic; this shouldn't happen.");
+  }])
+
+  .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
+      
+      var renderGraph = function(scope) {
+        var dimArr = [600, 400];
+        var data = graphHelpers.parseArray(scope.data.ptData.db);
+
+        var margins = [30, 30, 30, 60];
+        var width = dimArr[0] - margins[1] - margins[3];
+        var height = dimArr[1] - margins[0] - margins[2];
+
+        // set up the axes based on the data. will need to adjust where it grabs min/max
+        // may need to scale d3.time.day.offset to d3.time.month.offset or similar, depending on range of dates
+        var x = d3.time.scale()
+            .domain([data[0].encounter_date, d3.time.day.offset(data[data.length-1].encounter_date, 1)])
+            .range([0, width]);
+
+        var y = d3.scale.linear().domain([
+            graphHelpers.getBPExtreme(data, 'diastolic')-10,
+            graphHelpers.getBPExtreme(data, 'systolic')+10
+          ]).range([height, 0]);
+
+        var diasLine = d3.svg.line()
+          .x(function(d,i) {
+            // using/returning time to fake time spacing on our database data
+            return x(new Date(d.encounter_date));
+          })
+          .y(function(d, i) {
+            return y(d.blood_pressure.diastolic);
+        });
+
+        var sysLine = d3.svg.line()
+          .x(function(d,i) {
+            return x(new Date(d.encounter_date));
+          })
+          .y(function(d, i) {
+            return y(d.blood_pressure.systolic);
+        });
+
+        var diasTargetLine = d3.svg.line()
+          .x(function(d,i) {
+            return x(new Date(d.encounter_date));
+          })
+          .y(function(d, i) {
+            console.log(scope);
+            console.log(scope.targetDias);
+            return y(scope.targetDias);
+        });
+
+        var sysTargetLine = d3.svg.line()
+          .x(function(d,i) {
+            return x(new Date(d.encounter_date));
+          })
+          .y(function(d, i) {
+            return y(scope.targetSys);
+        });
+
+          // add the SVG element
+        var graph = d3.select('#bp-graph').append('svg:svg')
+          .attr('width', width + margins[1] + margins[3])
+          .attr('height', height + margins[0] + margins[2])
+          .attr('style', 'position:absolute; top: 0; left: 0')
+        .append('svg:g')
+          .attr('transform', 'translate(' + margins[3] + ',' + margins[1] + ')')
+          .attr('width', width)
+          .attr('height', height);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient('bottom')
+            .ticks(d3.time.days, 1)
+            .tickFormat(d3.time.format('%m/%d/%y'))
+            .tickSize(4)
+            .tickPadding(5);
+
+        //add the x axis...
+        graph.append('svg:g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0,' + height + ')')
+          .call(xAxis);
+
+        var yAxisLeft = d3.svg.axis()
+            .scale(y)
+            .orient('left')
+            .tickPadding(8);
+
+        // add the y-axis to the left
+        graph.append('svg:g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(0,0)')
+          .call(yAxisLeft);
+
+        graph.append('svg:path').attr('d', diasLine(data)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', sysLine(data)).attr('class', 'plotline sysLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', diasTargetLine(data)).attr('class', 'plotline diasLine targetLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', sysTargetLine(data)).attr('class', 'plotline sysLine targetLine').attr('transform','translate(40,0)');
+    };
+
+    var removeFirstGraphChild = function() {
+      var graph = document.getElementById('bp-graph');
+      if(graph.children.length > 1){
+        graph.removeChild(graph.firstChild);
+      }
+      return results;
+    };
+
+    return {
+      restrict: 'AE',
+      template: '<div id="bp-graph" class="graph" style="position: relative"></div>',
+      scope: {
+        data: '=data',
+        targetSys: '=targetSys',
+        targetDias: '=targetDias'
+      },
+      link: function (scope, element, attrs) {
+        scope.$watch('targetSys', function(newVal, oldVal) {
+          console.log('targetSys changed.');
+          renderGraph(scope);
+          removeFirstGraphChild();
+        });
+
+        scope.$watch('targetDias', function(newVal, oldVal) {
+          console.log('targetDias changed.');
+          renderGraph(scope);
+          removeFirstGraphChild();
+        });
+
+      }
+    }
   }])
   ;
