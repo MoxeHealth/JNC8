@@ -49,22 +49,6 @@ angular.module('myApp.directives', []).
             return y(d.blood_pressure.systolic);
         });
 
-        var diasTargetLine = d3.svg.line()
-          .x(function(d,i) {
-            return x(new Date(d.encounter_date));
-          })
-          .y(function(d, i) {
-            return y(scope.targetDias);
-        });
-
-        var sysTargetLine = d3.svg.line()
-          .x(function(d,i) {
-            return x(new Date(d.encounter_date));
-          })
-          .y(function(d, i) {
-            return y(scope.targetSys);
-        });
-
           // add the SVG element
         var graph = d3.select('#bp-graph').append('svg:svg')
           .attr('width', width + margins[1] + margins[3])
@@ -102,9 +86,45 @@ angular.module('myApp.directives', []).
 
         graph.append('svg:path').attr('d', diasLine(data)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
         graph.append('svg:path').attr('d', sysLine(data)).attr('class', 'plotline sysLine').attr('transform','translate(40,0)');
-        graph.append('svg:path').attr('d', diasTargetLine(data)).attr('class', 'plotline diasLine targetLine').attr('transform','translate(40,0)');
-        graph.append('svg:path').attr('d', sysTargetLine(data)).attr('class', 'plotline sysLine targetLine').attr('transform','translate(40,0)');
+        
+        graph.append('line')
+        	.attr('x1', 0)
+        	.attr('y1', function() { return y(scope.targetDias); })
+        	.attr('x2', width)
+        	.attr('y2', function() { return y(scope.targetDias); })
+        	.attr('class', 'plotline diasLine targetLine');
+
+        graph.append('line')
+        	.attr('x1', 0)
+        	.attr('y1', function() { return y(scope.targetSys); })
+        	.attr('x2', width)
+        	.attr('y2', function() { return y(scope.targetSys); })
+        	.attr('class', 'plotline sysLine targetLine');
+
+
+        // graph.append('svg:path').attr('d', sysTargetLine(data)).attr('class', 'plotline sysLine targetLine').attr('transform','translate(40,0)');
     };
+
+
+    // var diasTargetLine = d3.svg.line()
+    //   .x(function(d,i) {
+    //     return x(new Date(d.encounter_date));
+    //   })
+    //   .y(function(d, i) {
+    //     return y(scope.targetDias);
+    // });
+
+    // var sysTargetLine = d3.svg.line()
+    //   .x(function(d,i) {
+    //     return x(new Date(d.encounter_date));
+    //   })
+    //   .y(function(d, i) {
+    //     return y(scope.targetSys);
+    // });
+
+
+
+
 
     var removeFirstGraphChild = function() {
       var graph = document.getElementById('bp-graph');

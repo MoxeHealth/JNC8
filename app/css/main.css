@@ -189,16 +189,16 @@ tr.goal td.diastolic {
   fill: none;
 }
 
-#bp-graph path.targetLine {
+#bp-graph line.targetLine {
   stroke-opacity: 0.5;
   stroke-width:1px;
 }
 
-#bp-graph path.diasLine {
+#bp-graph .diasLine {
   stroke: red;
 }
 
-#bp-graph path.sysLine {
+#bp-graph .sysLine {
   stroke: steelblue;
 }
 
