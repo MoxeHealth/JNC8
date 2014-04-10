@@ -139,7 +139,7 @@ angular.module('myApp.services', [])
       // currentMeds: getCurrentMeds(startup.ptData.db);
       //stub for now
       // currentMeds: [{'ACEI': 'lisinopril', atMax: true}],
-      hasDiabetes: false,
+      // hasDiabetes: false,
       isOnMedication: true,
 
       //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use isFirstVisit. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 

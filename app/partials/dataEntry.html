@@ -1,4 +1,4 @@
-<form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()">
+<form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()" ng-model="dataForm">
   <section>
     <label for="age">Patient's age:</label>
     <div class="input-wrapper">
@@ -94,6 +94,5 @@
       </tr>
     </table>
   </section>
-
 <input class="submit-button" type="submit" value="Get recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 </form>

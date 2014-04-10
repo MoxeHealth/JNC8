@@ -5,8 +5,9 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
 function($scope, $q, $location, pt) {
-  console.log('algorithm', algorithm);
-  console.log('algorithm meds', algorithm.medRecs);
+  //run the algorithm on the current patient data 
+  
+  console.log('pt', pt);
 
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
@@ -15,23 +16,28 @@ function($scope, $q, $location, pt) {
   $scope.pt = pt;
   
   $scope.buttonsSelected = function() {
-    if($scope.pt.hasCKD && $scope.pt.isOnMedication && $scope.pt.hasDiabetes){
+    console.log('hasCKD', $scope.pt.hasCKD);
+    console.log('isOnMedication', $scope.pt.isOnMedication);
+    console.log('hasDiabetes', $scope.pt.hasDiabetes);
+    if($scope.pt.hasCKD !== undefined && $scope.pt.isOnMedication !== undefined && $scope.pt.hasDiabetes !== undefined){
       return true;
     }
+    console.log('false')
     return false;
   };
 
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', function($scope, pt, startup) {
-  console.log('algorithm', algorithm);
-  console.log('algorithm meds', algorithm.medRecs);
+  var algoResults = algorithm(pt);
+  console.log('algorithm', algoResults);
+  console.log('algorithm meds', algoResults.medRecs);
 
-  $scope.recommendationMsg = algorithm.recMsg;
-  $scope.medRecs = algorithm.medRecs;
+  $scope.recommendationMsg = algoResults.recMsg;
+  $scope.medRecs = algoResults.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  $scope.targetDias = algorithm.targetBP.diastolic;
-  $scope.targetSys = algorithm.targetBP.systolic;
+  $scope.targetDias = algoResults.targetBP.diastolic;
+  $scope.targetSys = algoResults.targetBP.systolic;
   $scope.pt = pt;
 
 }]);
