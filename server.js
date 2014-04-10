@@ -24,6 +24,8 @@ app.use(bodyParser());
 app.get('/db/encounters',  function(req, res){
   console.log('get db/encounters');
   var ptId = req.query.ptId;
+  var orgId = req.query.orgId;
+  
 
   db.connection.query('SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId, function(err, data){
     if(err){

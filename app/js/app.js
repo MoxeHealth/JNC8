@@ -36,11 +36,9 @@ angular.module('myApp', [
   $rootScope.patientId = 3230000;
   $rootScope.calculator = 'JNC8';
 
-
-
-  // db.addEncounter($rootScope.patientId, {
-  //   bloodPressure: {systolic: 130, diastolic: 68},
-  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  // });
+  db.addEncounter($rootScope.patientId, {
+    bloodPressure: {systolic: 130, diastolic: 68},
+    medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+  });
 
 }]);

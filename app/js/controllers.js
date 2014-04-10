@@ -5,6 +5,9 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
 function($scope, $q, $location, pt) {
+  console.log('algorithm', algorithm);
+  console.log('algorithm meds', algorithm.medRecs);
+
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
@@ -17,11 +20,15 @@ function($scope, $q, $location, pt) {
     }
     return false;
   };
+
 }])
 
-.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'algorithm', function($scope, pt, startup, algorithm) {
+.controller('dataVizCtrl', ['$scope', 'pt', 'startup', function($scope, pt, startup) {
+  console.log('algorithm', algorithm);
+  console.log('algorithm meds', algorithm.medRecs);
 
-  $scope.recommendationMsg = algorithm.recommendation;
+  $scope.recommendationMsg = algorithm.recMsg;
+  $scope.medRecs = algorithm.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
   $scope.targetDias = algorithm.targetBP.diastolic;
   $scope.targetSys = algorithm.targetBP.systolic;
