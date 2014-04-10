@@ -43,7 +43,7 @@ angular.module('myApp', [
   // }
 
   // db.addEncounter(ptObj, {
-  //   bloodPressure: {systolic: 130, diastolic: 68},
+  //   bloodPressure: {systolic: 135, diastolic: 85},
   //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
   // });
 

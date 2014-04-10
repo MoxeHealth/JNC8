@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS `encounters`;
 CREATE TABLE `encounters` (
   `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
   `patient_id` VARCHAR(200) NULL DEFAULT NULL,
+  `org_id` VARCHAR(200) NULL DEFAULT NULL,
   `encounter_date` DATETIME NULL DEFAULT NULL,
   `blood_pressure` VARCHAR(200) NULL DEFAULT NULL,
   `medications_prescribed` VARCHAR(500) NULL DEFAULT NULL,
@@ -40,6 +41,6 @@ CREATE TABLE `encounters` (
 -- Test Data
 -- ---
 
--- INSERT INTO `encounters` (`id`,`patient_id`,`encounter_date`,`blood_pressure`,`medications_prescribed`) VALUES
+-- INSERT INTO `encounters` (`id`,`patient_id`, `org_id,` `encounter_date`,`blood_pressure`,`medications_prescribed`) VALUES
 -- ('','','','','');
 

@@ -14,12 +14,19 @@ angular.module('myApp.directives', []).
   .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
       
       var renderGraph = function(scope) {
-        var dimArr = [600, 400];
+
+      	// set the width/height of the graph based on the size of the containing element
+      	var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
+      	console.log("elWidth: " + elWidth);
+
+
+
+
         var data = graphHelpers.parseArray(scope.data.ptData.db);
 
-        var margins = [30, 30, 30, 60];
-        var width = dimArr[0] - margins[1] - margins[3];
-        var height = dimArr[1] - margins[0] - margins[2];
+        var margins = [30, 30, 30, 40];
+        var width = elWidth - margins[1];
+        var height = (elWidth/1.5) - margins[0] - margins[2];
 
         // set up the axes based on the data. will need to adjust where it grabs min/max
         // may need to scale d3.time.day.offset to d3.time.month.offset or similar, depending on range of dates
@@ -101,29 +108,7 @@ angular.module('myApp.directives', []).
         	.attr('y2', function() { return y(scope.targetSys); })
         	.attr('class', 'plotline sysLine targetLine');
 
-
-        // graph.append('svg:path').attr('d', sysTargetLine(data)).attr('class', 'plotline sysLine targetLine').attr('transform','translate(40,0)');
     };
-
-
-    // var diasTargetLine = d3.svg.line()
-    //   .x(function(d,i) {
-    //     return x(new Date(d.encounter_date));
-    //   })
-    //   .y(function(d, i) {
-    //     return y(scope.targetDias);
-    // });
-
-    // var sysTargetLine = d3.svg.line()
-    //   .x(function(d,i) {
-    //     return x(new Date(d.encounter_date));
-    //   })
-    //   .y(function(d, i) {
-    //     return y(scope.targetSys);
-    // });
-
-
-
 
 
     var removeFirstGraphChild = function() {
@@ -153,6 +138,8 @@ angular.module('myApp.directives', []).
           renderGraph(scope);
           removeFirstGraphChild();
         });
+
+        // write a watch for the window size here. if it changes, re-render the SVG to match it
 
       }
     }

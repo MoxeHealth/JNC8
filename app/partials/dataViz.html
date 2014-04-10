@@ -1,44 +1,96 @@
-<div class="patient-status good">
-
-<b class="title">Good:</b> Patient has met the blood pressure goal and the treatment should continue.
-
+<div class="cf viz">
+  <h2>Treatment overview</h2>
+  <div class="top-div patient-status good">
+    <b class="title">Good:</b> Patient has met the blood pressure goal and the treatment should continue.
+  </div>
+  <div class="top-div rec-message">Recommendation: {{ recommendationMsg }}</div>
 </div>
 
-<div>Recommendation: {{ recommendationMsg }}</div>
+<div class="medication">
+  <h2>Medication</h2>
+  <ul>
+    <lh><h3>Patient's current medications</h3></lh>
+    <li class="cf">
+      <span class="med-name">acebutolol (Sectra)</span>
+      <div class="dosage">
+        <span class="quantity">40 mg</span>
+        <span class="frequency">Twice daily</span>
+      </div>
+    </li>
+    <li class="cf">
+      <span class="med-name">acebutolol (Sectra)</span>
+      <div class="dosage">
+        <span class="quantity">40 mg</span>
+        <span class="frequency">Twice daily</span>
+      </div>
+    </li>
+  </ul>
+  <ul>
+    <lh><h3>Suggested additional medications</h3></lh>
+    <li class="cf">
+      <ul>
+        <lh>ACE inhibitors</lh>
+        <li class="cf">
+          <span class="med-name">benazepril (Lotensin)</span>
+        </li>
+        <li class="cf">
+          <span class="med-name">captopril (Capoten)</span>
+        </li>
+        <li class="cf">
+          <span class="med-name">enalapril (Vasotec)</span>
+        </li>
+      </ul>
+    </li>
+    <li class="cf">
+      <ul>
+        <lh>Thiazide-type diuretics</lh>
+        <li class="cf">
+          <span class="med-name">Esidrix</span>
+        </li>
+        <li class="cf">
+          <span class="med-name">Zaroxolyn</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
 
-<section class="bp-goal-comparison">
-  <table>
-    <tr class="header">
-      <td width="37%">&nbsp;</td>
-      <td class="info-column" width="15%" height="15">
-          <span class="field-label">Systolic</span>
-      </td>
-      <td class="info-column" width="15%" height="15">
-          <span class="field-label">Diastolic</span>
-      </td>
-      <td class="info-column" width="27%"></td>
-    </tr>
-    <tr class="info-row current">
-      <td>Current Blood Pressure:</td>
-      <td class="info-column systolic">140</td>
-      <td class="info-column diastolic">80</td>
-    </tr>
-    <tr class="info-row goal">
-      <td width="37%">Goal Blood Pressure:</td>
-      <td class="info-column systolic" width="15%">
-          <input type="number" ng-model="targetSys" id="goal-systolic" value="120">
-      </td>
-      <td class="info-column diastolic" width="15%">
-          <input type="number" id="goal-diastolic" ng-model="targetDias">
-      </td>
-      <td class="info-column" width="27%"></td>
-    </tr>
-  </table>
-</section>
+<div class="bp-goal-comparison">
+  <h2>Blood pressure</h2>
+  <div class="table-contain">
+    <table width="350">
+      <tr class="header">
+        <td width="50%">&nbsp;</td>
+        <td class="info-column" width="25%" height="15">
+            <span class="field-label">Systolic</span>
+        </td>
+        <td class="info-column" width="25%" height="15">
+            <span class="field-label">Diastolic</span>
+        </td>
+      </tr>
+      <tr class="info-row current">
+        <td>Current Blood Pressure:</td>
+        <td class="info-column systolic">{{ pt.currentBP.Systolic }}</td>
+        <td class="info-column diastolic">{{ pt.currentBP.Diastolic }}</td>
+      </tr>
+      <tr class="info-row goal">
+        <td width="50%">Goal Blood Pressure:</td>
+        <td class="info-column systolic" width="25%">
+            <input type="number" ng-model="targetSys" id="goal-systolic">
+        </td>
+        <td class="info-column diastolic" width="25%">
+            <input type="number" id="goal-diastolic" ng-model="targetDias">
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <bp-graph data="dbData" target-sys="targetSys" target-dias="targetDias"></bp-graph>
+  </div>
+</div>
 
-<section>
-  <bp-graph data="dbData" target-sys="targetSys" target-dias="targetDias"></bp-graph>
-</section>
-<button>Save patient information</button>
 
+<div class="footer">
+  <button>Save patient information</button>
+</div>
 

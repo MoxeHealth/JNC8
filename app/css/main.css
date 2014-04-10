@@ -6,13 +6,14 @@ body {
 
 .container {
   width: 80%;
-  max-width: 1350px;
+  max-width: 810px;
   min-width: 400px;
   height: auto;
-  padding: 18px;
+  padding: 18px 40px;
   margin: 50px auto;
   border: solid #d7d7d7 1px;
   background-color: #fff;
+  color: #4d4d4d;
 }
 
 .container label {
@@ -27,6 +28,10 @@ body {
   font-size: 12px;
   display: block;
   font-weight: bold;
+}
+
+div.viz {
+  margin-bottom: 42px;
 }
 
 
@@ -64,7 +69,7 @@ body {
 
 /* Form styling */
 
-form section {
+form div {
   margin: 0;
   border-bottom: solid #f0f0f0 1px;
   padding:10px 0;
@@ -107,10 +112,62 @@ form select {
 
 
 /* Data visualization styling */
-div.patient-status {
+
+div.medication {
+  width: 380px;
+  float: left;
+}
+
+div.medication ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+div.medication lh {
+  border-bottom: solid #d7d7d7 1px;
+  margin-bottom: 6px;
+  display: block;
+  font-weight: bold;
+}
+
+div.medication li lh {
+  margin-top:18px;
+  border-bottom: none;
+}
+
+div.medication h3 {
+  margin-bottom: 6px;
+}
+
+div.medication ul li {
+  margin-bottom: 8px;
+  display: block;
+  clear:both;
+}
+
+div.medication ul span.med-name {
+  float: left;
+}
+
+div.medication ul div.dosage {
+  float: right;
+}
+
+div.medication ul div.dosage span {
+  display: block;
+}
+
+
+.top-div {
   width: 70%;
+  max-width: 350px;
+  margin-right: 18px;
+  float: left;
   padding: 18px;
-  margin: 0 auto 18px;
+}
+
+
+.patient-status {
   border: solid #d7d7d7 1px;
   border-radius: 3px;
 }
@@ -130,13 +187,27 @@ div.patient-status {
   color: #a94442;
 }
 
-section.bp-goal-comparison td {
+.recMessage {
+
+}
+
+div.bp-goal-comparison {
+  float: left;
+  margin-left: 50px;
+}
+
+div.footer {
+  clear:both;
+  width: 70%;
+}
+
+div.bp-goal-comparison td {
   padding: 16px 0;
   font-size: 18px;
   font-weight: bold;
 }
 
-section.bp-goal-comparison td:nth-child(1) {
+div.bp-goal-comparison td:nth-child(1) {
   font-size: 14px;
   font-weight: normal;
 }
@@ -144,6 +215,10 @@ section.bp-goal-comparison td:nth-child(1) {
 .bp-goal-comparison input {
   width: 50px;
   text-align: center;
+}
+
+.table-contain {
+  margin-top: -14px;
 }
 
 input[type=number]::-webkit-inner-spin-button, 
@@ -158,16 +233,16 @@ tr.header td {
 }
 
 tr.info-row td {
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 tr.current td.systolic {
   background-color: rgba(70, 130, 180, 1);
 }
 
-tr.current td {
+tr.current td.info-column {
   text-align: left;
-  padding-left: 12px;
+  padding-left: 18px;
 }
 
 tr.goal td.systolic {
@@ -257,4 +332,32 @@ img.loading {
 
 .submit-button[disabled] { 
   opacity: .5;
+}
+
+/* Micro clearfix */
+/**
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    contenteditable attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that are clearfixed.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.cf {
+    *zoom: 1;
 }

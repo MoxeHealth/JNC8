@@ -14,7 +14,7 @@ angular.module('myApp.services', [])
 
 
     //TODO - wrap following code in post request from Epic
-    var ptObj = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
+    var ptObj = {ptId: $rootScope.patientId};
     console.log("Searching for", ptObj);
 
     var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptObj)
@@ -35,14 +35,18 @@ angular.module('myApp.services', [])
   }])
 
   .service('db', ['$http', function($http) {
+
     this.getEncounters = function(ptObj, callback) {
       // ptObj should be an object in the form {ptId: number[, orgId: orgIdentifier]}
-      console.log("ptId in getEcounters:" + ptObj);
+
+
+
       return $http({
         url: '/db/encounters',
         method: 'GET',
         params: {
-          ptObj: ptObj
+          ptId: ptObj.ptId,
+          orgId: ptObj.orgId
         }
       });
     };
@@ -52,7 +56,8 @@ angular.module('myApp.services', [])
         url: '/db/encounters',
         method: 'POST',
         data: {
-          ptObj: ptObj,
+          ptId: ptObj.ptId,
+          orgId: ptObj.orgId,
           //encounter object expects two values: bloodPressure and medicationsPrescribed
           encounter: encounter
         }

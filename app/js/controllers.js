@@ -26,6 +26,7 @@ function($scope, $q, $location, pt) {
   $scope.targetDias = algorithm.targetBP.diastolic;
   $scope.targetSys = algorithm.targetBP.systolic;
   $scope.pt = pt;
+  console.log($scope.pt);
 
 }]);
 

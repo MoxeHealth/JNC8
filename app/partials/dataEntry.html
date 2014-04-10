@@ -1,4 +1,4 @@
-<form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()">
+  <form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()">
   <section>
     <label for="age">Patient's age:</label>
     <div class="input-wrapper">
@@ -56,24 +56,35 @@
   <section>
     <label for="diabetes">Does the patient have diabetes?</label>
     <div class="input-wrapper">
-      <span class="radio-wrapper"><input type="radio" ng-model="pt.hasDiabetes" name="diabetes" value="1"> Yes</span>
-      <span class="radio-wrapper"><input type="radio" ng-model="pt.hasDiabetes" name="diabetes" value="0"> No</span>
+      <span class="radio-wrapper">
+        <input type="radio" ng-model="pt.hasDiabetes" name="diabetes" value="1"> Yes
+      </span>
+      <span class="radio-wrapper">
+        <input type="radio" ng-model="pt.hasDiabetes" name="diabetes" value="0"> No
+      </span>
     </div>
   </section>
 
   <section>
     <label for="blood-pressure">Does the patient have CKD?</label>
     <div class="input-wrapper">
-      <span class="radio-wrapper"><input type="radio" ng-model="pt.hasCKD" name="ckd" value="1"> Yes</span>
-      <span class="radio-wrapper"><input type="radio" ng-model="pt.hasCKD" name="ckd" value="0" > No</span>
+      <span class="radio-wrapper">
+        <input type="radio" ng-model="pt.hasCKD" name="ckd" value="1"> Yes
+      </span>
+      <span class="radio-wrapper">
+        <input type="radio" ng-model="pt.hasCKD" name="ckd" value="0" > No
+      </span>
     </div>
   </section>
 
   <section>
     <label for="meds">Is the patient on medication?</label>
     <div class="input-wrapper">
-      <span class="radio-wrapper"><input type="radio" name="meds" value="1" ng-model="pt.isOnMedication"> Yes</span>
-      <span class="radio-wrapper"><input type="radio" ng-model="pt.isOnMedication" name="meds" value="0"> No</span>
+      <span class="radio-wrapper">
+        <input type="radio" name="meds" value="1" ng-model="pt.isOnMedication"> Yes</span>
+      <span class="radio-wrapper">
+        <input type="radio" ng-model="pt.isOnMedication" name="meds" value="0"> No
+      </span>
     </div>
   </section>
 
