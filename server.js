@@ -21,11 +21,34 @@ var headers = {
 app.use(express.static(__dirname));
 app.use(bodyParser());
 
+// Helper functions to be refactored into a diff file -- require db in that file
+exports.getPtArr = function(ptObj) {
+  console.log();
+  if(JSON.parse(ptObj)) {
+    ptObj = JSON.parse(ptObj);
+  }
+
+  if(ptObj.ptId) {
+    // have a unique ptId, add it to the ptArr
+    var ptArr = [ptObj.ptId];
+    if(ptObj.orgId) {
+      // have an orgId as well, so add that after the ptId
+      ptArr.push(ptObj.orgId);
+    }
+  } else {
+    console.warn("There was no unique patient identifier sent in the request.");
+  }
+  
+  return db.connection.escape(JSON.stringify(ptArr));
+};
+
+
 app.get('/db/encounters',  function(req, res){
   console.log('get db/encounters');
-  var ptId = req.query.ptId;
+  console.log(req.query.ptObj);
+  var ptArr = exports.getPtArr(req.query.ptObj);
 
-  db.connection.query('SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId, function(err, data){
+  db.connection.query('SELECT * FROM `encounters` WHERE `patient_id` = ' + ptArr, function(err, data){
     if(err){
       res.send(err);
       console.log('get from db failed');
@@ -38,12 +61,13 @@ app.get('/db/encounters',  function(req, res){
 
 app.post('/db/encounters',  function(req, res){
   console.log('post db/encounters');
-  var ptId = req.body.ptId;
+  console.log(req.body.ptObj);
+  var ptArr = exports.getPtArr(req.body.ptObj);
   var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
   var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure));
   var medicationsPrescribed = db.connection.escape(JSON.stringify(req.body.encounter.medicationsPrescribed));
 
-  db.connection.query('INSERT INTO `encounters` (patient_id, encounter_date, blood_pressure, medications_prescribed) VALUES (' + ptId + ',' + encounterDate + ',' + bloodPressure + ',' +medicationsPrescribed + ')', function(err, data){
+  db.connection.query('INSERT INTO `encounters` (patient_id, encounter_date, blood_pressure, medications_prescribed) VALUES (' + ptArr + ',' + encounterDate + ',' + bloodPressure + ',' +medicationsPrescribed + ')', function(err, data){
     if(err){
       console.log('insert failed');
       console.log(err);

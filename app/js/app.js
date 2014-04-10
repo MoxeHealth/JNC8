@@ -34,11 +34,15 @@ angular.module('myApp', [
 .run(['$rootScope', 'db', function($rootScope, db) {
   console.log('run called');
   $rootScope.patientId = 3230000;
+  $rootScope.orgId = 3;
   $rootScope.calculator = 'JNC8';
 
 
+  // var ptObj = {
+  //   ptId: $rootScope.patientId
+  // }
 
-  // db.addEncounter($rootScope.patientId, {
+  // db.addEncounter(ptObj, {
   //   bloodPressure: {systolic: 130, diastolic: 68},
   //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
   // });
