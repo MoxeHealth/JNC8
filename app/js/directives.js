@@ -19,8 +19,9 @@ angular.module('myApp.directives', []).
       	var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
       	console.log("elWidth: " + elWidth);
 
-
-
+        //handle case when patient has no entries in database 
+        console.log(scope.data.ptData.db);
+       if(!scope.data.ptData.db.length){ return; }
 
         var data = graphHelpers.parseArray(scope.data.ptData.db);
 
