@@ -25,7 +25,7 @@ body {
 }
 
 .container .field-label {
-  font-size: 12px;
+  font-size: 14px;
   display: block;
   font-weight: bold;
 }
@@ -157,6 +157,19 @@ div.medication ul div.dosage span {
   display: block;
 }
 
+div.medication ul li .med-name {
+  cursor: pointer;
+}
+
+.info-column .current, .info-column .goal {
+
+} 
+
+.med-detail {
+  padding-left: 24px;
+  padding-top: 4px;
+  font-size: 16px;
+}
 
 .top-div {
   width: 70%;
@@ -165,7 +178,6 @@ div.medication ul div.dosage span {
   float: left;
   padding: 18px;
 }
-
 
 .patient-status {
   border: solid #d7d7d7 1px;
@@ -207,9 +219,10 @@ div.bp-goal-comparison td {
   font-weight: bold;
 }
 
+/* Table cell in first column of each row */
 div.bp-goal-comparison td:nth-child(1) {
   font-size: 14px;
-  font-weight: normal;
+  font-weight: bold;
 }
 
 .bp-goal-comparison input {
@@ -236,24 +249,24 @@ tr.info-row td {
   padding: 8px 0;
 }
 
-tr.current td.systolic {
+tr.systolic td.current {
   background-color: rgba(70, 130, 180, 1);
 }
 
-tr.current td.info-column {
+td.info-column .current{
   text-align: left;
   padding-left: 18px;
 }
 
-tr.goal td.systolic {
+tr.systolic td.goal {
   background-color: rgba(70, 130, 180, 0.5);
 }
 
-tr.current td.diastolic {
+tr.diastolic td.current {
   background-color: rgba(255, 0, 0, 1);
 }
 
-tr.goal td.diastolic {
+tr.diastolic td.goal {
   background-color: rgba(255, 0, 0, 0.5);
 }
 
