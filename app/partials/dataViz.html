@@ -1,3 +1,4 @@
+
 <div class="cf viz">
   <h2>Treatment overview</h2>
   <div class="top-div patient-status good">
@@ -28,27 +29,16 @@
   <ul>
     <lh><h3>Suggested additional medications</h3></lh>
     <li class="cf">
-      <ul>
-        <lh>ACE inhibitors</lh>
-        <li class="cf">
-          <span class="med-name">benazepril (Lotensin)</span>
-        </li>
-        <li class="cf">
-          <span class="med-name">captopril (Capoten)</span>
-        </li>
-        <li class="cf">
-          <span class="med-name">enalapril (Vasotec)</span>
-        </li>
-      </ul>
-    </li>
-    <li class="cf">
-      <ul>
-        <lh>Thiazide-type diuretics</lh>
-        <li class="cf">
-          <span class="med-name">Esidrix</span>
-        </li>
-        <li class="cf">
-          <span class="med-name">Zaroxolyn</span>
+      <ul class="med-class" ng-repeat="medRec in medRecs">
+        <lh>{{ medRec.medClass }}</lh>
+        <li class="cf" ng-repeat="med in medRec.meds" ng-init="showDetails=false" ng-click="showDetails = !showDetails">
+          <div class="med-name">{{med}}</div>
+          <div class="med-details" ng-show="showDetails">
+            <ul>
+              <li class="med-detail">Dosage: 40</li>
+              <li class="med-detail">Units: 40</li>
+            </ul>
+          </div>
         </li>
       </ul>
     </li>
@@ -58,27 +48,27 @@
 <div class="bp-goal-comparison">
   <h2>Blood pressure</h2>
   <div class="table-contain">
-    <table width="350">
+    <table width="300">
       <tr class="header">
-        <td width="50%">&nbsp;</td>
-        <td class="info-column" width="25%" height="15">
-            <span class="field-label">Systolic</span>
+        <td>&nbsp;</td>
+        <td class="info-column" width="35%" height="15">
+            <span class="field-label">Current Blood Pressure:</span>
         </td>
-        <td class="info-column" width="25%" height="15">
-            <span class="field-label">Diastolic</span>
+        <td class="info-column" width="35%" height="15">
+            <span class="field-label">Goal Blood Pressure:</span>
         </td>
       </tr>
-      <tr class="info-row current">
-        <td>Current Blood Pressure:</td>
-        <td class="info-column systolic">{{ pt.currentBP.Systolic }}</td>
-        <td class="info-column diastolic">{{ pt.currentBP.Diastolic }}</td>
-      </tr>
-      <tr class="info-row goal">
-        <td width="50%">Goal Blood Pressure:</td>
-        <td class="info-column systolic" width="25%">
+      <tr class="info-row systolic">
+        <td>Systolic:</td>
+        <td class="info-column current">{{ pt.currentBP.Systolic }}</td>
+        <td class="info-column goal" width="35%">
             <input type="number" ng-model="targetSys" id="goal-systolic">
         </td>
-        <td class="info-column diastolic" width="25%">
+      </tr>
+      <tr class="info-row diastolic">
+        <td>Diastolic:</td>
+        <td class="info-column current">{{ pt.currentBP.Diastolic }}</td>
+        <td class="info-column goal" width="35%">
             <input type="number" id="goal-diastolic" ng-model="targetDias">
         </td>
       </tr>
