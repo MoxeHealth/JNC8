@@ -147,6 +147,7 @@ angular.module('myApp.services', [])
       hasCKD: true,
       races: ['Black or African American', 'Asian', 'Caucasian'],
       //todo - populate this variable from the database
+      //targetBP will have the same data structure as currentBP
       // targetBP: startup.ptData.db[db.length - 1].targetBP;
       hasTargetBP: function(){
         if(this.targetBP){
