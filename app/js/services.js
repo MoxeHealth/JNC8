@@ -5,6 +5,7 @@
 
 angular.module('myApp.services', [])
   .value('version', '0.1')
+
   .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
     console.log("into startup");
     var ptData = {};
@@ -231,7 +232,6 @@ angular.module('myApp.services', [])
       }
       return results;
     };
-
   }])
 
   .factory('algorithm', ['pt', function(pt) {
@@ -326,5 +326,22 @@ angular.module('myApp.services', [])
     // collect additional information where needed
 
     console.warn("Reached the bottom of the algorithm logic; this shouldn't happen.");
+  }])
+
+  .service('goodRx', ['$http', function($http) {
+    this.getPricing = function(name) {
+      $http({
+        url: '/goodrx/low-price',
+        method: 'GET',
+        params: {
+          name: name
+        }
+      }).success(function(data, status) {
+        console.log("The goodRx api responded successfully.");
+        console.log("GoodRx response: ", data);
+      }).error(function(data, status) {
+        console.warn("The goodRx API errored: ", data, status);
+      })
+    };
   }])
   ;

@@ -31,12 +31,12 @@ angular.module('myApp', [
     redirectTo: '/'
   });
 }])
-.run(['$rootScope', 'db', function($rootScope, db) {
+.run(['$rootScope', 'db', 'goodRx', function($rootScope, db, goodRx) {
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.orgId = 3;
   $rootScope.calculator = 'JNC8';
-
+  goodRx.getPricing('lipitor');
 
   // var ptObj = {
   //   ptId: $rootScope.patientId
