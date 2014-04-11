@@ -16,7 +16,6 @@ angular.module('myApp.services', [])
 
     //TODO - wrap following code in post request from Epic
     var ptObj = {ptId: $rootScope.patientId};
-    console.log("Searching for", ptObj);
 
     var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptObj)
     ]);
@@ -39,8 +38,6 @@ angular.module('myApp.services', [])
 
     this.getEncounters = function(ptObj, callback) {
       // ptObj should be an object in the form {ptId: number[, orgId: orgIdentifier]}
-
-
 
       return $http({
         url: '/db/encounters',
@@ -128,7 +125,7 @@ angular.module('myApp.services', [])
   }])
 
   .factory('pt', ['startup', function(startup) {
-    console.log('pt factory called');
+    // console.log('pt factory called');
     console.log(startup);
 
     return {
@@ -148,6 +145,7 @@ angular.module('myApp.services', [])
         unit: 'mg'
       }],
       targetBP: '',
+      email: startup.ptData.substrate.demographics.data.EmailAddresses,
       races: ['Black or African American', 'Asian', 'Caucasian'],
       hasBPGoal: function(){
         if(this.targetBP){
@@ -329,7 +327,7 @@ angular.module('myApp.services', [])
   }])
 
   .service('goodRx', ['$http', function($http) {
-    this.getPricing = function(name) {
+    this.getPricing = function(name, callback) {
       $http({
         url: '/goodrx/low-price',
         method: 'GET',
@@ -337,8 +335,8 @@ angular.module('myApp.services', [])
           name: name
         }
       }).success(function(data, status) {
-        console.log("The goodRx api responded successfully.");
-        console.log("GoodRx response: ", data);
+        console.log("The GoodRx API responded successfully.");
+        callback(data);
       }).error(function(data, status) {
         console.warn("The goodRx API errored: ", data, status);
       })

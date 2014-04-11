@@ -149,26 +149,55 @@ div.medication ul span.med-name {
   float: left;
 }
 
-div.medication ul div.dosage {
-  float: right;
+div.inline-info {
+  font-size: 14px;
 }
 
-div.medication ul div.dosage span {
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+  text-align: right;
+}
+
+div.inline-info span {
   display: block;
 }
 
-div.medication ul li .med-name {
+div.medication ul.single li,
+div.medication ul.multi ul li .med-name {
+  padding: 6px;
+}
+
+div.medication ul.multi li.med-class:first-child lh {
+  margin-top: 0;
+}
+
+div.medication .med-details {
+  font-size: 14px;
+  border: solid #eee 1px;
+  margin-top:5px;
+  padding: 10px 5px;
+}
+
+div span.label {
+  font-weight: bold;
+  display: inline;
+}
+
+div.medication ul.single li:nth-child(even),
+div.medication ul.multi ul li:nth-child(even) .med-name {
+  background-color: #f0f0f0;
+}
+
+div.medication ul.multi li .med-name {
   cursor: pointer;
 }
 
-.info-column .current, .info-column .goal {
-
-} 
-
-.med-detail {
-  padding-left: 24px;
-  padding-top: 4px;
-  font-size: 16px;
+div.med-details {
+  background-color: #fff;
 }
 
 .top-div {

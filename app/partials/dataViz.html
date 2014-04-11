@@ -9,36 +9,30 @@
 
 <div class="medication">
   <h2>Medication</h2>
-  <ul>
+  <ul class="single">
     <lh><h3>Patient's current medications</h3></lh>
     <li class="cf">
       <span class="med-name">acebutolol (Sectra)</span>
-      <div class="dosage">
+      <div class="inline-info right">
         <span class="quantity">40 mg</span>
         <span class="frequency">Twice daily</span>
       </div>
     </li>
     <li class="cf">
       <span class="med-name">acebutolol (Sectra)</span>
-      <div class="dosage">
+      <div class="inline-info right">
         <span class="quantity">40 mg</span>
         <span class="frequency">Twice daily</span>
       </div>
     </li>
   </ul>
-  <ul>
+  <ul class="multi">
     <lh><h3>Suggested additional medications</h3></lh>
-    <li class="cf">
-      <ul class="med-class" ng-repeat="medRec in medRecs">
+    <li class="med-class cf" ng-repeat="medRec in medRecs">
+      <ul>
         <lh>{{ medRec.medClass }}</lh>
-        <li class="cf" ng-repeat="med in medRec.meds" ng-init="showDetails=false" ng-click="showDetails = !showDetails">
-          <div class="med-name">{{med}}</div>
-          <div class="med-details" ng-show="showDetails">
-            <ul>
-              <li class="med-detail">Dosage: 40</li>
-              <li class="med-detail">Units: 40</li>
-            </ul>
-          </div>
+        <li class="cf" ng-repeat="med in medRec.meds">
+          <div drug-pricing med="med"></div>
         </li>
       </ul>
     </li>

@@ -26,8 +26,6 @@ var api = {
   }
 };
 
-console.log(api.moxe);
-
 app.use(express.static(__dirname));
 app.use(bodyParser());
 
@@ -44,8 +42,7 @@ app.get('/db/encounters',  function(req, res){
     orgIdString = ' is NULL';
   }
 
-  var query  = 'SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId + 
-    ' AND `org_id`' + orgIdString;
+  var query  = 'SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId + ' AND `org_id`' + orgIdString;
 
   db.connection.query(query, function(err, data){
       if(err){
@@ -53,7 +50,6 @@ app.get('/db/encounters',  function(req, res){
         console.log('get from db failed');
       }else{
         res.send(data);
-        // console.log('data', data);
       }
   });
 });

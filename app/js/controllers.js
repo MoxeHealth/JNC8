@@ -31,12 +31,12 @@ function($scope, $q, $location, pt) {
 
   //placeholder for now, in the future will be received from algorithm:
   //$scope.medRecs = algorithm.medRecs;
-  $scope.medRecs = [{'medClass': 'ACE', 'meds': ['benazeprirl', 'captopril']}, {'medClass': 'ARB', 'meds': ['xanax', 'prozac']}];
+  $scope.medRecs = [{'medClass': 'ACE', 'meds': ['benazepril', 'captopril']}, {'medClass': 'ARB', 'meds': ['xanax', 'delzicol']}];
 
   $scope.recommendationMsg = algorithm.recommendation;
 
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  console.log(startup);
+  // console.log(startup);
   $scope.targetDias = algorithm.targetBP.diastolic;
   $scope.targetSys = algorithm.targetBP.systolic;
   $scope.pt = pt;
