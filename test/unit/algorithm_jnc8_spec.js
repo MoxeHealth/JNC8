@@ -1,6 +1,5 @@
 //expected algorithm input with data types
 
-console.log(algorithm);
 var ptStub = {
   //template values for testing
   hasTargetBP: function(){
@@ -54,32 +53,75 @@ describe('meds data structure', function(){
 });
 
 describe('algorithm generateTarget', function(){
-  beforeEach(function(){
-    var ptStub = {
-      hasTargetBP: function(){
-      if(this.targetBP){
-        if(this.targetBP.length > 0){
-          return true;
-        }
-      }
-      return false;
-      } 
-    };
-
-    var algoResults = {};
-  });
+  // beforeEach(function(){
+  //   var ptStub = {
+  //     hasTargetBP: function(){
+  //       if(this.targetBP){
+  //         if(this.targetBP.length > 0){
+  //           return true;
+  //         }
+  //       }
+  //       return false;
+  //     } 
+  //   };
+  // });
 
   it('returns a targetBP if the patient already has one', function(){
-    ptStub.targetBP = [120, 80]
+    var pt = {
+      targetBP: {
+        Systolic: 120,
+        Diastolic: 80
+      },
+      age: 40
+    };
 
-    expect(algoResults.targetBP).toEqual([120, 80]);
+    var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
+
+    expect(algoGeneratedTargetBP).toEqual(
+      { Systolic: 120, Diastolic: 80 }
+    );
   });
 
   it('returns a targetBP of 150/90 if the patient is 60 years old and older and doesn\'t have diabetes or CKD', function(){
-    expect(2).toEqual(2);
+    var pt = {
+      age: 60,
+      hasDiabetes: false,
+      hasCKD: false
+    };
+    var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
+
+    expect(algoGeneratedTargetBP).toEqual({ Systolic: 150, Diastolic: 90 });
   });
 
   it('returns a targetBP of 140/90 if the patient does not meet any one of the criteria for having a 150/90 target', function(){
-    expect(2).toEqual(2);
+    //age
+    var pt = {
+      age: 50,
+      hasDiabetes: false,
+      hasCKD: false
+    };
+    var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
+
+    expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
+
+    //diabetes
+    var pt = {
+      age: 60,
+      hasDiabetes: true,
+      hasCKD: false
+    };
+    var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
+
+    expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
+
+    //CKD
+    var pt = {
+      age: 60,
+      hasDiabetes: false,
+      hasCKD: true
+    };
+    var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
+
+    expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
   });
 });
