@@ -128,8 +128,9 @@ describe('algorithm generateTarget', function(){
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
   });
 });
-describe('chooseNextMeds', function(){
-  it('should generate the proper next meds for a patient taking either ACEI or ARB', function(){
+
+describe('chooseNextMeds returns proper medication recommendations', function(){
+  it('patient taking either ACEI or ARB', function(){
     var currentMeds = [
       {className: 'ACEI'}
     ]
@@ -150,7 +151,7 @@ describe('chooseNextMeds', function(){
     expect(containsCCB).toEqual(true);
   });
 
-  it('should generate the proper next meds for a patient taking CCB', function(){
+  it('patient taking CCB', function(){
     var currentMeds = [
       {className: 'CCB'}
     ]
@@ -167,60 +168,175 @@ describe('chooseNextMeds', function(){
     });
 
     expect(containsACEI).toEqual(true);
-    // expect(containsARB).toEqual(true);
-    // expect(containsThiazide).toEqual(true);
-    // expect(containsCCB).toEqual(false);
+    expect(containsARB).toEqual(true);
+    expect(containsThiazide).toEqual(true);
+    expect(containsCCB).toEqual(false);
   });
+
+
+  //todo if time and clinician input received - finish checking data structure
 });
 
-describe('generateRecs for first visit', function(){
+//generateRecs tests depend on chooseNextMeds method working properly 
+describe('generateRecs for patient taking no meds (assumed to be first visit)', function(){
+  //todo - should put the following logic in beforeEach? Don't see a benefit. 
   var pt = {
     age: 60,
     hasDiabetes: false,
-    isAtBPGoal: ptStub.isAtBPGoal
+    isAtBPGoal: ptStub.isAtBPGoal,
+    //predefined so that the following specs aren't dependent on generateTarget method
+    targetBP: { Systolic: 150, Diastolic: 90 }
   };
-  //target BP will be 150/90
-  var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
 
-  it('recommends to continue treatment if patient has reached the target BP', function(){
+  it('continue treatment if patient has reached the target BP', function(){
     pt.currentBP = { Systolic: 120, Diastolic: 80 };
     pt.hasCKD = false;
-    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.continueTreatment);
     expect(algoGeneratedRecs.medRecs).toEqual([]);
   });
 
-  it('generates proper recs for a nonblack patient with no CKD who is taking no meds', function(){
+  it('nonblack patient', function(){
     pt.currentBP = { Systolic: 160, Diastolic: 90 };
     pt.race = 'Asian';
     pt.hasCKD = false;
-    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.nonBlackNoCKD);
     expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.nonBlackNoCKD);
   });
 
-  it('generates proper recs for a black patient with no CKD who is taking no meds', function(){
+  it('black patient with no CKD', function(){
     pt.currentBP = { Systolic: 160, Diastolic: 90 };
     pt.race = algorithm.opts.races.black;
     pt.hasCKD = false;
-    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.blackNoCKD);
     expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.blackNoCKD);
   });
 
-  it('generates proper recs for a patient with CKD who is taking no meds', function(){
+  it('patient with CKD', function(){
     pt.currentBP = { Systolic: 160, Diastolic: 90 };
     pt.race = algorithm.opts.races.black;
     pt.hasCKD = true;
 
-    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.CKD);
     expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.CKD);
   });
+});
 
-  //todo if time and clinician input received - finish checking data structure
+describe('generateRecs for patient taking one medication', function(){
+
+  var pt = {
+    age: 60,
+    hasDiabetes: false,
+    isAtBPGoal: ptStub.isAtBPGoal,
+    currentBP: { Systolic: 160, Diastolic: 90 },
+    //predefined so that the following specs aren't dependent on generateTarget method
+    targetBP: { Systolic: 150, Diastolic: 90 }
+  };
+
+  it('increase dosage of current medication if medication is not at max dosage', function(){
+    pt.currentMeds = [
+      {className: 'CCB', atMax: false}
+    ];
+
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
+    console.log(algoGeneratedRecs);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxNotReached);
+    expect(algoGeneratedRecs.medRecs).toEqual([]);
+  });
+
+  it('add additional medication if medication is  at max dosage', function(){
+    pt.currentMeds = [
+      {className: 'CCB', atMax: true}
+    ];
+
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
+    console.log(algoGeneratedRecs);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxReached);
+    expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.currentMeds));
+    expect(algoGeneratedRecs.medRecs.length).toEqual(meds.numFirstLineMedClasses - 1);
+  });
+});
+
+describe('generateRecs for patient taking two medications', function(){
+
+  var pt;
+  beforeEach(function(){
+    pt = {
+      age: 60,
+      hasDiabetes: false,
+      isAtBPGoal: ptStub.isAtBPGoal,
+      currentBP: { Systolic: 160, Diastolic: 90 },
+      //predefined so that the following specs aren't dependent on generateTarget method
+      targetBP: { Systolic: 150, Diastolic: 90 },
+      currentMeds: [{className: 'CCB', atMax: true}]
+    };
+  });
+
+  it('increase dosage of current medication if medication is not at max dosage', function(){
+    pt.currentMeds.push({className: 'Thiazide', atMax: false});
+
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxNotReached);
+    expect(algoGeneratedRecs.medRecs).toEqual([]);
+  });
+
+  it('add additional medication if medication is at max dosage', function(){
+    pt.currentMeds.push({className: 'Thiazide', atMax: true});
+
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
+    console.log(algoGeneratedRecs);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxReached);
+    expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.currentMeds));
+    expect(algoGeneratedRecs.medRecs.length).toEqual(meds.numFirstLineMedClasses - 2);
+  });
+});
+
+describe('generateRecs for patient taking two medications', function(){
+
+  var pt;
+
+  beforeEach(function(){
+    pt = {
+      age: 60,
+      hasDiabetes: false,
+      isAtBPGoal: ptStub.isAtBPGoal,
+      currentBP: { Systolic: 160, Diastolic: 90 },
+      //predefined so that the following specs aren't dependent on generateTarget method
+      targetBP: { Systolic: 150, Diastolic: 90 },
+      currentMeds: [
+        {className: 'CCB', atMax: true}, 
+        {className: 'ACEI', atMax: true}
+      ]
+    };
+  });
+
+  it('increase dosage of current medication if medication is not at max dosage', function(){
+    pt.currentMeds.push({className: 'Thiazide', atMax: false});
+
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxNotReached);
+    expect(algoGeneratedRecs.medRecs).toEqual([]);
+  });
+
+  it('recommend medication classes previously not recommended as well as specialist referral if medication is at max dosage', function(){
+    pt.currentMeds.push({className: 'Thiazide', atMax: true});
+
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.referralVisit);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.allMeds.Others);
+    expect(algoGeneratedRecs.medRecs.length).toEqual(1);
+  });
 });
