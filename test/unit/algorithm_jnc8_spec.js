@@ -2,17 +2,10 @@
 
 var ptStub = {
   //template values for testing
-  hasTargetBP: function(){
-    if(this.targetBP){
-      if(this.targetBP.length > 0){
-        return true;
-      }
-    }
-    return false;
-  },
+  //method is from 'pt' service in '/app/services.js'
   isAtBPGoal: function() {
-    if(this.hasTargetBP()) {
-      if(this.bp[0] >= this.targetBP[0] || this.bp[1] >= this.targetBP[1]) {
+    if(this.targetBP) {
+      if(this.currentBP.Systolic >= this.targetBP.Systolic || this.currentBP.Diastolic >= this.targetBP.Diastolic) {
         return false;
       }
       return true;
@@ -21,7 +14,7 @@ var ptStub = {
     }
   },
   onMedication: function() {
-    if(this.medication.length > 0) {
+    if(this.currentMeds.length > 0) {
       return true;
     }
     return false;
@@ -53,18 +46,6 @@ describe('meds data structure', function(){
 });
 
 describe('algorithm generateTarget', function(){
-  // beforeEach(function(){
-  //   var ptStub = {
-  //     hasTargetBP: function(){
-  //       if(this.targetBP){
-  //         if(this.targetBP.length > 0){
-  //           return true;
-  //         }
-  //       }
-  //       return false;
-  //     } 
-  //   };
-  // });
 
   it('returns a targetBP if the patient already has one', function(){
     var pt = {
@@ -74,12 +55,9 @@ describe('algorithm generateTarget', function(){
       },
       age: 40
     };
-
     var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
 
-    expect(algoGeneratedTargetBP).toEqual(
-      { Systolic: 120, Diastolic: 80 }
-    );
+    expect(algoGeneratedTargetBP).toEqual({ Systolic: 120, Diastolic: 80 });
   });
 
   it('returns a targetBP of 150/90 if the patient is 60 years old and older and doesn\'t have diabetes or CKD', function(){
@@ -94,7 +72,7 @@ describe('algorithm generateTarget', function(){
   });
 
   it('returns a targetBP of 140/90 if the patient does not meet any one of the criteria for having a 150/90 target', function(){
-    //age
+    //disqualified by age
     var pt = {
       age: 50,
       hasDiabetes: false,
@@ -104,7 +82,7 @@ describe('algorithm generateTarget', function(){
 
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
 
-    //diabetes
+    //disqualified by diabetes
     var pt = {
       age: 60,
       hasDiabetes: true,
@@ -114,7 +92,7 @@ describe('algorithm generateTarget', function(){
 
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
 
-    //CKD
+    //disqualified by CKD
     var pt = {
       age: 60,
       hasDiabetes: false,
@@ -124,4 +102,53 @@ describe('algorithm generateTarget', function(){
 
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
   });
+});
+
+describe('generateRecs for first visit', function(){
+  var pt = {
+    age: 60,
+    hasDiabetes: false,
+    isAtBPGoal: ptStub.isAtBPGoal
+  };
+  //target BP will be 150/90
+  var algoGeneratedTargetBP = algorithm.methods.generateTarget(pt);
+
+  it('recommends to continue treatment if patient has reached the target BP', function(){
+    pt.currentBP = { Systolic: 120, Diastolic: 80 };
+    pt.hasCKD = false;
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.continueTreatment);
+    expect(algoGeneratedRecs.medRecs).toEqual([]);
+  });
+
+  it('generates proper recs for a nonblack patient with no CKD who is taking no meds', function(){
+    pt.currentBP = { Systolic: 160, Diastolic: 90 };
+    pt.race = 'Asian';
+    pt.hasCKD = false;
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.nonBlackNoCKD);
+  });
+
+  it('generates proper recs for a black patient with no CKD who is taking no meds', function(){
+    pt.currentBP = { Systolic: 160, Diastolic: 90 };
+    pt.race = algorithm.opts.races.black;
+    pt.hasCKD = false;
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.blackNoCKD);
+  });
+
+  it('generates proper recs for a patient with CKD who is taking no meds', function(){
+    pt.currentBP = { Systolic: 160, Diastolic: 90 };
+    pt.race = algorithm.opts.races.black;
+    pt.hasCKD = true;
+    
+    var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
+
+    expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.CKD);
+  });
+
+  //todo if time and clinician input received - finish checking data structure
 });

@@ -149,17 +149,9 @@ angular.module('myApp.services', [])
       //todo - populate this variable from the database
       //targetBP will have the same data structure as currentBP
       // targetBP: startup.ptData.db[db.length - 1].targetBP;
-      hasTargetBP: function(){
-        if(this.targetBP){
-          if(this.targetBP.length > 0){
-            return true;
-          }
-        }
-        return false;
-      },
       isAtBPGoal: function() {
-        if(this.hasTargetBP()) {
-          if(this.bp[0] >= this.targetBP[0] || this.bp[1] >= this.targetBP[1]) {
+        if(this.targetBP) {
+          if(this.currentBP.Systolic >= this.targetBP.Systolic || this.currentBP.Diastolic >= this.targetBP.Diastolic) {
             return false;
           }
           return true;
@@ -168,7 +160,7 @@ angular.module('myApp.services', [])
         }
       },
       onMedication: function() {
-        if(this.medication.length > 0) {
+        if(this.currentMeds.length > 0) {
           return true;
         }
         return false;
