@@ -1,5 +1,5 @@
   <form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()">
-  <section>
+  <div class="section">
     <label for="age">Patient's age:</label>
     <div class="input-wrapper">
       <input type="number" ng-model="pt.age" id="age" required name="age" min="18" max="200" />
@@ -12,17 +12,17 @@
       Number outside age range. Age must be a number between 18-200. 
       </span>
     </div> 
-  </section>
-  <section>
+  </div>
+  <div class="section">
     <label for="race">Patient's race:</label>
     <div class="input-wrapper">
       <select name="race" required ng-model="pt.race" ng-options="race for race in pt.races">
       <option style="display:none" value="">Select a Race</option>
       </select>
     </div>
-  </section>
+  </div>
 
-  <section>
+  <div class="section">
     <label for="blood-pressure">Patient's blood pressure:</label>
     <div class="blood-pressure" id="blood-pressure">
       <div class="input-wrapper">
@@ -51,9 +51,9 @@
         </span>
       </div>   
     </div>
-  </section>
+  </div>
 
-  <section>
+  <div class="section">
     <label for="diabetes">Does the patient have diabetes?</label>
     <div class="input-wrapper">
       <span class="radio-wrapper">
@@ -63,9 +63,9 @@
         <input type="radio" ng-model="pt.hasDiabetes" name="diabetes" value="0"> No
       </span>
     </div>
-  </section>
+  </div>
 
-  <section>
+  <div class="section">
     <label for="blood-pressure">Does the patient have CKD?</label>
     <div class="input-wrapper">
       <span class="radio-wrapper">
@@ -75,9 +75,9 @@
         <input type="radio" ng-model="pt.hasCKD" name="ckd" value="0" > No
       </span>
     </div>
-  </section>
+  </div>
 
-  <section>
+  <div class="section">
     <label for="meds">Is the patient on medication?</label>
     <div class="input-wrapper">
       <span class="radio-wrapper">
@@ -86,10 +86,10 @@
         <input type="radio" ng-model="pt.isOnMedication" name="meds" value="0"> No
       </span>
     </div>
-  </section>
+  </div>
 
 
-  <section class="medications" ng-show="pt.isOnMedication">
+  <div class="section medications" ng-show="pt.isOnMedication">
     <table id="medications" width="100%">
       <tr class="header">
         <td width="40%">Drug name</td>
@@ -104,7 +104,7 @@
         <td width="20%" class="info-column"><span class="x-med">x</span></td>
       </tr>
     </table>
-  </section>
+  </div>
 
 <input class="submit-button" type="submit" value="Get recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 </form>

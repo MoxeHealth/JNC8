@@ -55,16 +55,13 @@ angular.module('myApp.directives', []).
         medName: '=med',
       },
       link: function(scope, element, attrs) {
-        console.log(pt);
         // get the pricing for this drug
         goodRx.getPricing(scope.medName, function(res) {
-          console.log(res);
           scope.price = res.data.price[0];
           scope.drugInfo = res.data;
           scope.dosage = res.data.dosage;
           scope.units = res.data.quantity;
           scope.emailLink = generateEmailLink(pt.email, scope.drugInfo);
-          console.log(scope.emailLink);
         });
       }
     }
@@ -76,7 +73,8 @@ angular.module('myApp.directives', []).
       var renderGraph = function(scope) {
 
         // set the width/height of the graph based on the size of the containing element
-        var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
+        // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
+        var elWidth = 350;
 
         //handle case when patient has no entries in database 
         // console.log(scope.data.ptData.db);

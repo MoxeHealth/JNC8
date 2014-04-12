@@ -4,7 +4,7 @@
   <div class="top-div patient-status good">
     <b class="title">Good:</b> Patient has met the blood pressure goal and the treatment should continue.
   </div>
-  <div class="top-div rec-message">Recommendation: {{ recommendationMsg }}</div>
+  <div class="top-div rec-message">Treatment recommendation: {{ recommendationMsg }}</div>
 </div>
 
 <div class="medication">
@@ -27,7 +27,7 @@
     </li>
   </ul>
   <ul class="multi">
-    <lh><h3>Suggested additional medications</h3></lh>
+    <lh><h3>Prescribe one of the following medications:</h3></lh>
     <li class="med-class cf" ng-repeat="medRec in medRecs">
       <ul>
         <lh>{{ medRec.medClass }}</lh>

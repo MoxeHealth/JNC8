@@ -5,12 +5,10 @@ body {
 }
 
 .container {
-  width: 80%;
-  max-width: 810px;
-  min-width: 400px;
+  width: 810px;
   height: auto;
   padding: 18px 40px;
-  margin: 50px auto;
+  margin: 20px auto;
   border: solid #d7d7d7 1px;
   background-color: #fff;
   color: #4d4d4d;
@@ -69,7 +67,7 @@ div.viz {
 
 /* Form styling */
 
-form div {
+form div.section {
   margin: 0;
   border-bottom: solid #f0f0f0 1px;
   padding:10px 0;
@@ -201,7 +199,7 @@ div.med-details {
 }
 
 .top-div {
-  width: 70%;
+  width: 90%;
   max-width: 350px;
   margin-right: 18px;
   float: left;
@@ -239,7 +237,8 @@ div.bp-goal-comparison {
 
 div.footer {
   clear:both;
-  width: 70%;
+  width: 90%;
+  margin-top: 25px;
 }
 
 div.bp-goal-comparison td {
@@ -257,10 +256,6 @@ div.bp-goal-comparison td:nth-child(1) {
 .bp-goal-comparison input {
   width: 50px;
   text-align: center;
-}
-
-.table-contain {
-  margin-top: -14px;
 }
 
 input[type=number]::-webkit-inner-spin-button, 
@@ -282,9 +277,10 @@ tr.systolic td.current {
   background-color: rgba(70, 130, 180, 1);
 }
 
-td.info-column .current{
+td.info-column.current {
   text-align: left;
   padding-left: 18px;
+  color: #fff;
 }
 
 tr.systolic td.goal {
@@ -335,7 +331,7 @@ tr.diastolic td.goal {
 }
 
 bp-graph {
-  height:450px;
+  height:250px;
   display: block;
 }
 
@@ -402,4 +398,18 @@ img.loading {
  */
 .cf {
     *zoom: 1;
+}
+
+
+/* For mobile and small screens */
+
+@media screen and (max-width: 500px) {
+  .container {
+    width: 380px;
+  }
+
+  div.bp-goal-comparison {
+    margin-left: 0;
+  }
+
 }
