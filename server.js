@@ -29,7 +29,11 @@ var api = {
 app.use(express.static(__dirname));
 app.use(bodyParser());
 
+app.get('/', function(req,res){
+  res.redirect('/app/index.html');
+});
 
+//The SQL database stores any information that must be persisted but cannot be written back to the EMR
 app.get('/db/encounters',  function(req, res){
   console.log('get db/encounters');
   var ptId = req.query.ptId;
@@ -42,7 +46,7 @@ app.get('/db/encounters',  function(req, res){
     orgIdString = ' is NULL';
   }
 
-  var query  = 'SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId + ' AND `org_id`' + orgIdString;
+  var query  = 'SELECT * FROM `encounters` WHERE `pt_id` = ' + ptId + ' AND `org_id`' + orgIdString;
 
   db.connection.query(query, function(err, data){
       if(err){
@@ -51,6 +55,50 @@ app.get('/db/encounters',  function(req, res){
       }else{
         res.send(data);
       }
+  });
+});
+
+app.get('/db',  function(req, res){
+  console.log("Serving app.get from db");
+  var url = api.moxe.baseUrl + req.url;
+  console.log("The url: " + url);
+});
+
+app.post('/db/encounters',  function(req, res){
+  console.log('post db/encounters');
+  console.log(req.body);
+  var ptId = db.connection.escape(req.body.ptId);
+  var orgId = db.connection.escape(req.body.orgId) || 'NULL';
+  var emails = db.connection.escape(JSON.stringify(req.body.emails)) || 'NULL';
+  var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
+  var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure)) || 'NULL';
+  var targetBP = db.connection.escape(JSON.stringify(req.body.encounter.targetBP)) || 'NULL';
+  var prescribedMeds = db.connection.escape(JSON.stringify(req.body.encounter.prescribedMeds)) || 'NULL';
+  var removedMeds = db.connection.escape(JSON.stringify(req.body.encounter.removedMeds)) || 'NULL';
+  var currentMeds = db.connection.escape(JSON.stringify(req.body.encounter.currentMeds)) || 'NULL';
+
+  console.log(ptId);
+  console.log(orgId);
+  console.log(emails);
+  console.log(encounterDate);
+  console.log(bloodPressure);
+  console.log(targetBP);
+  console.log(prescribedMeds);
+  console.log(removedMeds);
+  console.log(currentMeds);
+
+  var query = 'INSERT INTO `encounters` (pt_id, org_id, emails, encounter_date, blood_pressure, target_bp, prescribed_meds, removed_meds, current_meds) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + encounterDate + ',' + bloodPressure + ',' + targetBP + ',' + prescribedMeds + ',' + removedMeds + ',' + currentMeds +')';
+
+  console.log(query);
+
+  db.connection.query(query, function(err, data){
+    if(err){
+      console.log('insert failed');
+      console.log(err);
+      res.send(err);
+    }else{
+      res.send(data);
+    }
   });
 });
 
@@ -77,41 +125,12 @@ app.get('/goodrx/low-price', function(req, res) {
   req.pipe(request.get(urlString)).pipe(res);
 });
 
-app.post('/db/encounters',  function(req, res){
-  console.log('post db/encounters');
-  console.log(req.body);
-  var ptId = db.connection.escape(req.body.ptId);
-  var orgId = db.connection.escape(req.body.orgId) || 'NULL';
-  var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
-  var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure));
-  var medicationsPrescribed = db.connection.escape(JSON.stringify(req.body.encounter.medicationsPrescribed));
-
-  db.connection.query('INSERT INTO `encounters` (patient_id, org_id, encounter_date, blood_pressure, medications_prescribed) VALUES (' + ptId + ',' + orgId + ',' + encounterDate + ',' + bloodPressure + ',' +medicationsPrescribed + ')', function(err, data){
-    if(err){
-      console.log('insert failed');
-      console.log(err);
-      res.send(err);
-    }else{
-      res.send(data);
-    }
-  });
-});
-
+//will handle post requests from unique urls that are given to people who sign up for the standalone app 
 app.post('/*',  function(req, res){
   console.log("Serving app.post...");
   var url = api.moxe.baseUrl + req.url;
   console.log("The url: " + url);
   req.pipe(request.post({uri: url, json: req.body, headers: api.moxe.headers})).pipe(res);
-});
-
-app.get('/db',  function(req, res){
-  console.log("Serving app.get from db");
-  var url = api.moxe.baseUrl + req.url;
-  console.log("The url: " + url);
-});
-
-app.get('/', function(req,res){
-  res.redirect('/app/index.html');
 });
 
 var port = process.env.PORT || 8000;

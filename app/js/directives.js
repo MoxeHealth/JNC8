@@ -12,23 +12,23 @@ angular.module('myApp.directives', []).
 
   .directive('drugPricing', ['goodRx', 'pt', function(goodRx, pt) {
 
-    var generateEmailLink = function(email, drugObj){
+    var generateEmailsLink = function(emails, drugObj){
       var mailtoString = 'mailto:';
 
-      // append the patient's email
-      if(email.length) {
-        mailtoString += email[0].EmailAddress + '?';
+      // append the patient's emails
+      if(emails.length) {
+        mailtoString += emails[0].EmailAddress + '?';
       } else {
         mailtoString += '?';
       }
 
-      if(email.length > 1) {
-        mailtoString += 'cc=' + email[1].EmailAddress + '&';
+      if(emails.length > 1) {
+        mailtoString += 'cc=' + emails[1].EmailAddress + '&';
       }
 
       mailtoString += 'subject=Pricing information for ' + drugObj.display + '&';
 
-      // set the email body
+      // set the emails body
       mailtoString += 'body=Please find the pricing details for ' + drugObj.display + ' at this site: ' + drugObj.url;
 
 
@@ -47,7 +47,7 @@ angular.module('myApp.directives', []).
               '</span>' +
               '<span class="med-detail"><span class="label">Units:</span> {{ units }}</span></div>' +
               '<div class="inline-info right"><span class="med-detail"><a href="{{ drugInfo.url }}" target="_blank">More pricing information</a></span>' +
-              '<span class="med-detail"><a href="{{emailLink}}" title="Email pricing information for {{medName}}" target="_blank">Email pricing details</a></span></div>' +
+              '<span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{medName}}" target="_blank">Email pricing details</a></span></div>' +
           '</div></div>',
       replace: true,
       restrict: 'EA',
@@ -61,7 +61,7 @@ angular.module('myApp.directives', []).
           scope.drugInfo = res.data;
           scope.dosage = res.data.dosage;
           scope.units = res.data.quantity;
-          scope.emailLink = generateEmailLink(pt.email, scope.drugInfo);
+          scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
         });
       }
     }

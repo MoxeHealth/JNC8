@@ -36,17 +36,50 @@ function($scope, $q, $location, pt) {
 
 }])
 
-.controller('dataVizCtrl', ['$scope', 'pt', 'startup', function($scope, pt, startup) {
+.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', function($scope, pt, startup, db) {
   var algoResults = algorithm.methods.runAlgorithm(pt);
   console.log('algoResults', algoResults);
   console.log('algorithm meds', algoResults.medRecs);
 
+  console.log(pt);
+
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  console.log($scope.dbData);
   $scope.targetDias = algoResults.targetBP.Diastolic;
   $scope.targetSys = algoResults.targetBP.Systolic;
   $scope.pt = pt;
+  $scope.encounter = pt.encounter;
+
+  //hard code for now
+  pt.encounter.targetBP = {
+    Systolic: $scope.targetSys,
+    Diastolic: $scope.targetDias
+  };
+
+  console.log(pt.encounter);
+
+  $scope.saveToDB = db.addEncounter(pt.ids, pt.emails, pt.encounter); 
 }]);
 
+ // var ptId = db.connection.escape(req.body.ptId);
+ //  var orgId = db.connection.escape(req.body.orgId) || 'NULL';
+ //  var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
+ //  var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure));
+ //  var prescribedMeds = db.connection.escape(JSON.stringify(req.body.encounter.prescribedMeds));
+ //  var removedMeds = db.connection.escape(JSON.stringify(req.body.encounter.removedMeds));
+ //  var currentMeds = db.connection.escape(JSON.stringify(req.body.encounter.currentMeds));
+
+ //  this.addEncounter = function(ptIdentifier, encounter, callback) {
+
+ //      return $http({
+ //        url: '/db/encounters',
+ //        method: 'POST',
+ //        data: {
+ //          ptId: ptIdentifier.ptId,
+ //          orgId: ptIdentifier.orgId,
+ //          //encounter object expects two values: bloodPressure and prescribedMeds
+ //          encounter: encounter
+ //        }
+ //      });
+ //    };

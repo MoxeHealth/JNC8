@@ -41,8 +41,9 @@ angular.module('myApp', [
   var obj = {
     ptId: $rootScope.patientId
   };
-  db.addEncounter(obj, {
-    bloodPressure: {systolic: 130, diastolic: 68},
-    medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  });
+  // db.addEncounter(obj, {
+  //   bloodPressure: {systolic: 130, diastolic: 68},
+  //   prescribedMeds: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+  // });
 }]);
+

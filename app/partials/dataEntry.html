@@ -92,14 +92,16 @@
   <div class="section medications" ng-show="pt.isOnMedication">
     <table id="medications" width="100%">
       <tr class="header">
-        <td width="40%">Drug name</td>
-        <td class="info-column" width="30%">Dosage</td>
-        <td class="info-column" width="15%">Max dosage</td>
-        <td class="info-column" width="15%">Remove</td>
+        <td width="25%">Drug name</td>
+        <td class="info-column" width="20%">Dosage</td>
+        <td class="info-column" width="25%">JNC8 target dose</td>
+        <td class="info-column" width="20%">Max for pt?</td>
+        <td class="info-column" width="10%">Remove</td>
       </tr>
       <tr ng-repeat="drug in pt.medications">
         <td width="30%">{{ drug.name }}</td>
         <td width="25%" class="info-column">{{ drug.dose }}{{ drug.unit }}</td>
+        <td width="25%" class="info-column">{{ drug.atMax }} </td>
         <td width="25%" class="info-column">{{ drug.maxDose }}{{ drug.unit }}</td>
         <td width="20%" class="info-column"><span class="x-med">x</span></td>
       </tr>
