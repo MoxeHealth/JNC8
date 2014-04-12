@@ -1,0 +1,105 @@
+JNC8 algorithm pseudocode based on JNC8 HTN treatment guidelines 
+
+----------------------------
+Overall algorithm structure
+----------------------------
+
+Inputs:
+- age
+- current blood pressure (systolic and diastolic)
+- race
+- past encounters/vists. For each encounter:
+  - medications being taken and their doses
+  - blood pressure
+  - target blood pressure 
+- current medications (prescribed at last visit). For each medication:
+  - drug class name
+  - drug name 
+  - whether medication is marked by doctor as
+  "at max dose" 
+  - current dosage
+  - units of dosage (mg, ml, etc.)
+- whether patient has diabetes or not
+- whether patient has CKD or not 
+
+Outputs:
+- recommendation message, 
+- target blood pressure (systolic and diastolic)
+- recommended medications,
+- status of patient's treatment: 'bad', 'ok', 'good'
+
+Assumptions: 
+- doctor will have determined whether a medication is at the maximum desired dose for a particular patient (true or false)
+- doctor will only use titration strategy 'a' because doctors want to prescribe the minimum number of medications
+
+Titration Strategies:
+  a: "Maximize first medication before adding second.",
+  b: "Add second medication before reaching maximum dose of first medication.",
+  c: "Start with two medication classes, separately or as fixed-dose combination."
+}
+
+Drug Classes:
+- ACEI
+- ARB
+- CCB
+- thiazide
+- Other classes : beta blockers, etc. 
+
+ACEI and ARB can't be taken at the same time
+
+----------------------------
+Determine target BP
+----------------------------
+
+If the patient has a target BP, move on to the data visualization and recommend to "continue current treatment and monitoring".
+
+Otherwise, if the patient is 60 years old and older and doesn't have diabetes or CKD, their target BP is 150/90. 
+
+Otherwise, their target BP is 140/90. 
+
+----------------------------
+Determine recommendation message and list of recommended meds
+----------------------------
+
+For all recommendation messages, recommend that doctor "Reinforces medication and lifestyle adherence."
+
+------------First Visit------------------
+Currently we assume that the patient will have no records in our supplemental database if it's their first visit 
+
+If the patient doesn't have CKD and is not black, recommend that doctor chooses one medication from ACEI, ARB, or CCB classes 
+
+If the patient doesn't have CKD and is black, recommend that doctor chooses one medication from thiazide or CCB classes 
+
+If the patient has CKD, recommend that doctor chooses one medication from ACEI or ARB classes 
+
+------------Follow up visits------------------
+
+If the patient is not taking any medication, apply the "first visit" logic above instead of the "follow up visits" logic. 
+
+---logic for one medication---
+if patient is taking one medication:
+  if that medication is at its maximum dose:
+    if the medication's class is ACEI or ARB:
+      recommend that doctor chooses additional medication from CCB or thiazide classes
+    otherwise if the medication's class is CCB:
+      recommend that doctor chooses additional medication from ARB or ACEI or thiazide classes
+    otherwise if the medication's class is thiazide:
+      recommend that doctor chooses additional medication from ARB or ACEI or CCB classes
+
+  otherwise, if that one medication is not at its max dose:
+    recommend that doctor increases dose of current medication 
+
+---logic for two medications---
+otherwise, if they are taking two medications and both meds are at max dose:
+  recommend that doctor chooses additional medication from remaining classes (ACEI, ARB, CCB, thiazide)
+
+otherwise, if they are taking two medications but both medications are not at max dose:
+  due to the above algorithm logic, at least one medication will be at max dose already, so recommend that doctor increases doses of the medication that is not at max dose 
+
+---logic for three medications---
+otherwise, if they are taking three medications and all meds are at max dose:
+  recommend that doctor chooses additional medication from other classes (beta blockers, aldosterone antagonist, or others), and/or refer to physician with expertise in hypertension management
+
+otherwise, if they are taking three medications and all medications are not yet at max dose:
+  recommend that doctor increases doses of the medication that is not at max dose 
+    

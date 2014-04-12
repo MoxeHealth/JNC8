@@ -38,13 +38,11 @@ angular.module('myApp', [
   $rootScope.calculator = 'JNC8';
   goodRx.getPricing('lipitor');
 
-  // var ptObj = {
-  //   ptId: $rootScope.patientId
-  // }
-
-  // db.addEncounter(ptObj, {
-  //   bloodPressure: {systolic: 135, diastolic: 85},
-  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  // });
-
+  var obj = {
+    ptId: $rootScope.patientId
+  };
+  db.addEncounter(obj, {
+    bloodPressure: {systolic: 130, diastolic: 68},
+    medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
+  });
 }]);
