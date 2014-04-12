@@ -7,7 +7,8 @@ angular.module('myApp', [
   'myApp.filters',
   'myApp.services',
   'myApp.directives',
-  'myApp.controllers'
+  'myApp.controllers',
+  'ui.bootstrap'
 ])
 .config(['$routeProvider', function($routeProvider) {
   console.log('config called');
@@ -43,7 +44,7 @@ angular.module('myApp', [
   // }
 
   // db.addEncounter(ptObj, {
-  //   bloodPressure: {systolic: 135, diastolic: 85},
+  //   bloodPressure: {systolic: 160, diastolic: 95},
   //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
   // });
 

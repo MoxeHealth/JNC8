@@ -135,6 +135,7 @@ angular.module('myApp.services', [])
         Systolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Systolic.Value, 10),
         Diastolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Diastolic.Value, 10)
       },
+      bpDate: startup.ptData.substrate.vitals.data.BloodPressure.Systolic.ResultDateTime.DateTimeISO,
       hasDiabetes: true,
       isOnMedication: true,
       hasCKD: true,
@@ -336,7 +337,7 @@ angular.module('myApp.services', [])
         }
       }).success(function(data, status) {
         console.log("The GoodRx API responded successfully.");
-        callback(data);
+        if(callback) callback(data);
       }).error(function(data, status) {
         console.warn("The goodRx API errored: ", data, status);
       })

@@ -33,37 +33,25 @@ div.viz {
 }
 
 
-/* Menu styling */
+/* Tooltip-related styling */
 
-.menu {
-  list-style: none;
-  border-bottom: 0.1em solid black;
-  margin-bottom: 2em;
-  padding: 0 0 0.5em;
+h2.has-more-info {
+  float: left;
 }
 
-.menu:before {
-  content: "[";
+a.tooltip img {
+  margin: 1.6em 4px 0 12px;
 }
 
-.menu:after {
-  content: "]";
+div.tooltip {
+  color: #fff;
+  background-color: #4d4d4d;
+  padding: 5px;
+  font-size: 12px;
+  max-width: 130px;
+  text-align: left;
+  margin-top: 12px;
 }
-
-.menu > li {
-  display: inline;
-}
-
-.menu > li:before {
-  content: "|";
-  padding-right: 0.3em;
-}
-
-.menu > li:nth-child(1):before {
-  content: "";
-  padding: 0;
-}
-
 
 /* Form styling */
 
@@ -341,6 +329,7 @@ h1 {
   color: #2C3E50;
   font-weight: bold;
 }
+
 
 p.loading {
   font-size: 18px;
