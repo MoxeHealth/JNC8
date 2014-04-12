@@ -198,7 +198,7 @@ describe('generateRecs for first visit', function(){
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.nonBlackNoCKD);
-    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.ACEI_ARB_CCB);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.nonBlackNoCKD);
   });
 
   it('generates proper recs for a black patient with no CKD who is taking no meds', function(){
@@ -208,7 +208,7 @@ describe('generateRecs for first visit', function(){
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.blackNoCKD);
-    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.CCB_Thiazide);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.blackNoCKD);
   });
 
   it('generates proper recs for a patient with CKD who is taking no meds', function(){
@@ -219,7 +219,7 @@ describe('generateRecs for first visit', function(){
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.CKD);
-    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.ACEI_ARB);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.CKD);
   });
 
   //todo if time and clinician input received - finish checking data structure
