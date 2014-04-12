@@ -36,8 +36,33 @@ var ptStub = {
   */
 };
 
-describe('meds data structure', function(){
-  it('is an object containing keys whose values are arrays of objects', function(){
+// var medCombos = {
+//   ACEI_ARB: [
+//     { ACEI: meds.allMeds.ACEI }, 
+//     { ARB: meds.allMeds.ARB }
+//   ],
+//   ACEI_ARB_CCB: [
+//     { ACEI: meds.allMeds.ACEI },
+//     { ARB: meds.allMeds.ARB },
+//     CCB: meds.allMeds.CCB
+//   ],
+//   ACEI_ARB_Thiazide: [
+//     { ACEI: meds.allMeds.ACEI }, 
+//     { ARB: meds.allMeds.ARB },
+//     Thiazide: meds.allMeds.Thiazide
+//   ],
+//   CCB_Thiazide: [
+//     { CCB: meds.allMeds.CCB }, 
+//     { Thiazide: meds.allMeds.Thiazide }
+//   ],
+//   Others: [
+//     { CCB: meds.allMeds.CCB }, 
+//     { Thiazide: meds.allMeds.Thiazide }
+//   ]
+// };
+
+describe('meds', function(){
+  it('data structure is an object containing keys whose values are arrays of objects', function(){
     var type = typeof meds;
     expect(type).toBe('object');
   });
@@ -103,6 +128,50 @@ describe('algorithm generateTarget', function(){
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 140, Diastolic: 90 });
   });
 });
+describe('chooseNextMeds', function(){
+  it('should generate the proper next meds for a patient taking either ACEI or ARB', function(){
+    var currentMeds = [
+      {className: 'ACEI'}
+    ]
+    var nextMeds = algorithm.methods.chooseNextMeds(currentMeds);
+    console.log(nextMeds);
+    var containsACEI = _.some(nextMeds, function(med){ return med.className === 'ACEI';
+    });
+    var containsARB = _.some(nextMeds, function(med){ return med.className === 'ARB';
+    });
+    var containsThiazide = _.some(nextMeds, function(med){ return med.className === 'Thiazide';
+    });
+    var containsCCB = _.some(nextMeds, function(med){ return med.className === 'CCB';
+    });
+
+    expect(containsACEI).toEqual(false);
+    expect(containsARB).toEqual(false);
+    expect(containsThiazide).toEqual(true);
+    expect(containsCCB).toEqual(true);
+  });
+
+  it('should generate the proper next meds for a patient taking CCB', function(){
+    var currentMeds = [
+      {className: 'CCB'}
+    ]
+    console.log(currentMeds);
+    var nextMeds = algorithm.methods.chooseNextMeds(currentMeds);
+    console.log(nextMeds);
+    var containsACEI = _.some(nextMeds, function(med){ return med.className === 'ACEI';
+    });
+    var containsARB = _.some(nextMeds, function(med){ return med.className === 'ARB';
+    });
+    var containsThiazide = _.some(nextMeds, function(med){ return med.className === 'Thiazide';
+    });
+    var containsCCB = _.some(nextMeds, function(med){ return med.className === 'CCB';
+    });
+
+    expect(containsACEI).toEqual(true);
+    // expect(containsARB).toEqual(true);
+    // expect(containsThiazide).toEqual(true);
+    // expect(containsCCB).toEqual(false);
+  });
+});
 
 describe('generateRecs for first visit', function(){
   var pt = {
@@ -129,6 +198,7 @@ describe('generateRecs for first visit', function(){
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.nonBlackNoCKD);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.ACEI_ARB_CCB);
   });
 
   it('generates proper recs for a black patient with no CKD who is taking no meds', function(){
@@ -138,16 +208,18 @@ describe('generateRecs for first visit', function(){
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.blackNoCKD);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.CCB_Thiazide);
   });
 
   it('generates proper recs for a patient with CKD who is taking no meds', function(){
     pt.currentBP = { Systolic: 160, Diastolic: 90 };
     pt.race = algorithm.opts.races.black;
     pt.hasCKD = true;
-    
+
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt, algoGeneratedTargetBP);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.firstVisit.CKD);
+    expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.ACEI_ARB);
   });
 
   //todo if time and clinician input received - finish checking data structure
