@@ -12,12 +12,6 @@ var ptStub = {
     } else {
       throw new Error ("Patient's target BP hasn't been set.");
     }
-  },
-  onMedication: function() {
-    if(this.currentMeds.length > 0) {
-      return true;
-    }
-    return false;
   }
   /* the following values are populated in the specs:
   // possible races: 'Black or African American', 'Asian', 'Caucasian'
@@ -36,42 +30,16 @@ var ptStub = {
   */
 };
 
-// var medCombos = {
-//   ACEI_ARB: [
-//     { ACEI: meds.allMeds.ACEI }, 
-//     { ARB: meds.allMeds.ARB }
-//   ],
-//   ACEI_ARB_CCB: [
-//     { ACEI: meds.allMeds.ACEI },
-//     { ARB: meds.allMeds.ARB },
-//     CCB: meds.allMeds.CCB
-//   ],
-//   ACEI_ARB_Thiazide: [
-//     { ACEI: meds.allMeds.ACEI }, 
-//     { ARB: meds.allMeds.ARB },
-//     Thiazide: meds.allMeds.Thiazide
-//   ],
-//   CCB_Thiazide: [
-//     { CCB: meds.allMeds.CCB }, 
-//     { Thiazide: meds.allMeds.Thiazide }
-//   ],
-//   Others: [
-//     { CCB: meds.allMeds.CCB }, 
-//     { Thiazide: meds.allMeds.Thiazide }
-//   ]
-// };
-
 describe('meds', function(){
   it('data structure is an object containing keys whose values are arrays of objects', function(){
     var type = typeof meds;
     expect(type).toBe('object');
   });
 
-  //todo if time and clinician input received - finish checking data structure
+  //todo if time and clinician input received - finish checking meds data structure
 });
 
 describe('algorithm generateTarget', function(){
-
   it('returns a targetBP if the patient already has one', function(){
     var pt = {
       targetBP: {
@@ -85,7 +53,7 @@ describe('algorithm generateTarget', function(){
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 120, Diastolic: 80 });
   });
 
-  it('returns a targetBP of 150/90 if the patient is 60 years old and older and doesn\'t have diabetes or CKD', function(){
+  it('returns a target BP of 150/90 if the patient is 60 years old and older and doesn\'t have diabetes or CKD', function(){
     var pt = {
       age: 60,
       hasDiabetes: false,
@@ -96,7 +64,7 @@ describe('algorithm generateTarget', function(){
     expect(algoGeneratedTargetBP).toEqual({ Systolic: 150, Diastolic: 90 });
   });
 
-  it('returns a targetBP of 140/90 if the patient does not meet any one of the criteria for having a 150/90 target', function(){
+  it('returns a targetBP of 140/90 if the patient does not meet any one of the criteria for having a 150/90 target BP', function(){
     //disqualified by age
     var pt = {
       age: 50,
@@ -135,7 +103,6 @@ describe('chooseNextMeds returns proper medication recommendations', function(){
       {className: 'ACEI'}
     ]
     var nextMeds = algorithm.methods.chooseNextMeds(currentMeds);
-    console.log(nextMeds);
     var containsACEI = _.some(nextMeds, function(med){ return med.className === 'ACEI';
     });
     var containsARB = _.some(nextMeds, function(med){ return med.className === 'ARB';
@@ -155,9 +122,7 @@ describe('chooseNextMeds returns proper medication recommendations', function(){
     var currentMeds = [
       {className: 'CCB'}
     ]
-    console.log(currentMeds);
     var nextMeds = algorithm.methods.chooseNextMeds(currentMeds);
-    console.log(nextMeds);
     var containsACEI = _.some(nextMeds, function(med){ return med.className === 'ACEI';
     });
     var containsARB = _.some(nextMeds, function(med){ return med.className === 'ARB';
@@ -173,13 +138,11 @@ describe('chooseNextMeds returns proper medication recommendations', function(){
     expect(containsCCB).toEqual(false);
   });
 
-
   //todo if time and clinician input received - finish checking data structure
 });
 
 //generateRecs tests depend on chooseNextMeds method working properly 
 describe('generateRecs for patient taking no meds (assumed to be first visit)', function(){
-  //todo - should put the following logic in beforeEach? Don't see a benefit. 
   var pt = {
     age: 60,
     hasDiabetes: false,
@@ -217,7 +180,7 @@ describe('generateRecs for patient taking no meds (assumed to be first visit)', 
     expect(algoGeneratedRecs.medRecs).toEqual(meds.combos.firstVisit.blackNoCKD);
   });
 
-  it('patient with CKD', function(){
+  it('patient of any race with CKD', function(){
     pt.currentBP = { Systolic: 160, Diastolic: 90 };
     pt.race = algorithm.opts.races.black;
     pt.hasCKD = true;
@@ -230,7 +193,6 @@ describe('generateRecs for patient taking no meds (assumed to be first visit)', 
 });
 
 describe('generateRecs for patient taking one medication', function(){
-
   var pt = {
     age: 60,
     hasDiabetes: false,
@@ -246,7 +208,6 @@ describe('generateRecs for patient taking one medication', function(){
     ];
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
-    console.log(algoGeneratedRecs);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxNotReached);
     expect(algoGeneratedRecs.medRecs).toEqual([]);
@@ -258,7 +219,6 @@ describe('generateRecs for patient taking one medication', function(){
     ];
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
-    console.log(algoGeneratedRecs);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxReached);
     expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.currentMeds));
@@ -267,7 +227,6 @@ describe('generateRecs for patient taking one medication', function(){
 });
 
 describe('generateRecs for patient taking two medications', function(){
-
   var pt;
   beforeEach(function(){
     pt = {
@@ -294,7 +253,6 @@ describe('generateRecs for patient taking two medications', function(){
     pt.currentMeds.push({className: 'Thiazide', atMax: true});
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
-    console.log(algoGeneratedRecs);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxReached);
     expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.currentMeds));
@@ -302,7 +260,7 @@ describe('generateRecs for patient taking two medications', function(){
   });
 });
 
-describe('generateRecs for patient taking two medications', function(){
+describe('generateRecs for patient taking three medications', function(){
 
   var pt;
 
