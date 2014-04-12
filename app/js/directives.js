@@ -71,6 +71,7 @@ angular.module('myApp.directives', []).
   .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
       
       var renderGraph = function(scope) {
+        console.log('scope', scope);
 
         // set the width/height of the graph based on the size of the containing element
         // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;

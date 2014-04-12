@@ -5,6 +5,10 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
 function($scope, $q, $location, pt) {
+  //run the algorithm on the current patient data 
+  
+  console.log('pt', pt);
+
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
@@ -20,25 +24,29 @@ function($scope, $q, $location, pt) {
   };
   
   $scope.buttonsSelected = function() {
-    if($scope.pt.hasCKD && $scope.pt.isOnMedication && $scope.pt.hasDiabetes){
+    console.log('hasCKD', $scope.pt.hasCKD);
+    console.log('isOnMedication', $scope.pt.isOnMedication);
+    console.log('hasDiabetes', $scope.pt.hasDiabetes);
+    if($scope.pt.hasCKD !== undefined && $scope.pt.isOnMedication !== undefined && $scope.pt.hasDiabetes !== undefined){
       return true;
     }
+    console.log('false')
     return false;
   };
+
 }])
 
-.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'algorithm', function($scope, pt, startup, algorithm) {
+.controller('dataVizCtrl', ['$scope', 'pt', 'startup', function($scope, pt, startup) {
+  var algoResults = algorithm.methods.runAlgorithm(pt);
+  console.log('algoResults', algoResults);
+  console.log('algorithm meds', algoResults.medRecs);
 
-  //placeholder for now, in the future will be received from algorithm:
-  //$scope.medRecs = algorithm.medRecs;
-  $scope.medRecs = [{'medClass': 'ACE', 'meds': ['benazepril', 'captopril']}, {'medClass': 'ARB', 'meds': ['xanax', 'delzicol']}];
-
-  $scope.recommendationMsg = algorithm.recommendation;
-
+  $scope.recommendationMsg = algoResults.recs.recMsg;
+  $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  // console.log(startup);
-  $scope.targetDias = algorithm.targetBP.diastolic;
-  $scope.targetSys = algorithm.targetBP.systolic;
+  console.log($scope.dbData);
+  $scope.targetDias = algoResults.targetBP.Diastolic;
+  $scope.targetSys = algoResults.targetBP.Systolic;
   $scope.pt = pt;
 }]);
 

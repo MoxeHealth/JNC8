@@ -37,7 +37,6 @@ angular.module('myApp', [
   $rootScope.patientId = 3230000;
   $rootScope.orgId = 3;
   $rootScope.calculator = 'JNC8';
-  goodRx.getPricing('lipitor');
 
   // var ptObj = {
   //   ptId: $rootScope.patientId

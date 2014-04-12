@@ -1,7 +1,4 @@
-/* global d3 */
 'use strict';
-
-/* Services */
 
 angular.module('myApp.services', [])
   .value('version', '0.1')
@@ -124,41 +121,44 @@ angular.module('myApp.services', [])
     };
   }])
 
+  //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   .factory('pt', ['startup', function(startup) {
     // console.log('pt factory called');
     console.log(startup);
 
+    var isFirstVisit = function(){
+      var result = startup.ptData.db.length === 0;
+      console.log('isFirstVisit', result);
+      return startup.ptData.db.length === 0;
+    }
+
     return {
       race: startup.ptData.substrate.demographics.data.Race.Text,
-      age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
+      // age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
+      age: 70,
       currentBP: {
         Systolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Systolic.Value, 10),
         Diastolic: parseInt(startup.ptData.substrate.vitals.data.BloodPressure.Diastolic.Value, 10)
       },
       bpDate: startup.ptData.substrate.vitals.data.BloodPressure.Systolic.ResultDateTime.DateTimeISO,
-      hasDiabetes: true,
+      //todo - write this function
+      // currentMeds: getCurrentMeds(startup.ptData.db);
+      //stub for now
+      // currentMeds: [{'ACEI': 'lisinopril', atMax: true}],
+      // hasDiabetes: false,
       isOnMedication: true,
+
+      //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use isFirstVisit. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
+      isFirstVisit: isFirstVisit(),
       hasCKD: true,
-      medication: [{
-        name: 'Advil',
-        dose: 10,
-        maxDose: 50,
-        unit: 'mg'
-      }],
-      targetBP: '',
       email: startup.ptData.substrate.demographics.data.EmailAddresses,
       races: ['Black or African American', 'Asian', 'Caucasian'],
-      hasBPGoal: function(){
-        if(this.targetBP){
-          if(this.targetBP.length > 0){
-            return true;
-          }
-        }
-        return false;
-      },
+      //todo - populate this variable from the database
+      //targetBP will have the same data structure as currentBP
+      // targetBP: startup.ptData.db[db.length - 1].targetBP;
       isAtBPGoal: function() {
-        if(this.hasTargetBP()) {
-          if(this.bp[0] >= this.targetBP[0] || this.bp[1] >= this.targetBP[1]) {
+        if(this.targetBP) {
+          if(this.currentBP.Systolic >= this.targetBP.Systolic || this.currentBP.Diastolic >= this.targetBP.Diastolic) {
             return false;
           }
           return true;
@@ -167,7 +167,7 @@ angular.module('myApp.services', [])
         }
       },
       onMedication: function() {
-        if(this.medication.length > 0) {
+        if(this.currentMeds.length > 0) {
           return true;
         }
         return false;
@@ -193,6 +193,8 @@ angular.module('myApp.services', [])
       }
     };
 
+    //currently assuming that every encounter in the database
+    //will have a value in the blood_pressure field and an encounter_date field
     this.parseBPData = function(bpDataArr, targetBP) {
       var results = [];
       var targetSys = 120;
@@ -233,100 +235,6 @@ angular.module('myApp.services', [])
     };
   }])
 
-  .factory('algorithm', ['pt', function(pt) {
-    //returns recommendation string and status
-    //3 possible statuses: 'bad', 'ok', 'good'
-
-    var recMessages = {
-      continueTreatment: "Continue current treatment and monitoring.",
-      firstVisit: {
-        nonBlackNoCKD: "Initiate thiazide-type diuretic or ACEI or ARB or CCB, alone or in combination. ACEIs and ARBs should not be used in combination.",
-        blackNoCKD: "Initiate thiazide-type diuretic or CCB, alone or in combination.",
-        CKD: "Initiate ACEI or ARB, alone or in combination with other drug class. ACEIs and ARBs should not be used in combination."
-      },
-      titrationStrategies: {
-        a: "Maximize first medication before adding second.",
-        b: "Add second medication before reaching maximum dose of first medication.",
-        c: "Start with two medication classes, separately or as fixed-dose combination."
-      },
-      allFollowUpVisits: "Reinforce medication and lifestyle adherence.",
-      secondVisit: {
-        ab: "Add and titrate thiazide-type diuretic or ACEI or ARB or CCB (use medication class not previously selected and avoid combined use of ACEI and ARB).",
-        c: "Titrate doses of initial medication to maximum."
-      },
-      thirdVisit: "Add and titrate thiazide-type diuretic or ACEI or ARB or CCB (use medication class not previously selected and avoid combined use of ACEI and ARB).",
-      fourthVisit: "Add additional medication class(eg, &#914;-blocker, aldosterone antagonist, or others) and/or refer to physician with expertise in hypertension management."
-    };
-
-    //for the moment, return a stub object:
-    return {
-      targetBP: {
-        systolic: 120,
-        diastolic: 80
-      },
-      recommendation: recMessages.firstVisit.blackNoCKD
-    };
-
-    var recommendation = {
-      status: '',
-      message: ''
-    };
-
-    var generateRec = function() {
-      if(pt.hasBPGoal()){
-        if(pt.isAtBPGoal()){
-            // meeting goal -- move to data viz to reinforce success and show BP graphs
-          return {};
-        } else { // not at BP goals
-          console.log("Not at BP goals.");
-        }
-      } else {
-        if(pt.age >= 18) {
-          // set targetBP by age and diabetes/CKD logic
-          if(!pt.hasDiabetes && !pt.hasCKD) {
-            if(pt.age >= 60) {
-              pt.targetBP = [150, 90];
-            } else if (pt.age < 60) {
-              pt.targetBP = [140, 90];
-            }
-          } else if(pt.hasDiabetes || pt.hasCKD) {
-            if(pt.hasDiabetes && !pt.hasCKD) {
-              pt.targetBP = [140, 90];
-            } else if (pt.hasCKD) {
-              pt.targetBP = [140, 90];
-            }
-          }
-        } else {
-          // TODO: Patient is under 18.
-          console.warn("Patient is under 18.");
-        }
-
-        if(pt.isAtBPGoal()) {
-          recommendation.message = recMessages.continueTreatment;
-          return recommendation;
-        }
-
-        if(!pt.hasCKD) {
-          if(pt.race !== "Black or African American") {
-            // TODO: pt.selectDrugTreatmentStrategy();
-            recommendation.message = recMessages.firstVisit.nonBlackNoCKD;
-            return recommendation;
-          } else if(pt.race === "Black or African American") {
-            recommendation.message = recMessages.firstVisit.blackNoCKD;
-            return recommendation;
-          }
-        } else if(pt.hasCKD) {
-          recommendation.message = recMessages.firstVisit.CKD;
-          return recommendation;
-        }
-      }
-    };
-
-    // collect additional information where needed
-
-    console.warn("Reached the bottom of the algorithm logic; this shouldn't happen.");
-  }])
-
   .service('goodRx', ['$http', function($http) {
     this.getPricing = function(name, callback) {
       $http({
@@ -343,4 +251,4 @@ angular.module('myApp.services', [])
       })
     };
   }])
-  ;
+;

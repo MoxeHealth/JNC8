@@ -1,5 +1,5 @@
-  <form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()">
-  <div class="section">
+<form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()" ng-model="dataForm">
+  <section>
     <label for="age">Patient's age:</label>
     <div class="input-wrapper">
       <input type="number" ng-model="pt.age" id="age" required name="age" min="18" max="200" />
@@ -97,7 +97,7 @@
         <td class="info-column" width="15%">Max dosage</td>
         <td class="info-column" width="15%">Remove</td>
       </tr>
-      <tr ng-repeat="drug in pt.medication">
+      <tr ng-repeat="drug in pt.medications">
         <td width="30%">{{ drug.name }}</td>
         <td width="25%" class="info-column">{{ drug.dose }}{{ drug.unit }}</td>
         <td width="25%" class="info-column">{{ drug.maxDose }}{{ drug.unit }}</td>
@@ -105,6 +105,5 @@
       </tr>
     </table>
   </div>
-
 <input class="submit-button" type="submit" value="Get recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 </form>
