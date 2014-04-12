@@ -10,7 +10,7 @@ angular.module('myApp.directives', []).
     };
   }])
 
-  .directive('drugPricing', ['goodRx', 'pt', function(goodRx, pt) {
+  .directive('drugDetails', ['goodRx', 'pt', function(goodRx, pt) {
 
     var generateEmailsLink = function(emails, drugObj){
       var mailtoString = 'mailto:';
@@ -35,28 +35,30 @@ angular.module('myApp.directives', []).
       return mailtoString;
     };
 
-
+    //make sure the following bindings to the med model are up to date with the data structure defined in algorithm_jnc8 and meds_jnc8. Example:
+    //{ className: 'ACEI', meds: [{medName: 'valsartan', initialDoseOpts: [5],targetDoseOpts: [20]: }]})
     return {
       template: '<div>'+
-      '<div class="med-name" ng-init="showDetails=false" ng-click="showDetails = !showDetails">{{medName}}' + 
+      '<div class="med-name" ng-init="showDetails=false" ng-click="showDetails = !showDetails">{{med.medName}}' + 
             '<div class="inline-info price right">{{ price | currency }}</div>' + 
           '</div>' + 
           '<div class="med-details cf" ng-show="showDetails">' +
               '<div class="inline-info left"><span class="med-detail">' +
-                '<span class="label">Dosage:</span> {{ dosage }}' +
+                '<span class="label">Dosage:</span> {{ med.initialDoseOpts[0] }}' +
               '</span>' +
-              '<span class="med-detail"><span class="label">Units:</span> {{ units }}</span></div>' +
+              '<span class="med-detail"><span class="label">Units:</span> {{ med.units }}</span></div>' +
               '<div class="inline-info right"><span class="med-detail"><a href="{{ drugInfo.url }}" target="_blank">More pricing information</a></span>' +
-              '<span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{medName}}" target="_blank">Email pricing details</a></span></div>' +
+              '<span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{med.medName}}" target="_blank">Email pricing details</a></span></div>' +
           '</div></div>',
       replace: true,
       restrict: 'EA',
       scope: {
-        medName: '=med',
+        med: '=med',
       },
       link: function(scope, element, attrs) {
         // get the pricing for this drug
-        goodRx.getPricing(scope.medName, function(res) {
+        // res properties 
+        goodRx.getPricing(scope.med.medName, function(res) {
           scope.price = res.data.price[0];
           scope.drugInfo = res.data;
           scope.dosage = res.data.dosage;

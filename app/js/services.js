@@ -179,9 +179,10 @@ angular.module('myApp.services', [])
       ids: startup.ptIdentifier,
       emails: startup.ptData.substrate.demographics.data.EmailAddresses,
       encounter: encounter,
+      //hard code for now to generate med recs
       currentBP: {
-        Systolic: parseInt(vitalsBP.Systolic.Value, 10),
-        Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
+        Systolic: 170,
+        Diastolic: 90
       },
       //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
       currentEncounterDate: currentEncounterDate, //vitalsBP.Systolic[vitalsBP.Systolic.length - 1].ResultDateTime.DateTime;

@@ -28,11 +28,11 @@
   </ul>
   <ul class="multi">
     <lh><h3>Prescribe one of the following medications:</h3></lh>
-    <li class="med-class cf" ng-repeat="medRec in medRecs">
+    <li class="med-class cf" ng-repeat="medClass in medRecs">
       <ul>
-        <lh>{{ medRec.medClass }}</lh>
-        <li class="cf" ng-repeat="med in medRec.meds">
-          <div drug-pricing med="med"></div>
+        <lh>{{ medClass.className }}</lh>
+        <li class="cf" ng-repeat="med in medClass.meds">
+          <div drug-details med="med"></div>
         </li>
       </ul>
     </li>
