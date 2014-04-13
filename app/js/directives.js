@@ -51,7 +51,9 @@ angular.module('myApp.directives', []).
               '<span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{med.medName}}" target="_blank">Email pricing details</a></span></div>' +
           '</div>'
           +
-          '<div class="goodRxAlts cf inline-info" ng-show="showDetails" ng-model="goodRxAlts" ng-if="goodRxErr">{{ goodRxAlts }}</div>' + 
+          '<div class="goodRxAlts cf inline-info" ng-show="showDetails" ng-model="goodRxAlts" ng-if="goodRxErr">' +
+            '<li class="med-class cf" ng-repeat="alt in goodRxAlts" ng-click="getPricing(alt)"> {{ alt }} </li>' + 
+          '</div>' + 
       '</div>',
       replace: true,
       restrict: 'EA',
@@ -72,7 +74,7 @@ angular.module('myApp.directives', []).
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           }else{
             var searchedMedName = scope.med.medName;
-            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on goodRx\'s website. Click this box to show the closest matches found: '
+            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on goodRx\'s website. If applicable, choose from given alternatives: '
             scope.goodRxAlts = res.errors[0].candidates;
             scope.goodRxErr = true;
           }
