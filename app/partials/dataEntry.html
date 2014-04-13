@@ -92,18 +92,18 @@
   <div class="section medications" ng-show="pt.isOnMedication">
     <table id="medications" width="100%">
       <tr class="header">
-        <td width="25%">Drug name</td>
+        <td width="25%">Medication</td>
         <td class="info-column" width="20%">Dosage</td>
-        <td class="info-column" width="25%">JNC8 target dose</td>
+        <td class="info-column" width="25%">JNC8 target dose(s)</td>
         <td class="info-column" width="20%">Max for pt?</td>
         <td class="info-column" width="10%">Remove</td>
       </tr>
-      <tr ng-repeat="drug in pt.medications">
-        <td width="30%">{{ drug.name }}</td>
-        <td width="25%" class="info-column">{{ drug.dose }}{{ drug.unit }}</td>
-        <td width="25%" class="info-column">{{ drug.atMax }} </td>
-        <td width="25%" class="info-column">{{ drug.maxDose }}{{ drug.unit }}</td>
-        <td width="20%" class="info-column"><span class="x-med">x</span></td>
+      <tr ng-repeat="med in pt.encounter.currentMeds">
+        <td width="30%">{{ med.medName }}</td>
+        <td width="25%" class="info-column">{{ med.dosage }}{{ ' ' + med.units }}</td>
+        <td width="25%" class="info-column">{{ med.targetDoseRecs | numTargetDoses }}{{ ' ' + med.units }}</td>
+        <td width="25%" class="info-column">{{ med.atMax }} </td>
+        <td width="20%" class="info-column"><span class="x-med" ng-click="removeMed(med)">x</span></td>
       </tr>
     </table>
   </div>

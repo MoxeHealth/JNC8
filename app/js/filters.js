@@ -3,8 +3,13 @@
 /* Filters */
 
 angular.module('myApp.filters', []).
-  filter('interpolate', ['version', function(version) {
-    return function(text) {
-      return String(text).replace(/\%VERSION\%/mg, version);
+  filter('numTargetDoses', function() {
+    return function(targetDoses){
+      var targetDoses = targetDoses || '';
+
+      if(targetDoses.length === 1) return targetDoses[0];
+      
+      return targetDoses[0] + '-' + targetDoses[1];
     };
-  }]);
+  })
+  ;

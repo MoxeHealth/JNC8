@@ -20,8 +20,8 @@ angular.module('myApp.services', [])
       return result.then(function(response) {
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
-
         ptData.db = response[1].data;
+        console.log('ptData.db', ptData.db);
       });
     };
 
@@ -49,7 +49,7 @@ angular.module('myApp.services', [])
 
     this.addEncounter = function(ptIdentifier, emails, encounter, callback) {
 
-      console.log('ptIdentifier', ptIdentifier);
+      console.log('addEncounter called');
       console.log('ptEncounter', encounter);
       return $http({
         url: '/db/encounters',
@@ -130,18 +130,12 @@ angular.module('myApp.services', [])
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
   .factory('pt', ['startup', function(startup) {
     // console.log('pt factory called');
-    console.log('startup', startup);
-
-    var isFirstVisit = function(){
-      var result = startup.ptData.db.length === 0;
-      console.log('isFirstVisit', result);
-      return startup.ptData.db.length === 0;
-    }
 
     //need access to BP readings multiple times
     var vitalsBP = startup.ptData.substrate.vitals.data.BloodPressure;
-    var currentEncounterDate = "2013-06-18T20:47:00Z"; //vitalsBP.Systolic[vitalsBP.Systolic.length - 1].ResultDateTime.DateTime;
+    var currentEncounterDate = new Date().toISOString().slice(0, 19).replace('T', ' '); //vitalsBP.Systolic[vitalsBP.Systolic.length - 1].ResultDateTime.DateTime;
 
+    //todo- stub for now, waiting on currentMeds service to be added to Moxe
     var currentBP = {
       Systolic: parseInt(vitalsBP.Systolic.Value, 10),
       Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
@@ -149,7 +143,7 @@ angular.module('myApp.services', [])
     var encounter = {
       bloodPressure: currentBP,
       encounterDate: currentEncounterDate,
-      //stub for now, waiting on currentMeds service to be added to Moxe
+      //todo- stub for now, waiting on currentMeds service to be added to Moxe
       prescribedMeds: [
         {
           className: 'ACE', 
@@ -168,13 +162,14 @@ angular.module('myApp.services', [])
           dosage: 30,
           units: 'mg',
           atMax: false,
+          targetDoseRecs: [40, 60],
           date: "2013-06-18T20:47:00Z"
         }
       ]
     };
 
     return {
-      //information that will be written to database at end of session:
+      /////////information that will be written to database at end of session:
       //'ids' needed to save information from session to the database 
       ids: startup.ptIdentifier,
       emails: startup.ptData.substrate.demographics.data.EmailAddresses,
@@ -185,27 +180,24 @@ angular.module('myApp.services', [])
         Diastolic: 90
       },
       //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
-      currentEncounterDate: currentEncounterDate, //vitalsBP.Systolic[vitalsBP.Systolic.length - 1].ResultDateTime.DateTime;
+      currentEncounterDate: currentEncounterDate,
 
+      //todo - populate this variable from the database
+      // targetBP: startup.ptData.db[db.length - 1].targetBP;
 
-      //other information
+      /////////other information
       race: startup.ptData.substrate.demographics.data.Race.Text,
       // age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
       age: 70,
-      //todo - write this function
-      // currentMeds: getCurrentMeds(startup.ptData.db);
-      //stub for now
-      // currentMeds: [{'ACEI': 'lisinopril', atMax: true}],
       hasDiabetes: false,
       isOnMedication: true,
 
-      //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use isFirstVisit. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
-      isFirstVisit: isFirstVisit(),
+      //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use an isFirstVisit method. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
       hasCKD: true,
       races: ['Black or African American', 'Asian', 'Caucasian'],
-      //todo - populate this variable from the database
-      //targetBP will have the same data structure as currentBP
-      // targetBP: startup.ptData.db[db.length - 1].targetBP;
+      
+      //methods
+      
       isAtBPGoal: function() {
         if(this.targetBP) {
           if(this.currentBP.Systolic >= this.targetBP.Systolic || this.currentBP.Diastolic >= this.targetBP.Diastolic) {
@@ -216,12 +208,6 @@ angular.module('myApp.services', [])
           throw new Error ("Patient's target BP hasn't been set.");
         }
       },
-      onMedication: function() {
-        if(this.currentMeds.length > 0) {
-          return true;
-        }
-        return false;
-      }
     };
   }])
 
@@ -296,7 +282,6 @@ angular.module('myApp.services', [])
         }
       }).success(function(data, status) {
         console.log("The GoodRx API responded successfully.");
-        console.log(data)
         if(callback) callback(data);
       }).error(function(data, status) {
         console.warn("The goodRx API errored: ", data, status);
