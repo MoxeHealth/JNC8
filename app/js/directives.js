@@ -39,31 +39,43 @@ angular.module('myApp.directives', []).
     //{ className: 'ACEI', meds: [{medName: 'valsartan', initialDoseOpts: [5],targetDoseOpts: [20]: }]})
     return {
       template: '<div>'+
-      '<div class="med-name" ng-init="showDetails=false" ng-click="showDetails = !showDetails">{{med.medName}}' + 
-            '<div class="inline-info price right">{{ price | currency }}</div>' + 
+      '<div class="med-name" ng-init="showDetails=false" good-rx-err="false" ng-click="showDetails = !showDetails">{{med.medName}}' + 
+            '<div class="inline-info price right med-detail" ng-if="!goodRxErr">{{ price | currency }}</div>' + 
           '</div>' + 
-          '<div class="med-details cf" ng-show="showDetails">' +
+          '<div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">' +
               '<div class="inline-info left"><span class="med-detail">' +
                 '<span class="label">Dosage:</span> {{ med.initialDoseOpts[0] }}' +
               '</span>' +
               '<span class="med-detail"><span class="label">Units:</span> {{ med.units }}</span></div>' +
               '<div class="inline-info right"><span class="med-detail"><a href="{{ drugInfo.url }}" target="_blank">More pricing information</a></span>' +
               '<span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{med.medName}}" target="_blank">Email pricing details</a></span></div>' +
-          '</div></div>',
+          '</div>'
+          +
+          '<div class="goodRxAlts cf inline-info" ng-show="showDetails" ng-model="goodRxAlts" ng-if="goodRxErr">{{ goodRxAlts }}</div>' + 
+      '</div>',
       replace: true,
       restrict: 'EA',
       scope: {
         med: '=med',
+        goodRxErr: '@'
       },
       link: function(scope, element, attrs) {
         // get the pricing for this drug
         // res properties 
         goodRx.getPricing(scope.med.medName, function(res) {
-          scope.price = res.data.price[0];
-          scope.drugInfo = res.data;
-          scope.dosage = res.data.dosage;
-          scope.units = res.data.quantity;
-          scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
+          console.log(res.errors.length);
+          if(!res.errors.length){
+            scope.price = res.data.price[0];
+            scope.drugInfo = res.data;
+            scope.dosage = res.data.dosage;
+            scope.units = res.data.quantity;
+            scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
+          }else{
+            var searchedMedName = scope.med.medName;
+            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on goodRx\'s website. Click this box to show the closest matches found: '
+            scope.goodRxAlts = res.errors[0].candidates;
+            scope.goodRxErr = true;
+          }
         });
       }
     }

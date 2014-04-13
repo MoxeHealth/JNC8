@@ -295,9 +295,11 @@ angular.module('myApp.services', [])
         }
       }).success(function(data, status) {
         console.log("The GoodRx API responded successfully.");
-        callback(data);
+        console.log(data)
+        if(callback) callback(data);
       }).error(function(data, status) {
         console.warn("The goodRx API errored: ", data, status);
+        callback(data);
       })
     };
   }])

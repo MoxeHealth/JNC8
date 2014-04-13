@@ -31,7 +31,7 @@
     <li class="med-class cf" ng-repeat="medClass in medRecs">
       <ul>
         <lh>{{ medClass.className }}</lh>
-        <li class="cf" ng-repeat="med in medClass.meds">
+        <li class="cf" ng-model="med" ng-repeat="med in medClass.meds">
           <div drug-details med="med"></div>
         </li>
       </ul>

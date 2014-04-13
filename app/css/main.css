@@ -109,7 +109,7 @@ form select {
 }
 
 
-/* Data visualization styling */
+/* Medication recommendation styling */
 
 div.medication {
   width: 380px;
@@ -206,6 +206,8 @@ div.med-details {
   padding: 18px;
 }
 
+/* Patient status message  */
+
 .patient-status {
   border: solid #d7d7d7 1px;
   border-radius: 3px;
@@ -229,6 +231,8 @@ div.med-details {
 .recMessage {
 
 }
+
+/* Current vs. target BP comparison styling */
 
 div.bp-goal-comparison {
   float: left;
