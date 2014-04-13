@@ -234,12 +234,13 @@ angular.module('myApp.services', [])
         numArray.push(array[i].blood_pressure[keyName]);
       }
 
-      if(keyName === 'systolic') {
+      if(keyName === 'Systolic') {
+        var max = Math.max.apply(Math, numArray);
         return Math.max.apply(Math, numArray);
-      } else if (keyName === 'diastolic') {
+      } else if (keyName === 'Diastolic') {
         return Math.min.apply(Math, numArray);
       } else {
-        throw new Error("getBPExtreme requires either 'systolic' or 'diastolic' as a key name.");
+        throw new Error("getBPExtreme requires either 'Systolic' or 'Diastolic' as a key name.");
       }
     };
 
@@ -265,7 +266,7 @@ angular.module('myApp.services', [])
       return results;
     };
 
-    this.parseArray = function(array) {
+    this.parseGraphData = function(array) {
       var results = [];
       for(var i = 0; i < array.length; i++) {
         var obj = array[i];

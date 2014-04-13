@@ -87,17 +87,14 @@ angular.module('myApp.directives', []).
   .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
       
       var renderGraph = function(scope) {
-        console.log('scope', scope);
-
         // set the width/height of the graph based on the size of the containing element
         // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
         var elWidth = 350;
 
         //handle case when patient has no entries in database 
-        // console.log(scope.data.ptData.db);
        if(!scope.data.ptData.db.length){ return; }
 
-        var data = graphHelpers.parseArray(scope.data.ptData.db);
+        var data = graphHelpers.parseGraphData(scope.data.ptData.db);
 
         var margins = [30, 30, 30, 40];
         var width = elWidth - margins[1];
@@ -110,8 +107,8 @@ angular.module('myApp.directives', []).
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
-            graphHelpers.getBPExtreme(data, 'diastolic')-10,
-            graphHelpers.getBPExtreme(data, 'systolic')+10
+            graphHelpers.getBPExtreme(data, 'Diastolic')-10,
+            graphHelpers.getBPExtreme(data, 'Systolic')+10
           ]).range([height, 0]);
 
         var diasLine = d3.svg.line()
@@ -120,7 +117,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.diastolic);
+            return y(d.blood_pressure.Diastolic);
         });
 
         var sysLine = d3.svg.line()
@@ -128,7 +125,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.systolic);
+            return y(d.blood_pressure.Systolic);
         });
 
           // add the SVG element
