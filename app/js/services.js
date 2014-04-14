@@ -12,7 +12,7 @@ angular.module('myApp.services', [])
 
 
     //TODO - wrap following code in post request from Epic
-    var ptObj = {ptId: $rootScope.patientId};
+    var ptObj = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
     var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptObj)
     ]);
@@ -248,6 +248,7 @@ angular.module('myApp.services', [])
         if(callback) callback(data);
       }).error(function(data, status) {
         console.warn("The goodRx API errored: ", data, status);
+        if(callback) callback(data);
       })
     };
   }])

@@ -1,10 +1,11 @@
 var express = require('express');
 var request = require('request');
 var bodyParser = require('body-parser');
-// var helpers = require('./helpers');
 var db = require('./db-config')
 var app = express();
 var crypto = require('crypto');
+var Connection = require('tedious').Connection;
+var Request = require('tedious').Request;
 
 
 var api = {
@@ -42,17 +43,18 @@ app.get('/db/encounters',  function(req, res){
     orgIdString = ' is NULL';
   }
 
-  var query  = 'SELECT * FROM `encounters` WHERE `patient_id` = ' + ptId + ' AND `org_id`' + orgIdString;
+  // prep the query
+  var query  = 'SELECT * FROM dbo.encounters WHERE pt_id = ' + ptId + ' AND org_id' + orgIdString;
 
-  db.connection.query(query, function(err, data){
-      if(err){
-        res.send(err);
-        console.log('get from db failed');
-      }else{
-        res.send(data);
-      }
+  db.queryHelper(query, function(err, rows, other) {
+    if(err) {
+      res.send(err);
+    } else {
+      res.send(rows);
+    }
   });
 });
+
 
 app.get('/goodrx/low-price', function(req, res) {
   console.log('into GET goodrx/low-price');
@@ -71,27 +73,41 @@ app.get('/goodrx/low-price', function(req, res) {
   // append the base64 encoding onto the string
   var urlString = api.goodRx.url + '?' + reqString + '&sig=' + encodedString;
 
-  console.log(urlString);
-
   //forward the request and pipe 
   req.pipe(request.get(urlString)).pipe(res);
 });
 
 app.post('/db/encounters',  function(req, res){
   console.log('post db/encounters');
-  console.log(req.body);
-  var ptId = db.connection.escape(req.body.ptId);
-  var orgId = db.connection.escape(req.body.orgId) || 'NULL';
-  var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
-  var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure));
-  var medicationsPrescribed = db.connection.escape(JSON.stringify(req.body.encounter.medicationsPrescribed));
 
-  db.connection.query('INSERT INTO `encounters` (patient_id, org_id, encounter_date, blood_pressure, medications_prescribed) VALUES (' + ptId + ',' + orgId + ',' + encounterDate + ',' + bloodPressure + ',' +medicationsPrescribed + ')', function(err, data){
-    if(err){
-      console.log('insert failed');
+  var msString = function(target) {
+    if(typeof target === 'string') {
+      return target;
+    } else if(target instanceof Date) {
+      return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
+    } else {
+      return '\'' + JSON.stringify(target) + '\'' || 'NULL';
+    }
+  };
+
+  // there must be a better way to do this...
+  var ptId = req.body.ptId;
+  var orgId = req.body.orgId || 'NULL';
+  var email = msString(req.body.encounter.email);
+  var encounterDate = msString(new Date());
+  var bloodPressure = msString(req.body.encounter.bloodPressure);
+  var targetBP = msString(req.body.encounter.targetBP);
+  var prescribedMeds = msString(req.body.encounter.prescribedMeds);
+  var removedMeds = msString(req.body.encounter.removedMeds);
+  var currentMeds = msString(req.body.encounter.currentMeds);
+
+  var query = 'INSERT INTO dbo.encounters (pt_id, org_id, emails, encounter_date, blood_pressure, target_bp, prescribed_meds, removed_meds, current_meds) VALUES (' + ptId + ',' + orgId + ',' + email +',' + encounterDate + ',' + bloodPressure + ',' + targetBP +',' + prescribedMeds + ',' + removedMeds + ',' + currentMeds + ')';
+
+  db.queryHelper(query, function(err, data){
+    if(err) {
       console.log(err);
       res.send(err);
-    }else{
+    } else {
       res.send(data);
     }
   });
