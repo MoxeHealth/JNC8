@@ -26,6 +26,8 @@
     "mysql": "^2.1.1",
     "nodemon": "~1.0.17",
     "request": "~2.34.0",
-    "crypto": "0.0.3"
+    "crypto": "0.0.3",
+    "tedious": "^0.2.2",
+    "tedious-connection-pool": "^0.1.1"
   }
 }

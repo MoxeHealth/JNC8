@@ -35,16 +35,33 @@ angular.module('myApp', [
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.orgId = 3;
-  $rootScope.calculator = 'JNC8';
-  goodRx.getPricing('lipitor');
 
-  // var ptObj = {
-  //   ptId: $rootScope.patientId
-  // }
+  var ptObj = {
+    ptId: $rootScope.patientId,
+    orgId: $rootScope.orgId
+  };
 
-  // db.addEncounter(ptObj, {
-  //   bloodPressure: {systolic: 135, diastolic: 85},
-  //   medicationsPrescribed: {thiazine: 'thiazine', vitaminc: 'vitaminc'}
-  // });
+  var details = {
+    email: ['ilyons@gmail.com'],
+    bloodPressure: { 
+      Systolic: '150',
+      Diastolic: '100'
+    },
+    targetBP: { 
+      Systolic: '1400',
+      Diastolic: '90'
+    },
+    prescribedMeds: {
+      notSure: 'entirelyUnsure'
+    },
+    removedMeds: {
+      notSure: 'entirelyUnsure'
+    },
+    currentMeds: {
+      notSure: 'entirelyUnsure'
+    }
+  };
+
+  // db.addEncounter(ptObj, details);
 
 }]);
