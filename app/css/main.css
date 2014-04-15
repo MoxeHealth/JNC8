@@ -96,9 +96,18 @@ form select {
   min-width:200px;
 }
 
+form div.medications select {
+  min-width: 120px;
+}
+
 /* Medication input styling */
+
+div.section.medications {
+  margin-bottom:20px;
+}
+
 div.medications input[type="text"] {
-  width: 100%;
+  width: 83%;
   min-width: 40px;
 }
 
@@ -110,7 +119,7 @@ div.medications input[type="number"] {
 /* align input elements inside each td */ 
 div.medications tr td {
   text-align: left;
-  padding: 8px 8px 68px 0;
+  padding: 8px 8px 4px 0;
 }
 
 /* Medication recommendation styling */
@@ -168,7 +177,7 @@ div.inline-info span {
   display: block;
 }
 
-div.medication ul.single li,
+div.medication ul.single li div.med-name,
 div.medication ul.multi ul li .med-name {
   padding: 6px;
 }
@@ -189,7 +198,7 @@ div span.label {
   display: inline;
 }
 
-div.medication ul.single li:nth-child(even),
+div.medication ul.single div.med-name:nth-child(even),
 div.medication ul.multi ul li:nth-child(even) .med-name {
   background-color: #f0f0f0;
 }
@@ -218,7 +227,7 @@ div.med-details {
   background-image: url(../img/expand.gif);
 }
 
-.error {
+.rx-error {
   background-image: url(../img/error.gif);
 }
 

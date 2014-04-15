@@ -21,6 +21,12 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   //   var newDrugField = $compile('<tr drugInput></tr>')
   //   angular.element('tbody').append('<tr><td>Thing</td></tr>')
   // };
+  $scope.possibleMeds = [
+    'ACEI',
+    'ARB',
+    'CCB',
+    'Thiazide'
+  ];
 
   $scope.buttonsSelected = function() {
     if($scope.pt.hasCKD !== undefined && $scope.pt.isOnMedication !== undefined && $scope.pt.hasDiabetes !== undefined){

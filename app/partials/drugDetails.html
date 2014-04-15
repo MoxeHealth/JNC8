@@ -2,7 +2,7 @@
   <div class="med-name" ng-init="showDetails=false" good-rx-err="false" ng-click="showDetails = !showDetails">
     <span class="rx-status contracted" ng-if="!err" ng-show="!showDetails"></span>
     <span class="rx-status expanded"  ng-if="!err" ng-show="showDetails"></span>
-    <span class="rx-status error right" ng-show="err" alt="There was an error getting the drug information from the GoodRx website."></span>
+    <span class="rx-status rx-error right" ng-show="err" alt="There was an error getting the drug information from the GoodRx website."></span>
     <span ng-if="!med.searchError">{{med.medName}}</span>
     <span ng-if="med.searchError">{{med.searchError}}</span>
     <div class="inline-info price right med-detail" ng-if="!goodRxErr">{{ price | currency }}</div> 

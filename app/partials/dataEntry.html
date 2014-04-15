@@ -93,16 +93,16 @@
       <tr class="header">
         <td width="25%">Medication</td>
         <td width="25%">Med Class</td>
-        <td class="info-column" width="15%">Dose</td>
-        <td class="info-column" width="20%">JNC8 target dose(s)</td>
-        <td class="info-column" width="15%">Max for pt?</td>
+        <td class="info-column" width="15%">Dosage</td>
+        <td class="info-column" width="20%">JNC8 target dose</td>
+        <td class="info-column" width="15%">At max dose?</td>
       </tr>
       <tr class="med-entry" ng-repeat="med in pt.encounter.currentMeds">
         <td width="25%">  
           <input type="text" value="{{ med.medName }}" class="med-name" ng-disabled="!standAlone">
         </td>
         <td width="25%">
-          <input type="text" value="{{ med.className }}" class="med-class-name" ng-disabled="!standAlone">
+          <select ng-model="med.className" ng-options="med for med in possibleMeds" class="med-class-name" ng-disabled="!standAlone">
         </td>
         <td width="15%" class="info-column">
           <input type="number" value="{{ med.dose }}" class="med-dose" ng-disabled="!standAlone">
@@ -111,7 +111,7 @@
           <input type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name" ng-disabled="!standAlone">
         </td>
         <td width="15%" class="info-column">
-          <input type="text" value="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
+          <input type="checkbox" checked="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
         </td>
       </tr>
 
