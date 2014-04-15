@@ -64,7 +64,7 @@ angular.module('myApp.directives', []).
       },
       link: function(scope, element, attrs) {
         // get the pricing for this drug
-        // res properties 
+        console.log(scope.med);
         goodRx.getPricing(scope.med.medName, scope.med.initialDoseRecs, function(res) {
           scope.err = false;
           if(!res.errors.length && !res.errors.sig){
@@ -125,6 +125,8 @@ angular.module('myApp.directives', []).
             graphHelpers.getBPExtreme(data, 'Diastolic')-10,
             graphHelpers.getBPExtreme(data, 'Systolic')+10
           ]).range([height, 0]);
+
+        console.log(data);
 
         var diasLine = d3.svg.line()
           .x(function(d,i) {

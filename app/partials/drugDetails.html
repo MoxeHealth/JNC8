@@ -10,10 +10,10 @@
   <div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">
       <div class="inline-info left">
         <span class="med-detail">
-          <span class="label med-dose" ng-if="standAlone">Dose:</span> {{ med.initialDoseRecs[0] }}
+          <span class="label med-dose" ng-if="standAlone">Dose:</span> <span ng-if="standAlone">{{ med.initialDoseRecs[0] }}</span>
         </span>
         <span class="med-detail">
-          <span class="label med-dose" ng-if="!standAlone">Current Dose:</span> {{ med.dose }}
+          <span class="label med-dose" ng-if="!standAlone">Current Dose:</span> <span ng-if="!standAlone">{{ med.dose }}{{med.units}}</span>
         </span>
         <span class="med-detail">
           <span class="label">Units:</span> {{ units }}

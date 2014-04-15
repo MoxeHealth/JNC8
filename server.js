@@ -62,6 +62,20 @@ app.get('/db/encounters',  function(req, res){
 app.get('/goodrx/low-price', function(req, res) {
   console.log('into GET goodrx/low-price');
 
+  var signUrl = function(name) {
+
+  };
+
+  var escapeRegExp = function (string) {
+    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  };
+
+  var replaceAll = function (find, replace, str) {
+    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+  }
+
+
+
   // pull the data out of the query
   var name = req.query.name;
   name = name.toUpperCase();
@@ -80,8 +94,9 @@ app.get('/goodrx/low-price', function(req, res) {
   var hmac = crypto.createHmac('sha256', api.goodRx.secret);
   hmac.update(queryString);
   var encodedString = hmac.digest('base64');
-  encodedString = encodedString.replace("+", "_");
-  encodedString = encodedString.replace("/", "_");
+
+  encodedString = replaceAll('+', "_", encodedString);
+  encodedString = replaceAll('/', "_", encodedString);
   encodedString = encodeURIComponent(encodedString);
 
   // append the base64 encoding onto the string

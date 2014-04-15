@@ -387,6 +387,10 @@ img.loading {
   display: block;
 }
 
+a {
+  font-size: 12px;
+  color: #606D7B;
+}
 
 /* Form validation */
 
