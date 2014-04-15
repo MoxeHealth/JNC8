@@ -66,3 +66,4 @@ angular.module('myApp', [
   // db.addEncounter(ptObj, details);
 
 }]);
+

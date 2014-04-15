@@ -10,58 +10,57 @@ angular.module('myApp.directives', []).
     };
   }])
 
-  .directive('drugPricing', ['goodRx', 'pt', function(goodRx, pt) {
+  .directive('drugDetails', ['goodRx', 'pt', function(goodRx, pt) {
 
-    var generateEmailLink = function(email, drugObj){
+    var generateEmailsLink = function(emails, drugObj){
       var mailtoString = 'mailto:';
 
-      // append the patient's email
-      if(email.length) {
-        mailtoString += email[0].EmailAddress + '?';
+      // append the patient's emails
+      if(emails.length) {
+        mailtoString += emails[0].EmailAddress + '?';
       } else {
         mailtoString += '?';
       }
 
-      if(email.length > 1) {
-        mailtoString += 'cc=' + email[1].EmailAddress + '&';
+      if(emails.length > 1) {
+        mailtoString += 'cc=' + emails[1].EmailAddress + '&';
       }
 
       mailtoString += 'subject=Pricing information for ' + drugObj.display + '&';
 
-      // set the email body
+      // set the emails body
       mailtoString += 'body=Please find the pricing details for ' + drugObj.display + ' at this site: ' + drugObj.url;
 
 
       return mailtoString;
     };
 
-
+    //make sure the following bindings to the med model are up to date with the data structure defined in algorithm_jnc8 and meds_jnc8. Example:
+    //{ className: 'ACEI', meds: [{medName: 'valsartan', initialDoseOpts: [5],targetDoseOpts: [20]: }]})
     return {
-      template: '<div>'+
-      '<div class="med-name" ng-init="showDetails=false" ng-click="showDetails = !showDetails">{{medName}}' + 
-            '<div class="inline-info price right">{{ price | currency }}</div>' + 
-          '</div>' + 
-          '<div class="med-details cf" ng-show="showDetails">' +
-              '<div class="inline-info left"><span class="med-detail">' +
-                '<span class="label">Dosage:</span> {{ dosage }}' +
-              '</span>' +
-              '<span class="med-detail"><span class="label">Units:</span> {{ units }}</span></div>' +
-              '<div class="inline-info right"><span class="med-detail"><a href="{{ drugInfo.url }}" target="_blank">More pricing information</a></span>' +
-              '<span class="med-detail"><a href="{{emailLink}}" title="Email pricing information for {{medName}}" target="_blank">Email pricing details</a></span></div>' +
-          '</div></div>',
+      templateUrl: 'partials/drugDetails.html',
       replace: true,
       restrict: 'EA',
       scope: {
-        medName: '=med',
+        med: '=med',
+        goodRxErr: '@'
       },
       link: function(scope, element, attrs) {
         // get the pricing for this drug
-        goodRx.getPricing(scope.medName, function(res) {
-          scope.price = res.data.price[0];
-          scope.drugInfo = res.data;
-          scope.dosage = res.data.dosage;
-          scope.units = res.data.quantity;
-          scope.emailLink = generateEmailLink(pt.email, scope.drugInfo);
+        // res properties 
+        goodRx.getPricing(scope.med.medName, function(res) {
+          if(!res.errors.length){
+            scope.price = res.data.price[0];
+            scope.drugInfo = res.data;
+            scope.dose = res.data.dose;
+            scope.units = res.data.quantity;
+            scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
+          }else{
+            var searchedMedName = scope.med.medName;
+            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on goodRx\'s website. If applicable, choose from given alternatives: '
+            scope.goodRxAlts = res.errors[0].candidates;
+            scope.goodRxErr = true;
+          }
         });
       }
     }
@@ -71,17 +70,14 @@ angular.module('myApp.directives', []).
   .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
       
       var renderGraph = function(scope) {
-        console.log('scope', scope);
-
         // set the width/height of the graph based on the size of the containing element
         // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
         var elWidth = 350;
 
         //handle case when patient has no entries in database 
-        // console.log(scope.data.ptData.db);
        if(!scope.data.ptData.db.length){ return; }
 
-        var data = graphHelpers.parseArray(scope.data.ptData.db);
+        var data = graphHelpers.parseGraphData(scope.data.ptData.db);
 
         var margins = [30, 30, 30, 40];
         var width = elWidth - margins[1];
@@ -94,8 +90,8 @@ angular.module('myApp.directives', []).
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
-            graphHelpers.getBPExtreme(data, 'diastolic')-10,
-            graphHelpers.getBPExtreme(data, 'systolic')+10
+            graphHelpers.getBPExtreme(data, 'Diastolic')-10,
+            graphHelpers.getBPExtreme(data, 'Systolic')+10
           ]).range([height, 0]);
 
         var diasLine = d3.svg.line()
@@ -104,7 +100,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.diastolic);
+            return y(d.blood_pressure.Diastolic);
         });
 
         var sysLine = d3.svg.line()
@@ -112,7 +108,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.systolic);
+            return y(d.blood_pressure.Systolic);
         });
 
           // add the SVG element

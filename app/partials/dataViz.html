@@ -2,37 +2,25 @@
 <div class="cf viz">
   <h2>Treatment overview</h2>
   <div class="top-div patient-status good">
-    <b class="title">Good:</b> Patient has met the blood pressure goal and the treatment should continue.
+    <b class="title">{{ recs.recStatus }}</b> {{ recs.recMsg }}
   </div>
-  <div class="top-div rec-message">Treatment recommendation: {{ recommendationMsg }}</div>
 </div>
 
 <div class="medication">
   <h2>Medication</h2>
   <ul class="single">
     <lh><h3>Patient's current medications</h3></lh>
-    <li class="cf">
-      <span class="med-name">acebutolol (Sectra)</span>
-      <div class="inline-info right">
-        <span class="quantity">40 mg</span>
-        <span class="frequency">Twice daily</span>
-      </div>
-    </li>
-    <li class="cf">
-      <span class="med-name">acebutolol (Sectra)</span>
-      <div class="inline-info right">
-        <span class="quantity">40 mg</span>
-        <span class="frequency">Twice daily</span>
-      </div>
+    <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.encounter.currentMeds">
+      <div drug-details med="medObj"></div>
     </li>
   </ul>
   <ul class="multi">
     <lh><h3>Prescribe one of the following medications:</h3></lh>
-    <li class="med-class cf" ng-repeat="medRec in medRecs">
+    <li class="med-class cf" ng-repeat="medClass in recs.medRecs">
       <ul>
-        <lh>{{ medRec.medClass }}</lh>
-        <li class="cf" ng-repeat="med in medRec.meds">
-          <div drug-pricing med="med"></div>
+        <lh>{{ medClass.className }}</lh>
+        <li class="cf" ng-model="med" ng-repeat="med in medClass.meds">
+          <div drug-details med="med"></div>
         </li>
       </ul>
     </li>
@@ -76,6 +64,6 @@
 
 
 <div class="footer">
-  <button>Save patient information</button>
+  <button ng-click="saveToDB()">Save patient information</button>
 </div>
 

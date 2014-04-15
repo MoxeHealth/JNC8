@@ -30,7 +30,11 @@ var api = {
 app.use(express.static(__dirname));
 app.use(bodyParser());
 
+app.get('/', function(req,res){
+  res.redirect('/app/index.html');
+});
 
+//The SQL database stores any information that must be persisted but cannot be written back to the EMR
 app.get('/db/encounters',  function(req, res){
   console.log('get db/encounters');
   var ptId = req.query.ptId;
@@ -54,7 +58,6 @@ app.get('/db/encounters',  function(req, res){
     }
   });
 });
-
 
 app.get('/goodrx/low-price', function(req, res) {
   console.log('into GET goodrx/low-price');
@@ -113,21 +116,12 @@ app.post('/db/encounters',  function(req, res){
   });
 });
 
+//will handle post requests from unique urls that are given to people who sign up for the standalone app 
 app.post('/*',  function(req, res){
   console.log("Serving app.post...");
   var url = api.moxe.baseUrl + req.url;
   console.log("The url: " + url);
   req.pipe(request.post({uri: url, json: req.body, headers: api.moxe.headers})).pipe(res);
-});
-
-app.get('/db',  function(req, res){
-  console.log("Serving app.get from db");
-  var url = api.moxe.baseUrl + req.url;
-  console.log("The url: " + url);
-});
-
-app.get('/', function(req,res){
-  res.redirect('/app/index.html');
 });
 
 var port = process.env.PORT || 8000;

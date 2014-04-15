@@ -202,10 +202,12 @@ describe('generateRecs for patient taking one medication', function(){
     targetBP: { Systolic: 150, Diastolic: 90 }
   };
 
-  it('increase dosage of current medication if medication is not at max dosage', function(){
-    pt.currentMeds = [
-      {className: 'CCB', atMax: false}
-    ];
+  it('increase dose of current medication if medication is not at max dose', function(){
+    pt.encounter = {
+      currentMeds: [
+        {className: 'CCB', atMax: false}
+      ]
+    };
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
@@ -213,15 +215,17 @@ describe('generateRecs for patient taking one medication', function(){
     expect(algoGeneratedRecs.medRecs).toEqual([]);
   });
 
-  it('add additional medication if medication is  at max dosage', function(){
-    pt.currentMeds = [
-      {className: 'CCB', atMax: true}
-    ];
+  it('add additional medication if medication is  at max dose', function(){
+    pt.encounter = {
+      currentMeds: [
+        {className: 'CCB', atMax: true}
+      ]
+    };
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxReached);
-    expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.currentMeds));
+    expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.encounter.currentMeds));
     expect(algoGeneratedRecs.medRecs.length).toEqual(meds.numFirstLineMedClasses - 1);
   });
 });
@@ -236,12 +240,14 @@ describe('generateRecs for patient taking two medications', function(){
       currentBP: { Systolic: 160, Diastolic: 90 },
       //predefined so that the following specs aren't dependent on generateTarget method
       targetBP: { Systolic: 150, Diastolic: 90 },
-      currentMeds: [{className: 'CCB', atMax: true}]
+      encounter: {
+        currentMeds: [{className: 'CCB', atMax: true}]
+      }
     };
   });
 
-  it('increase dosage of current medication if medication is not at max dosage', function(){
-    pt.currentMeds.push({className: 'Thiazide', atMax: false});
+  it('increase dose of current medication if medication is not at max dose', function(){
+    pt.encounter.currentMeds.push({className: 'Thiazide', atMax: false});
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
@@ -249,13 +255,13 @@ describe('generateRecs for patient taking two medications', function(){
     expect(algoGeneratedRecs.medRecs).toEqual([]);
   });
 
-  it('add additional medication if medication is at max dosage', function(){
-    pt.currentMeds.push({className: 'Thiazide', atMax: true});
+  it('add additional medication if medication is at max dose', function(){
+    pt.encounter.currentMeds.push({className: 'Thiazide', atMax: true});
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
     expect(algoGeneratedRecs.recMsg).toEqual(algorithm.opts.recMessages.allFollowUpVisits + " " + algorithm.opts.recMessages.followUpVisitMaxReached);
-    expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.currentMeds));
+    expect(algoGeneratedRecs.medRecs).toEqual(algorithm.methods.chooseNextMeds(pt.encounter.currentMeds));
     expect(algoGeneratedRecs.medRecs.length).toEqual(meds.numFirstLineMedClasses - 2);
   });
 });
@@ -272,15 +278,17 @@ describe('generateRecs for patient taking three medications', function(){
       currentBP: { Systolic: 160, Diastolic: 90 },
       //predefined so that the following specs aren't dependent on generateTarget method
       targetBP: { Systolic: 150, Diastolic: 90 },
-      currentMeds: [
-        {className: 'CCB', atMax: true}, 
-        {className: 'ACEI', atMax: true}
-      ]
+      encounter: {
+        currentMeds: [
+          {className: 'CCB', atMax: true}, 
+          {className: 'ACEI', atMax: true}
+        ]
+      }
     };
   });
 
-  it('increase dosage of current medication if medication is not at max dosage', function(){
-    pt.currentMeds.push({className: 'Thiazide', atMax: false});
+  it('increase dose of current medication if medication is not at max dose', function(){
+    pt.encounter.currentMeds.push({className: 'Thiazide', atMax: false});
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
@@ -288,8 +296,8 @@ describe('generateRecs for patient taking three medications', function(){
     expect(algoGeneratedRecs.medRecs).toEqual([]);
   });
 
-  it('recommend medication classes previously not recommended as well as specialist referral if medication is at max dosage', function(){
-    pt.currentMeds.push({className: 'Thiazide', atMax: true});
+  it('recommend medication classes previously not recommended as well as specialist referral if medication is at max dose', function(){
+    pt.encounter.currentMeds.push({className: 'Thiazide', atMax: true});
 
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
