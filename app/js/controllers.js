@@ -36,10 +36,10 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
-  console.log(pt.currentMeds);
+  console.log(pt.encounter.currentMeds);
 
-  // $scope.standAlone = orgId ? false : true;
-  $scope.standAlone = true;
+  $scope.standAlone = orgId ? false : true;
+  // $scope.standAlone = true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
 
