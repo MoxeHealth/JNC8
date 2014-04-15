@@ -178,7 +178,7 @@ div.medication ul.multi ul li:nth-child(even) .med-name {
   background-color: #f0f0f0;
 }
 
-div.medication ul.multi li .med-name {
+div.medication li .med-name {
   cursor: pointer;
 }
 
@@ -187,11 +187,10 @@ div.med-details {
 }
 
 .top-div {
-  width: 90%;
-  max-width: 350px;
+  width: 75%;
   margin-right: 18px;
-  float: left;
   padding: 18px;
+  margin: 0 auto;
 }
 
 /* Patient status message  */
@@ -201,17 +200,17 @@ div.med-details {
   border-radius: 3px;
 }
 
-.good {
+.Good {
   background-color: #dff0d8;
   color: #3c763d;
 }
 
-.okay {
+.Okay {
   background-color: #fcf8e3;
   color: #8a6d3b;
 }
 
-.bad {
+.Danger; {
   background-color: #f2dede;
   color: #a94442;
 }

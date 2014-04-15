@@ -63,18 +63,29 @@ app.get('/goodrx/low-price', function(req, res) {
   console.log('into GET goodrx/low-price');
 
   // pull the data out of the query
-  var name = encodeURIComponent(req.query.name);
-
+  var name = req.query.name;
+  name = name.toUpperCase();
+  var queryString = 'name=' + name;
+  if(req.query.dosage) {
+    var dosage = req.query.dosage;
+    queryString += '&dosage=' + dosage;
+  }
   // construct the query string to be encoded with the hash
-  var reqString = 'name=' + name + '&api_key=' + api.goodRx.key;
+   queryString += '&api_key=' + api.goodRx.key;
+
+  console.log(queryString);
 
   // make and base64 encode the hash
   var hmac = crypto.createHmac('sha256', api.goodRx.secret);
-  hmac.update(reqString);
-  var encodedString = encodeURIComponent(hmac.digest('base64').replace("+", "_").replace("/", "_"));
+  hmac.update(queryString);
+  var encodedString = hmac.digest('base64');
+  encodedString = encodedString.replace("+", "_");
+  encodedString = encodedString.replace("/", "_");
+  encodedString = encodeURIComponent(encodedString);
 
   // append the base64 encoding onto the string
-  var urlString = api.goodRx.url + '?' + reqString + '&sig=' + encodedString;
+  var urlString = api.goodRx.url + '?' + queryString + '&sig=' + encodedString;
+  console.log(urlString);
 
   //forward the request and pipe 
   req.pipe(request.get(urlString)).pipe(res);

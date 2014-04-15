@@ -78,8 +78,8 @@ angular.module('myApp.services', [])
 
       var result = $q.all({
         demographics: getPatientDemographics(patientId),
-        vitals: getVitals(patientId),
-        lab: getLabs(patientId)
+        vitals: getVitals(patientId)
+        // lab: getLabs(patientId) // LABS IS DOWN
       });
 
       return result;
@@ -272,13 +272,16 @@ angular.module('myApp.services', [])
   }])
 
   .service('goodRx', ['$http', function($http) {
-    this.getPricing = function(name, callback) {
+    this.getPricing = function(name, dosage, callback) {
+      
+      var params = {};
+      params.name = name;
+      // if(dosage) params.dosage = dosage;
+
       $http({
         url: '/goodrx/low-price',
         method: 'GET',
-        params: {
-          name: name
-        }
+        params: params
       }).success(function(data, status) {
         console.log("The GoodRx API responded successfully.");
         if(callback) callback(data);

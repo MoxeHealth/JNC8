@@ -18,19 +18,15 @@ angular.module('myApp.directives', []).
       // append the patient's emails
       if(emails.length) {
         mailtoString += emails[0].EmailAddress + '?';
+        if(emails.length > 1) {
+          mailtoString += 'cc=' + emails[1].EmailAddress + '&';
+        }
       } else {
         mailtoString += '?';
       }
 
-      if(emails.length > 1) {
-        mailtoString += 'cc=' + emails[1].EmailAddress + '&';
-      }
-
-      mailtoString += 'subject=Pricing information for ' + drugObj.display + '&';
-
       // set the emails body
-      mailtoString += 'body=Please find the pricing details for ' + drugObj.display + ' at this site: ' + drugObj.url;
-
+      mailtoString += 'subject=Pricing information for ' + drugObj.display + '&' + 'body=Please find the pricing details for ' + drugObj.display + ' at this site: ' + drugObj.url;
 
       return mailtoString;
     };
@@ -48,16 +44,27 @@ angular.module('myApp.directives', []).
       link: function(scope, element, attrs) {
         // get the pricing for this drug
         // res properties 
-        goodRx.getPricing(scope.med.medName, function(res) {
+        goodRx.getPricing(scope.med.medName, scope.med.initialDoseRecs, function(res) {
           if(!res.errors.length){
-            scope.price = res.data.price[0];
+            if(res.data) {
+              scope.price = res.data.price[0] || "No price found.";
+            } else {
+              scope.price = "No price found.";
+            }
             scope.drugInfo = res.data;
             scope.dose = res.data.dose;
             scope.units = res.data.quantity;
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
-          }else{
+          } else {
             var searchedMedName = scope.med.medName;
-            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on goodRx\'s website. If applicable, choose from given alternatives: '
+
+            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on GoodRx\'s website.';
+
+            if(res.errors[0].candidates.length) {
+              scope.med.medName += ' Choose from these alternatives: ';
+            } else {
+              scope.med.medName += ' No alternatives were found.';
+            }
             scope.goodRxAlts = res.errors[0].candidates;
             scope.goodRxErr = true;
           }

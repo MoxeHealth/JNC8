@@ -25,10 +25,9 @@ function($scope, $q, $location, pt) {
   console.log(pt);
   
   var algoResults = algorithm.methods.runAlgorithm(pt);
-
-  console.log(pt.currentMeds);
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
+  $scope.showMeds = $scope.recs.medRecs.length ? true : false;
 
   $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
@@ -36,6 +35,13 @@ function($scope, $q, $location, pt) {
   $scope.targetSys = algoResults.targetBP.Systolic;
   $scope.pt = pt;
   $scope.encounter = pt.encounter;
+  console.log(parseInt(pt.isOnMedication));
+
+  if(typeof pt.isOnMedication === 'string') {
+    $scope.ptOnMeds = parseInt(pt.isOnMedication) ? true : false;
+  } else {
+    $scope.ptOnMeds = pt.isOnMedication;
+  }
 
   //hard code for now
   pt.encounter.targetBP = {
@@ -47,25 +53,3 @@ function($scope, $q, $location, pt) {
     db.addEncounter(pt.ids, pt.emails, pt.encounter); 
   }
 }]);
-
- // var ptId = db.connection.escape(req.body.ptId);
- //  var orgId = db.connection.escape(req.body.orgId) || 'NULL';
- //  var encounterDate = db.connection.escape(new Date().toISOString().slice(0, 19).replace('T', ' '));
- //  var bloodPressure = db.connection.escape(JSON.stringify(req.body.encounter.bloodPressure));
- //  var prescribedMeds = db.connection.escape(JSON.stringify(req.body.encounter.prescribedMeds));
- //  var removedMeds = db.connection.escape(JSON.stringify(req.body.encounter.removedMeds));
- //  var currentMeds = db.connection.escape(JSON.stringify(req.body.encounter.currentMeds));
-
- //  this.addEncounter = function(ptIdentifier, encounter, callback) {
-
- //      return $http({
- //        url: '/db/encounters',
- //        method: 'POST',
- //        data: {
- //          ptId: ptIdentifier.ptId,
- //          orgId: ptIdentifier.orgId,
- //          //encounter object expects two values: bloodPressure and prescribedMeds
- //          encounter: encounter
- //        }
- //      });
- //    };

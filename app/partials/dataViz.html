@@ -1,20 +1,21 @@
 
 <div class="cf viz">
   <h2>Treatment overview</h2>
-  <div class="top-div patient-status good">
-    <b class="title">{{ recs.recStatus }}</b> {{ recs.recMsg }}
+  <div class="top-div patient-status {{ recs.recStatus }}">
+    <b class="title">{{ recs.recStatus }}.</b> {{ recs.recMsg }}
   </div>
 </div>
 
 <div class="medication">
   <h2>Medication</h2>
-  <ul class="single">
+  <ul class="single" ng-if="ptOnMeds">
     <lh><h3>Patient's current medications</h3></lh>
     <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.encounter.currentMeds">
       <div drug-details med="medObj"></div>
     </li>
   </ul>
-  <ul class="multi">
+  <p ng-if="!ptOnMeds" style="font-weight: bold;">This patient isn't currently on any medication.</p>
+  <ul class="multi" ng-if="showMeds">
     <lh><h3>Prescribe one of the following medications:</h3></lh>
     <li class="med-class cf" ng-repeat="medClass in recs.medRecs">
       <ul>
@@ -25,11 +26,12 @@
       </ul>
     </li>
   </ul>
+  <p ng-if="!showMeds" style="font-weight: bold;">There are no recommended medications for this patient.</p>
 </div>
 
 <div class="bp-goal-comparison">
   <h2 class="has-more-info">Blood pressure</h2>
-  <a href="#" tooltip="Reading taken on: {{ pt.bpDate | date:'MM/dd/yyyy @ h:mma' }}" tooltip-placement="right" class="tooltip"><img src="img/info-icon-trans.gif" alt="More information on this patient's blood pressure readings"></a>
+  <a href="#" ng-if="pt.bpDate" tooltip="Reading taken on: {{ pt.bpDate | date:'MM/dd/yyyy @ h:mma' }}" tooltip-placement="right" class="tooltip"><img src="img/info-icon-trans.gif" alt="More information on this patient's blood pressure readings"></a>
   <div class="table-contain">
     <table width="300">
       <tr class="header">
