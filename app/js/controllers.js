@@ -6,10 +6,6 @@ angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
 function($scope, $q, $location, pt) {
 
-  $scope.removeMed = function(med){
-    pt.removeMed(med);
-  };
-
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
@@ -26,9 +22,14 @@ function($scope, $q, $location, pt) {
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', function($scope, pt, startup, db) {
+  console.log(pt);
+  
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
+  console.log(pt.currentMeds);
   $scope.recommendationMsg = algoResults.recs.recMsg;
+  $scope.recs = algoResults.recs;
+
   $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
   $scope.targetDias = algoResults.targetBP.Diastolic;
@@ -42,7 +43,6 @@ function($scope, $q, $location, pt) {
     Diastolic: $scope.targetDias
   };
 
-  console.log('in dataViz controller');
   $scope.saveToDB = function(){
     db.addEncounter(pt.ids, pt.emails, pt.encounter); 
   }

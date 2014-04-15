@@ -146,9 +146,9 @@ angular.module('myApp.services', [])
       //todo- stub for now, waiting on currentMeds service to be added to Moxe
       prescribedMeds: [
         {
-          className: 'ACE', 
+          className: 'ACEI', 
           medName: 'lisinopril', 
-          dosage: 30,
+          dose: 30,
           units: 'mg',
           atMax: false,
           date: "2013-06-18T20:47:00Z"
@@ -157,11 +157,11 @@ angular.module('myApp.services', [])
       removedMeds: [],
       currentMeds: [
         {
-          className: 'ACE', 
+          className: 'ACEI', 
           medName: 'lisinopril', 
-          dosage: 30,
+          dose: 30,
           units: 'mg',
-          atMax: false,
+          atMax: true,
           targetDoseRecs: [40, 60],
           date: "2013-06-18T20:47:00Z"
         }
@@ -195,8 +195,6 @@ angular.module('myApp.services', [])
       //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use an isFirstVisit method. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
       hasCKD: true,
       races: ['Black or African American', 'Asian', 'Caucasian'],
-      
-      //methods
       
       isAtBPGoal: function() {
         if(this.targetBP) {

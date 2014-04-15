@@ -17,8 +17,8 @@ Inputs:
   - drug name 
   - whether medication is marked by doctor as
   "at max dose" 
-  - current dosage
-  - units of dosage (mg, ml, etc.)
+  - current dose
+  - units of dose (mg, ml, etc.)
 - whether patient has diabetes or not
 - whether patient has CKD or not 
 
