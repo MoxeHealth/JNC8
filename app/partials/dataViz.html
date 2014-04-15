@@ -48,14 +48,14 @@
       </tr>
       <tr class="info-row systolic">
         <td>Systolic:</td>
-        <td class="info-column current">{{ pt.currentBP.Systolic }}</td>
+        <td class="info-column current">{{ pt.encounter.bloodPressure.Systolic }}</td>
         <td class="info-column goal" width="35%">
             <input type="number" ng-model="targetSys" id="goal-systolic">
         </td>
       </tr>
       <tr class="info-row diastolic">
         <td>Diastolic:</td>
-        <td class="info-column current">{{ pt.currentBP.Diastolic }}</td>
+        <td class="info-column current">{{ pt.encounter.bloodPressure.Diastolic }}</td>
         <td class="info-column goal" width="35%">
             <input type="number" id="goal-diastolic" ng-model="targetDias">
         </td>

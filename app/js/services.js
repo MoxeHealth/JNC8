@@ -16,14 +16,11 @@ angular.module('myApp.services', [])
   .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
     console.log("into startup");
     var ptData = {};
+    //TODO - wrap following code in post request from Epic
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
     var initialize = function(){
       console.log('Initialize called');
-
-
-    //TODO - wrap following code in post request from Epic
-    var ptObj = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
     var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
     ]);
@@ -57,7 +54,7 @@ angular.module('myApp.services', [])
       });
     };
 
-    this.addEncounter = function(ptIdentifier, emails, encounter, callback) {
+    this.addEncounter = function(ptIdentifier, encounter, callback) {
 
       console.log('addEncounter called');
       console.log('ptEncounter', encounter);
@@ -67,8 +64,7 @@ angular.module('myApp.services', [])
         data: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId,
-          emails: emails,
-          //encounter object expects two values: bloodPressure and prescribedMeds
+          //encounter object expects multiple values: bloodPressure, currentMeds, targetBP
           encounter: encounter
         }
       });
@@ -146,36 +142,19 @@ angular.module('myApp.services', [])
     var currentEncounterDate = new Date().toISOString().slice(0, 19).replace('T', ' '); //vitalsBP.Systolic[vitalsBP.Systolic.length - 1].ResultDateTime.DateTime;
 
     //todo- stub for now, waiting on currentMeds service to be added to Moxe
-    var currentBP = {
-      Systolic: parseInt(vitalsBP.Systolic.Value, 10),
-      Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
-    };
+    // var bloodPressure = {
+    //   Systolic: parseInt(vitalsBP.Systolic.Value, 10),
+    //   Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
+    // };
+
+    var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
+
     var encounter = {
-      bloodPressure: currentBP,
-      encounterDate: currentEncounterDate,
-      //todo- stub for now, waiting on currentMeds service to be added to Moxe
-      prescribedMeds: [
-        {
-          className: 'ACEI', 
-          medName: 'lisinopril', 
-          dose: 30,
-          units: 'mg',
-          atMax: false,
-          date: "2013-06-18T20:47:00Z"
-        }
-      ],
-      removedMeds: [],
-      currentMeds: [
-        {
-          className: 'ACEI', 
-          medName: 'lisinopril', 
-          dose: 30,
-          units: 'mg',
-          atMax: true,
-          targetDoseRecs: [40, 60],
-          date: "2013-06-18T20:47:00Z"
-        }
-      ]
+      email: encounterDbData.emails[0],
+      encounterDate: encounterDbData.encounter_date,
+      bloodPressure: encounterDbData.blood_pressure,
+      targetBP: encounterDbData.target_bp,
+      currentMeds: encounterDbData.current_meds
     };
 
     return {
@@ -184,11 +163,6 @@ angular.module('myApp.services', [])
       ids: startup.ptIdentifier,
       emails: startup.ptData.substrate.demographics.data.EmailAddresses,
       encounter: encounter,
-      //hard code for now to generate med recs
-      currentBP: {
-        Systolic: 170,
-        Diastolic: 90
-      },
       //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
       currentEncounterDate: currentEncounterDate,
 
@@ -200,6 +174,7 @@ angular.module('myApp.services', [])
       // age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
       age: 70,
       hasDiabetes: false,
+      //todo - hook up to db 
       isOnMedication: true,
 
       //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use an isFirstVisit method. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
@@ -207,8 +182,8 @@ angular.module('myApp.services', [])
       races: ['Black or African American', 'Asian', 'Caucasian'],
       
       isAtBPGoal: function() {
-        if(this.targetBP) {
-          if(this.currentBP.Systolic >= this.targetBP.Systolic || this.currentBP.Diastolic >= this.targetBP.Diastolic) {
+        if(this.encounter.targetBP) {
+          if(this.encounter.bloodPressure.Systolic >= this.encounter.targetBP.Systolic || this.encounter.bloodPressure.Diastolic >= this.encounter.targetBP.Diastolic) {
             return false;
           }
           return true;

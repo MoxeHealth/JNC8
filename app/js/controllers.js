@@ -46,17 +46,20 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 
   $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  $scope.targetDias = algoResults.targetBP.Diastolic;
-  $scope.targetSys = algoResults.targetBP.Systolic;
+  console.log('target', algoResults.targetBP)
+  $scope.targetDias = parseInt(algoResults.targetBP.Diastolic, 10);
+  $scope.targetSys = parseInt(algoResults.targetBP.Systolic, 10);
   $scope.pt = pt;
   $scope.encounter = pt.encounter;
   console.log(parseInt(pt.isOnMedication));
 
-  if(typeof pt.isOnMedication === 'string') {
-    $scope.ptOnMeds = parseInt(pt.isOnMedication) ? true : false;
-  } else {
-    $scope.ptOnMeds = pt.isOnMedication;
-  }
+  // if(typeof pt.isOnMedication === 'string') {
+  //   $scope.ptOnMeds = parseInt(pt.isOnMedication) ? true : false;
+  // } else {
+  //   $scope.ptOnMeds = pt.isOnMedication;
+  // }
+
+  $scope.ptOnMeds = pt.encounter.currentMeds.length ? true : false;
 
   //hard code for now
   pt.encounter.targetBP = {
@@ -65,6 +68,6 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   };
 
   $scope.saveToDB = function(){
-    db.addEncounter(pt.ids, pt.emails, pt.encounter); 
+    db.addEncounter(pt.ids, pt.encounter); 
   }
 }]);
