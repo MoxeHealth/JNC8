@@ -1,4 +1,4 @@
-<form name="dataForm" class="data-form" novalidate ng-submit="goToDataViz()" ng-model="dataForm">
+<form name="dataForm" class="data-form" novalidate ng-model="dataForm">
   <section>
     <label for="age">Patient's age:</label>
     <div class="input-wrapper">
@@ -91,27 +91,32 @@
   <div class="section medications" ng-show="pt.isOnMedication">
   <table id="medications" ng-model="medications" width="100%">
       <tr class="header">
-        <td width="35%">Medication</td>
-        <td class="info-column" width="25%">Dose</td>
+        <td width="25%">Medication</td>
+        <td width="25%">Med Class</td>
+        <td class="info-column" width="15%">Dose</td>
         <td class="info-column" width="20%">JNC8 target dose(s)</td>
-        <td class="info-column" width="20%">Max for pt?</td>
+        <td class="info-column" width="15%">Max for pt?</td>
       </tr>
       <tr class="med-entry" ng-repeat="med in pt.encounter.currentMeds">
-        <td width="35%">
-          <input type="text" value="{{ med.medName }}" class="med-name" ng-disabled="!standAlone"></td>
-        <td width="25%" class="info-column">
+        <td width="25%">  
+          <input type="text" value="{{ med.medName }}" class="med-name" ng-disabled="!standAlone">
+        </td>
+        <td width="25%">
+          <input type="text" value="{{ med.className }}" class="med-class-name" ng-disabled="!standAlone">
+        </td>
+        <td width="15%" class="info-column">
           <input type="number" value="{{ med.dose }}" class="med-dose" ng-disabled="!standAlone">
-          </td>
+        </td>
         <td width="20%" class="info-column">
           <input type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name" ng-disabled="!standAlone">
         </td>
-        <td width="20%" class="info-column">
+        <td width="15%" class="info-column">
           <input type="text" value="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
         </td>
       </tr>
 
     </table>
-    <button ng-if="standAlone" ng-="addDrugField()">Add Another Medication</button>
+    <button ng-if="standAlone" drugAdder >Add Another Medication</button>
   </div>
-<input class="submit-button" type="submit" value="Get Treatment Recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
+<button class="submit-button" ng-click="goToDataViz()" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">Get Treatment Recommendations</button>
 </form>
