@@ -28,11 +28,12 @@ var pool = new ConnectionPool(exports.poolconfig, exports.config);
 var parseData = function(array) {
 	for (var i = 0; i < array.length; i++) {
 		for(key in array[i]) {
-			console.log(array[i][key].value);
-			if(key === 'encounter_date') { // it's the date
-				array[i][key] = array[i][key].value;
-			} else { // it's any of the others; parse
-				array[i][key] = JSON.parse(array[i][key].value);
+			if(array[i][key].value !== 'undefined'){
+				if(key === 'encounter_date') { // it's the date
+					array[i][key] = array[i][key].value;
+				} else { // it's any of the others; parse
+					array[i][key] = JSON.parse(array[i][key].value);
+				}
 			}
 		}
 	};

@@ -93,17 +93,25 @@
     <table id="medications" width="100%">
       <tr class="header">
         <td width="35%">Medication</td>
-        <td class="info-column" width="25%">dose</td>
+        <td class="info-column" width="25%">Dose</td>
         <td class="info-column" width="20%">JNC8 target dose(s)</td>
         <td class="info-column" width="20%">Max for pt?</td>
       </tr>
-      <tr ng-repeat="med in pt.encounter.currentMeds">
-        <td width="35%">{{ med.medName }}</td>
-        <td width="25%" class="info-column">{{ med.dose }}{{ med.units }}</td>
-        <td width="20%" class="info-column">{{ med.targetDoseRecs | numTargetDoses }}{{ ' ' + med.units }}</td>
-        <td width="20%" class="info-column">{{ med.atMax }} </td>
+      <tr class="med-entry" ng-repeat="med in pt.encounter.currentMeds">
+        <td width="35%">
+          <input type="text" value="{{ med.medName }}" class="med-name"></td>
+        <td width="25%" class="info-column">
+          <input type="number" value="{{ med.dose }}" class="med-dose">
+          </td>
+        <td width="20%" class="info-column">
+          <input type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name">
+        </td>
+        <td width="20%" class="info-column">
+          <input type="text" value="{{ med.atMax }}" class="med-max">
+        </td>
       </tr>
     </table>
+    <button ng-click="addDrugField()">Add Another Medication</button>
   </div>
-<input class="submit-button" type="submit" value="Get recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
+<input class="submit-button" type="submit" value="Get Treatment Recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 </form>

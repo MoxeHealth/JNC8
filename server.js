@@ -64,6 +64,7 @@ app.get('/goodrx/low-price', function(req, res) {
 
   // pull the data out of the query
   var name = encodeURIComponent(req.query.name);
+  console.log('name', name);
 
   // construct the query string to be encoded with the hash
   var reqString = 'name=' + name + '&api_key=' + api.goodRx.key;

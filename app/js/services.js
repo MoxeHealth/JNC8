@@ -78,8 +78,8 @@ angular.module('myApp.services', [])
 
       var result = $q.all({
         demographics: getPatientDemographics(patientId),
-        vitals: getVitals(patientId),
-        lab: getLabs(patientId)
+        vitals: getVitals(patientId)
+        // lab: getLabs(patientId)
       });
 
       return result;

@@ -12,6 +12,9 @@ function($scope, $q, $location, pt) {
 
   $scope.pt = pt;
 
+  $scope.addDrugField = function(){
+  };
+
   $scope.buttonsSelected = function() {
     if($scope.pt.hasCKD !== undefined && $scope.pt.isOnMedication !== undefined && $scope.pt.hasDiabetes !== undefined){
       return true;
