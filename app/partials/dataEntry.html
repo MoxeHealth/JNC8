@@ -98,15 +98,15 @@
       </tr>
       <tr class="med-entry" ng-repeat="med in pt.encounter.currentMeds">
         <td width="35%">
-          <input type="text" value="{{ med.medName }}" class="med-name"></td>
+          <input type="text" value="{{ med.medName }}" class="med-name" ng-disabled="!standAlone"></td>
         <td width="25%" class="info-column">
-          <input type="number" value="{{ med.dose }}" class="med-dose">
+          <input type="number" value="{{ med.dose }}" class="med-dose" ng-disabled="!standAlone">
           </td>
         <td width="20%" class="info-column">
-          <input type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name">
+          <input type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name" ng-disabled="!standAlone">
         </td>
         <td width="20%" class="info-column">
-          <input type="text" value="{{ med.atMax }}" class="med-max">
+          <input type="text" value="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
         </td>
       </tr>
     </table>
