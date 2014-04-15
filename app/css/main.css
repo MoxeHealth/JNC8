@@ -202,6 +202,26 @@ div.med-details {
   background-color: #fff;
 }
 
+.rx-status {
+  width: 20px;
+  height: 16px;
+  background-repeat: none;
+  display: inline-block;
+  margin-bottom: -1px;
+}
+
+.expanded {
+  background-image: url(../img/contract.gif);
+}
+
+.contracted {
+  background-image: url(../img/expand.gif);
+}
+
+.error {
+  background-image: url(../img/error.gif);
+}
+
 .top-div {
   width: 75%;
   margin-right: 18px;
@@ -226,14 +246,11 @@ div.med-details {
   color: #8a6d3b;
 }
 
-.Danger; {
+.Danger {
   background-color: #f2dede;
   color: #a94442;
 }
 
-.recMessage {
-
-}
 
 /* Current vs. target BP comparison styling */
 

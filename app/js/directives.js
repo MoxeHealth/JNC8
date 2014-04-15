@@ -52,7 +52,9 @@ angular.module('myApp.directives', []).
         // get the pricing for this drug
         // res properties 
         goodRx.getPricing(scope.med.medName, scope.med.initialDoseRecs, function(res) {
-          if(!res.errors.length){
+          scope.err = false;
+          if(!res.errors.length && !res.errors.sig){
+            scope.med.searchError = false;
             if(res.data) {
               scope.price = res.data.price[0] || "No price found.";
             } else {
@@ -63,18 +65,20 @@ angular.module('myApp.directives', []).
             scope.units = res.data.quantity;
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           } else {
+            scope.err = true;
             var searchedMedName = scope.med.medName;
 
-            scope.med.medName = 'Medication lookup error: "' + searchedMedName + '" was not found on GoodRx\'s website.';
+            scope.med.searchError = 'Medication lookup error: "' + searchedMedName + '" was not found on GoodRx\'s website.';
 
             if(res.errors[0].candidates.length) {
-              scope.med.medName += ' Choose from these alternatives: ';
+              scope.med.searchError += ' Choose from these alternatives: ';
             } else {
-              scope.med.medName += ' No alternatives were found.';
+              scope.med.searchError += ' No alternatives were found.';
             }
             scope.goodRxAlts = res.errors[0].candidates;
             scope.goodRxErr = true;
           }
+          console.log("Error status: " + scope.err);
         });
       }
     }
