@@ -38,22 +38,7 @@ angular.module('myApp.directives', []).
     //make sure the following bindings to the med model are up to date with the data structure defined in algorithm_jnc8 and meds_jnc8. Example:
     //{ className: 'ACEI', meds: [{medName: 'valsartan', initialDoseOpts: [5],targetDoseOpts: [20]: }]})
     return {
-      template: '<div>'+
-      '<div class="med-name" ng-init="showDetails=false" good-rx-err="false" ng-click="showDetails = !showDetails">{{med.medName}}' + 
-            '<div class="inline-info price right med-detail" ng-if="!goodRxErr">{{ price | currency }}</div>' + 
-          '</div>' + 
-          '<div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">' +
-              '<div class="inline-info left"><span class="med-detail">' +
-                '<span class="label">dose:</span> {{ med.initialDoseRecs[0] }}' +
-              '</span>' +
-              '<div class="inline-info right"><span class="med-detail"><a href="{{ drugInfo.url }}" target="_blank">More pricing information</a></span>' +
-              '<span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{med.medName}}" target="_blank">Email pricing details</a></span></div>' +
-          '</div>'
-          +
-          '<div class="goodRxAlts cf inline-info" ng-show="showDetails" ng-model="goodRxAlts" ng-if="goodRxErr">' +
-            '<li class="med-class cf" ng-repeat="alt in goodRxAlts" ng-click="getPricing(alt)"> {{ alt }} </li>' + 
-          '</div>' + 
-      '</div>',
+      templateUrl: 'partials/drugDetails.html',
       replace: true,
       restrict: 'EA',
       scope: {
