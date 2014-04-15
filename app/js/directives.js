@@ -17,6 +17,20 @@ angular.module('myApp.directives', []).
     }
   }])
 
+  .directive('drugAdder', [ function() {
+    return {
+      template: 'ng-click="addDrugField()"',
+      restrict: 'EA',
+      link: function(){
+        // $element.parent().append( newElement );
+        console.log('yes');
+      },
+      addDrugField: function(){
+        console.log('yes');
+      }
+    }
+  }])
+
   .directive('drugDetails', ['goodRx', 'pt', function(goodRx, pt) {
 
     var generateEmailsLink = function(emails, drugObj){

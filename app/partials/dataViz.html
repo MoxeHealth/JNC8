@@ -11,7 +11,10 @@
   <ul class="single" ng-if="ptOnMeds">
     <lh><h3>Patient's current medications</h3></lh>
     <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.encounter.currentMeds">
-      <div drug-details med="medObj"></div>
+      <ul>
+        <lh>{{ medObj.className }}</lh>
+          <div drug-details med="medObj"></div>
+      </ul>
     </li>
   </ul>
   <p ng-if="!ptOnMeds" style="font-weight: bold;">This patient isn't currently on any medication.</p>
