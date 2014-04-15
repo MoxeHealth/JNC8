@@ -89,7 +89,7 @@
   </div>
 
   <div class="section medications" ng-show="pt.isOnMedication">
-    <table id="medications" width="100%">
+  <table id="medications" ng-model="medications" width="100%">
       <tr class="header">
         <td width="35%">Medication</td>
         <td class="info-column" width="25%">Dose</td>
@@ -109,8 +109,9 @@
           <input type="text" value="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
         </td>
       </tr>
+
     </table>
-    <button ng-if="standAlone" ng-click="addDrugField()">Add Another Medication</button>
+    <button ng-if="standAlone" ng-="addDrugField()">Add Another Medication</button>
   </div>
 <input class="submit-button" type="submit" value="Get Treatment Recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 </form>

@@ -12,11 +12,13 @@ function($scope, $q, $location, pt, orgId) {
 
   //visitors to stand alone website will not have an ordId 
   //todo- why not orgId.orgId?????
-  $scope.standAlone = orgId ? false : true;
+  // $scope.standAlone = orgId ? false : true;
+  $scope.standAlone = true;
 
   $scope.pt = pt;
 
   $scope.addDrugField = function(){
+    angular.element($scope.medications)
   };
 
   $scope.buttonsSelected = function() {
@@ -35,7 +37,8 @@ function($scope, $q, $location, pt, orgId) {
 
   console.log(pt.currentMeds);
 
-  $scope.standAlone = orgId ? false : true;
+  // $scope.standAlone = orgId ? false : true;
+  $scope.standAlone = true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
 
