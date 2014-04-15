@@ -126,7 +126,7 @@ app.post('/db/encounters',  function(req, res){
   var ptId = req.body.ptId;
   var orgId = req.body.orgId || 'NULL';
   var email = msString(req.body.encounter.email);
-  var encounterDate = msString(new Date());
+  var encounterDate = msString(new Date(req.body.encounter.encounterDate)) || msString(new Date());
   var bloodPressure = msString(req.body.encounter.bloodPressure);
   var targetBP = msString(req.body.encounter.targetBP);
   var prescribedMeds = msString(req.body.encounter.prescribedMeds);
