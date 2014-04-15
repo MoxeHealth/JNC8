@@ -70,6 +70,7 @@ app.get('/goodrx/low-price', function(req, res) {
     var dosage = req.query.dosage;
     queryString += '&dosage=' + dosage;
   }
+
   // construct the query string to be encoded with the hash
    queryString += '&api_key=' + api.goodRx.key;
 

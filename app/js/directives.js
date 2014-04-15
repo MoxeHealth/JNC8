@@ -10,6 +10,13 @@ angular.module('myApp.directives', []).
     };
   }])
 
+  .directive('drugInput', [ function() {
+    return {
+      templateUrl: 'partials/drugInput.html',
+      restrict: 'EA'
+    }
+  }])
+
   .directive('drugDetails', ['goodRx', 'pt', function(goodRx, pt) {
 
     var generateEmailsLink = function(emails, drugObj){

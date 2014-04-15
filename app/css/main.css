@@ -96,6 +96,22 @@ form select {
   min-width:200px;
 }
 
+/* Medication input styling */
+div.medications input[type="text"] {
+  width: 100%;
+  min-width: 40px;
+}
+
+div.medications input[type="number"] {
+  width: 20%;
+  min-width: 40px;
+}
+
+/* align input elements inside each td */ 
+div.medications tr td {
+  text-align: left;
+  padding: 8px 8px 68px 0;
+}
 
 /* Medication recommendation styling */
 

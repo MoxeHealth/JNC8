@@ -3,6 +3,16 @@
 angular.module('myApp.services', [])
   .value('version', '0.1')
 
+  .service('orgId', ['$rootScope', function($rootScope){
+    return {
+      orgId: $rootScope.orgId
+    }
+  }])
+
+  // .factory('orgId', ['$rootScope', function(orgId, $rootScope){
+  //   return $rootScope.orgId;
+  // }])
+
   .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
     console.log("into startup");
     var ptData = {};
