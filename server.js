@@ -36,6 +36,8 @@ app.get('/', function(req,res){
 
 //The SQL database stores any information that must be persisted but cannot be written back to the EMR
 app.get('/db/encounters',  function(req, res){
+
+  //todo - parse back into correct var names "blood_pressure" --> "bloodPressure"
   console.log('get db/encounters');
   var ptId = req.query.ptId;
   var orgIdString;

@@ -5,7 +5,7 @@ var ptStub = {
   //method is from 'pt' service in '/app/services.js'
   isAtBPGoal: function() {
     if(this.targetBP) {
-      if(this.currentBP.Systolic >= this.targetBP.Systolic || this.currentBP.Diastolic >= this.targetBP.Diastolic) {
+      if(this.bloodPressure.Systolic >= this.targetBP.Systolic || this.bloodPressure.Diastolic >= this.targetBP.Diastolic) {
         return false;
       }
       return true;
@@ -17,7 +17,7 @@ var ptStub = {
   // possible races: 'Black or African American', 'Asian', 'Caucasian'
   race: 'string' 
   age: integer
-  currentBP: {
+  bloodPressure: {
     Systolic: integer
     Diastolic: integer
   },
@@ -152,7 +152,7 @@ describe('generateRecs for patient taking no meds (assumed to be first visit)', 
   };
 
   it('continue treatment if patient has reached the target BP', function(){
-    pt.currentBP = { Systolic: 120, Diastolic: 80 };
+    pt.bloodPressure = { Systolic: 120, Diastolic: 80 };
     pt.hasCKD = false;
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
 
@@ -161,7 +161,7 @@ describe('generateRecs for patient taking no meds (assumed to be first visit)', 
   });
 
   it('nonblack patient', function(){
-    pt.currentBP = { Systolic: 160, Diastolic: 90 };
+    pt.bloodPressure = { Systolic: 160, Diastolic: 90 };
     pt.race = 'Asian';
     pt.hasCKD = false;
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
@@ -171,7 +171,7 @@ describe('generateRecs for patient taking no meds (assumed to be first visit)', 
   });
 
   it('black patient with no CKD', function(){
-    pt.currentBP = { Systolic: 160, Diastolic: 90 };
+    pt.bloodPressure = { Systolic: 160, Diastolic: 90 };
     pt.race = algorithm.opts.races.black;
     pt.hasCKD = false;
     var algoGeneratedRecs = algorithm.methods.generateRecs(pt);
@@ -181,7 +181,7 @@ describe('generateRecs for patient taking no meds (assumed to be first visit)', 
   });
 
   it('patient of any race with CKD', function(){
-    pt.currentBP = { Systolic: 160, Diastolic: 90 };
+    pt.bloodPressure = { Systolic: 160, Diastolic: 90 };
     pt.race = algorithm.opts.races.black;
     pt.hasCKD = true;
 
@@ -197,7 +197,7 @@ describe('generateRecs for patient taking one medication', function(){
     age: 60,
     hasDiabetes: false,
     isAtBPGoal: ptStub.isAtBPGoal,
-    currentBP: { Systolic: 160, Diastolic: 90 },
+    bloodPressure: { Systolic: 160, Diastolic: 90 },
     //predefined so that the following specs aren't dependent on generateTarget method
     targetBP: { Systolic: 150, Diastolic: 90 }
   };
@@ -237,7 +237,7 @@ describe('generateRecs for patient taking two medications', function(){
       age: 60,
       hasDiabetes: false,
       isAtBPGoal: ptStub.isAtBPGoal,
-      currentBP: { Systolic: 160, Diastolic: 90 },
+      bloodPressure: { Systolic: 160, Diastolic: 90 },
       //predefined so that the following specs aren't dependent on generateTarget method
       targetBP: { Systolic: 150, Diastolic: 90 },
       encounter: {
@@ -275,7 +275,7 @@ describe('generateRecs for patient taking three medications', function(){
       age: 60,
       hasDiabetes: false,
       isAtBPGoal: ptStub.isAtBPGoal,
-      currentBP: { Systolic: 160, Diastolic: 90 },
+      bloodPressure: { Systolic: 160, Diastolic: 90 },
       //predefined so that the following specs aren't dependent on generateTarget method
       targetBP: { Systolic: 150, Diastolic: 90 },
       encounter: {

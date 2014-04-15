@@ -27,7 +27,7 @@
     <div class="blood-pressure" id="blood-pressure">
       <div class="input-wrapper">
         <span class="field-label">Systolic:</span>
-        <input type="number" required name="systolicBP" ng-model="pt.currentBP.Systolic" id="blood-pressure-syst" min="50" max="400"/>    
+        <input type="text" required name="systolicBP" ng-model="pt.encounter.bloodPressure.Systolic" id="blood-pressure-syst" min="50" max="400"/>    
       </div>
       <div ng-show="dataForm.systolicBP.$dirty && dataForm.systolicBP.$invalid">
         <span class="error" ng-show="dataForm.systolicBP.$error.required">
@@ -40,7 +40,7 @@
 
       <div class="input-wrapper">
         <span class="field-label">Diastolic:</span>
-        <input type="number" required name="diastolicBP" ng-model="pt.currentBP.Diastolic" id="blood-pressure-diast" min="0" max="200"/>
+        <input type="text" required name="diastolicBP" ng-model="pt.encounter.bloodPressure.Diastolic" id="blood-pressure-diast" min="0" max="200"/>
       </div>
       <div ng-show="dataForm.diastolicBP.$dirty && dataForm.diastolicBP.$invalid">
         <span class="error" ng-show="dataForm.diastolicBP.$error.required">
