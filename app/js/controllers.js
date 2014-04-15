@@ -5,6 +5,7 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', '$compile','pt', 'orgId',
 function($scope, $q, $location, $compile, pt, orgId, drugInput) {
+  console.log('dataEntryPt', pt);
 
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
@@ -38,7 +39,7 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
-  console.log(pt);
+  console.log('datavizpt', pt);
   
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
