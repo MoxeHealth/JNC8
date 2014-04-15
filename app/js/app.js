@@ -10,6 +10,11 @@ angular.module('myApp', [
   'myApp.controllers',
   'ui.bootstrap'
 ])
+
+.value('patientId', 323000)
+
+.value('orgId', 3)
+
 .config(['$routeProvider', function($routeProvider) {
   console.log('config called');
 
@@ -32,7 +37,7 @@ angular.module('myApp', [
     redirectTo: '/'
   });
 }])
-.run(['$rootScope', 'db', 'goodRx', function($rootScope, db, goodRx) {
+.run(['$rootScope', 'db', 'goodRx', 'orgId', function($rootScope, db, goodRx, orgId) {
   console.log('run called');
   $rootScope.patientId = 3230000;
   $rootScope.orgId = 3;

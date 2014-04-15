@@ -88,7 +88,6 @@
     </div>
   </div>
 
-
   <div class="section medications" ng-show="pt.isOnMedication">
     <table id="medications" width="100%">
       <tr class="header">
@@ -111,7 +110,7 @@
         </td>
       </tr>
     </table>
-    <button ng-click="addDrugField()">Add Another Medication</button>
+    <button ng-if="standAlone" ng-click="addDrugField()">Add Another Medication</button>
   </div>
 <input class="submit-button" type="submit" value="Get Treatment Recommendations" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">
 </form>

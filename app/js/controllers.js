@@ -3,12 +3,16 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt',
-function($scope, $q, $location, pt) {
+.controller('dataEntryCtrl', ['$scope', '$q','$location', 'pt', 'orgId',
+function($scope, $q, $location, pt, orgId) {
 
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
+
+  //visitors to stand alone website will not have an ordId 
+  //todo- why not orgId.orgId?????
+  $scope.standAlone = orgId ? false : true;
 
   $scope.pt = pt;
 
@@ -24,12 +28,14 @@ function($scope, $q, $location, pt) {
 
 }])
 
-.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', function($scope, pt, startup, db) {
+.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
   console.log(pt);
   
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
   console.log(pt.currentMeds);
+
+  $scope.standAlone = orgId ? false : true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
 
