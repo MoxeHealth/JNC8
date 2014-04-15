@@ -150,7 +150,7 @@ angular.module('myApp.services', [])
     var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
 
     var encounter = {
-      email: encounterDbData.emails[0],
+      emails: encounterDbData.emails[0],
       encounterDate: encounterDbData.encounter_date,
       bloodPressure: encounterDbData.blood_pressure,
       targetBP: encounterDbData.target_bp,

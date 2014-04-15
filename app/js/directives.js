@@ -118,7 +118,7 @@ angular.module('myApp.directives', []).
         // set up the axes based on the data. will need to adjust where it grabs min/max
         // may need to scale d3.time.day.offset to d3.time.month.offset or similar, depending on range of dates
         var x = d3.time.scale()
-            .domain([data[0].encounter_date, d3.time.day.offset(data[data.length-1].encounter_date, 1)])
+            .domain([data[0].encounter_date, d3.time.month.offset(data[data.length-1].encounter_date, 1)])
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
@@ -134,7 +134,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.Diastolic);
+          return y(d.blood_pressure.Diastolic);
         });
 
         var sysLine = d3.svg.line()
@@ -158,7 +158,7 @@ angular.module('myApp.directives', []).
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient('bottom')
-            .ticks(d3.time.days, 1)
+            .ticks(d3.time.months, 1)
             .tickFormat(d3.time.format('%m/%d/%y'))
             .tickSize(4)
             .tickPadding(5);

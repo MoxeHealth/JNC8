@@ -177,6 +177,10 @@ div.inline-info span {
   display: block;
 }
 
+div.inline-info span.dose{
+  display: inline;
+}
+
 div.medication ul.single li div.med-name,
 div.medication ul.multi ul li .med-name {
   padding: 6px;
