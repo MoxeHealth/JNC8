@@ -32,7 +32,6 @@ angular.module('myApp.services', [])
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1].data;
-        console.log('ptData.db', ptData.db);
       });
     };
 
