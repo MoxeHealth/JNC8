@@ -39,6 +39,25 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
+  $scope.saveToDB = function(){
+    $scope.clicked = true;
+    // console.log('saveToDB');
+    // db.addEncounter(pt.ids, pt.encounter); 
+  };
+
+  //only want to save targetBP and date
+  $scope.saveTargetToDB = function(){
+    $scope.clicked = true;
+    pt.encounter = {
+      targetBP: {
+        Systolic: $scope.targetSys,
+        Diastolic: $scope.targetDias
+      },
+      encounterDate: pt.encounter.encounterDate
+    }
+    db.addEncounter(pt.ids, pt.encounter); 
+  }
+
   console.log('datavizpt', pt);
   
   var algoResults = algorithm.methods.runAlgorithm(pt);
@@ -46,14 +65,12 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   console.log(pt.encounter.currentMeds);
 
   $scope.standAlone = orgId ? false : true;
-  // $scope.standAlone = true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
   $scope.showMeds = $scope.recs.medRecs.length ? true : false;
 
   $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  console.log('target', algoResults.targetBP)
   $scope.targetDias = parseInt(algoResults.targetBP.Diastolic, 10);
   $scope.targetSys = parseInt(algoResults.targetBP.Systolic, 10);
   $scope.pt = pt;
@@ -68,13 +85,7 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 
   $scope.ptOnMeds = pt.encounter.currentMeds.length ? true : false;
 
-  //hard code for now
-  pt.encounter.targetBP = {
-    Systolic: $scope.targetSys,
-    Diastolic: $scope.targetDias
-  };
+  console.log('end pt', pt)
 
-  $scope.saveToDB = function(){
-    db.addEncounter(pt.ids, pt.encounter); 
-  }
+
 }]);
