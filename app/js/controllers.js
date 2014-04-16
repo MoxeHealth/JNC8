@@ -74,6 +74,8 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
     Diastolic: $scope.targetDias
   };
 
+  console.log('end pt', pt)
+
   $scope.saveToDB = function(){
     db.addEncounter(pt.ids, pt.encounter); 
   }
