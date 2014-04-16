@@ -83,73 +83,25 @@ angular.module('myApp.services', [])
       problems: '/patient/problems'
     };
 
+
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
       var result = $q.all({
-        demographics: getPatientDemographics(patientId),
-        vitals: getVitals(patientId),
-        // lab: getLabs(patientId), // LABS IS DOWN
-        //waiting on these:
-        // medications: getMedications(patientId),
-        // problems: getProblems(patientId)
+        demographics: getSubstrateData('demographics', patientId),
+        vitals: getSubstrateData('vitals', patientId),
+        // labs: getLabs('labs', patientId), // LABS IS DOWN
+        // //waiting on these:
+        // medications: getMedications('medications', patientId),
+        // problems: getProblems('problems', patientId)
       });
-
       return result;
     };
 
-    var getPatientDemographics = function(patientId) {
-      console.log('getPatientDemographics is being run.');
+    var getSubstrateData = function(type, patientId){
+      console.log('getting ' + type + ' data');
       return $http({
-        url: apiPaths.demographics,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
-
-    var getLabs = function(patientId) {
-      console.log('getLabs is being run.');
-      return $http({
-        url: apiPaths.labs,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
-
-    var getVitals = function(patientId) {
-      console.log('getVitals is being run.');
-      return $http({
-        url: apiPaths.vitals,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
-
-    var getMedications = function(patientId) {
-      console.log('getPatientMedications is being run.');
-      return $http({
-        url: apiPaths.medications,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
-
-    var getProblems = function(patientId) {
-      console.log('getPatientProblems is being run.');
-      return $http({
-        url: apiPaths.problems,
+        url: apiPaths[type],
         method: 'POST',
         data: {
           'Value': patientId,
