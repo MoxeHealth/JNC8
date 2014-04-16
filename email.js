@@ -13,19 +13,22 @@ var smtpTransport = nodemailer.createTransport('SMTP', {
 	}
 });
 
-var emailOptions = {
-	from: emailAuth.user,
-	subject: 'Your information from the JNC8 treatment application',
-	text: 'Plaintext body',
-	html: 'HTML body'
+exports.sendMail = function(userEmail) {
+	var emailOptions = {
+		from: emailAuth.user,
+		to: userEmail,
+		subject: 'Your information from the JNC8 treatment application',
+		text: 'Plaintext body about how to log back into the application',
+		html: 'HTML body about how to log back into the application'
+	};
+
+	smtpTransport.sendMail(emailOptions, function(error, response) {
+		if(error) {
+			console.log(error);
+		} else {
+			console.log('Message sent: ' + response.message);
+		}
+
+		smtpTransport.close();
+	});
 };
-
-smtpTransport.sendMail(emailOptions, function(error, response) {
-	if(error) {
-		console.log(error);
-	} else {
-		console.log('Message sent: ' + response.message);
-	}
-
-	smtpTransport.close();
-});
