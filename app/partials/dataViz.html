@@ -43,7 +43,7 @@
             <span class="field-label">Current Blood Pressure:</span>
         </td>
         <td class="info-column" width="35%" height="15">
-            <span class="field-label">Goal Blood Pressure:</span>
+            <span class="field-label">Target Blood Pressure:</span>
         </td>
       </tr>
       <tr class="info-row systolic">
@@ -69,6 +69,7 @@
 
 
 <div class="footer">
-  <button ng-if="standAlone" ng-click="saveToDB()">Save patient information</button>
+  <!-- <button ng-if="!standAlone" ng-click="saveToDB()">Save patient information</button> -->
+  <button ng-click="saveTargetToDB()">Save patient target blood pressure</button>
 </div>
 

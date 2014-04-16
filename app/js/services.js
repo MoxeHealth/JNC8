@@ -90,10 +90,10 @@ angular.module('myApp.services', [])
       var result = $q.all({
         demographics: getSubstrateData('demographics', patientId),
         vitals: getSubstrateData('vitals', patientId),
-        // labs: getLabs('labs', patientId), // LABS IS DOWN
+        labs: getSubstrateData('labs', patientId), // LABS IS DOWN
         // //waiting on these:
-        // medications: getMedications('medications', patientId),
-        // problems: getProblems('problems', patientId)
+        medications: getSubstrateData('medications', patientId),
+        problems: getSubstrateData('problems', patientId)
       });
       return result;
     };
