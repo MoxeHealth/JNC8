@@ -1,5 +1,9 @@
 <form name="dataForm" class="data-form" novalidate ng-model="dataForm">
-  <section>
+  <div class="section email-capture" ng-if="standAlone">
+    <p>If you're interested in using this application throughout your treatment, please enter your email so we can maintain a history of your treatment.</p>
+    <input type="email" placeholder="you@example.com" />
+  </div>
+  <div class="section">
     <label for="age">Patient's age:</label>
     <div class="input-wrapper">
       <input type="number" ng-model="pt.age" id="age" required name="age" min="18" max="200" />
@@ -116,7 +120,7 @@
       </tr>
 
     </table>
-    <a href="#" ng-if="standAlone" drugAdder>+ Add another medication</A\a>
+    <a href="#" ng-if="standAlone" drugAdder>+ Add another medication</a>
   </div>
 <button class="submit-button" ng-click="goToDataViz()" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">Get Treatment Recommendations</button>
 </form>
