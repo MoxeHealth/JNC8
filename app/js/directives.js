@@ -100,8 +100,8 @@ angular.module('myApp.directives', []).
   }])
 
   .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
-      
-      var renderGraph = function(scope) {
+
+    var renderGraph = function(scope) {
         // set the width/height of the graph based on the size of the containing element
         // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
         var elWidth = 350;
@@ -110,15 +110,13 @@ angular.module('myApp.directives', []).
        if(!scope.data.ptData.db.length){ return; }
 
         var data = graphHelpers.parseGraphData(scope.data.ptData.db);
-
         var margins = [30, 30, 30, 40];
         var width = elWidth - margins[1];
         var height = (elWidth/1.5) - margins[0] - margins[2];
-
-        // set up the axes based on the data. will need to adjust where it grabs min/max
-        // may need to scale d3.time.day.offset to d3.time.month.offset or similar, depending on range of dates
+        var timeScale = graphHelpers.getTimeScale(data[0].encounter_date, data[data.length-1].encounter_date);
+        
         var x = d3.time.scale()
-            .domain([data[0].encounter_date, d3.time.month.offset(data[data.length-1].encounter_date, 1)])
+            .domain([data[0].encounter_date, d3.time[timeScale].offset(data[data.length-1].encounter_date, 1)])
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
@@ -158,7 +156,7 @@ angular.module('myApp.directives', []).
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient('bottom')
-            .ticks(d3.time.months, 1)
+            .ticks(d3.time[timeScale + 's'], 1)
             .tickFormat(d3.time.format('%m/%d/%y'))
             .tickSize(4)
             .tickPadding(5);
@@ -196,15 +194,6 @@ angular.module('myApp.directives', []).
           .attr('x2', width)
           .attr('y2', function() { return y(scope.targetSys); })
           .attr('class', 'plotline sysLine targetLine');
-
-    };
-
-
-    var removeFirstGraphChild = function() {
-      var graph = document.getElementById('bp-graph');
-      if(graph.children.length > 1){
-        graph.removeChild(graph.firstChild);
-      }
     };
 
     return {
@@ -219,18 +208,15 @@ angular.module('myApp.directives', []).
         scope.$watch('targetSys', function(newVal, oldVal) {
           // console.log('targetSys changed.');
           renderGraph(scope);
-          removeFirstGraphChild();
+          graphHelpers.removeFirstGraphChild();
         });
 
         scope.$watch('targetDias', function(newVal, oldVal) {
-          // console.log('targetDias changed.');
           renderGraph(scope);
-          removeFirstGraphChild();
+          graphHelpers.removeFirstGraphChild();
         });
-
-        // write a watch for the window size here. if it changes, re-render the SVG to match it
-
       }
     }
+
   }])
 ;

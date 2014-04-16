@@ -290,6 +290,33 @@ angular.module('myApp.services', [])
       }
       return results;
     };
+
+    this.getTimeScale = function(dateOne, dateTwo) {
+      if(dateOne instanceof Date && dateTwo instanceof Date) {
+        var dayLengthMs = 86400000;
+        var timeDiffDays = (dateTwo.getTime() - dateOne.getTime())/dayLengthMs;
+
+        if(timeDiffDays <= 10) {
+          return 'day';
+        } else if(45 >= timeDiffDays > 10) {
+          return 'week';
+        } else if (timeDiffDays > 45) {
+          return 'month';
+        } else {
+          console.warn("There was an error in getTimeScale.");
+          return 'month';
+        }
+      } else {
+        throw new Error("Both arguments to getTimeScale should be date objects.");
+      }
+    };
+
+    this.removeFirstGraphChild = function() {
+      var graph = document.getElementById('bp-graph');
+      if(graph.children.length > 1){
+        graph.removeChild(graph.firstChild);
+      }
+    };
   }])
 
   .service('goodRx', ['$http', function($http) {
