@@ -26,6 +26,7 @@ angular.module('myApp.services', [])
     ]);
 
       return result.then(function(response) {
+        console.log(response);
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1].data;
@@ -75,7 +76,9 @@ angular.module('myApp.services', [])
     var apiPaths = {
       demographics: '/patient/demographics',
       vitals: '/encounter/vitals',
-      labs: '/patient/labs'
+      labs: '/patient/labs',
+      medications: '/patient/medications',
+      problems: '/patient/problems'
     };
 
     var getPatientData = function(patientId, callback){
@@ -83,10 +86,11 @@ angular.module('myApp.services', [])
 
       var result = $q.all({
         demographics: getPatientDemographics(patientId),
-        vitals: getVitals(patientId)
+        vitals: getVitals(patientId),
+        problems: getProblems(patientId),
+        medications: getMedications(patientId)
         // lab: getLabs(patientId) // LABS IS DOWN
       });
-
       return result;
     };
 
@@ -122,6 +126,39 @@ angular.module('myApp.services', [])
         data: {
           'Value': patientId,
           'Type': 'MRN'
+        }
+      });
+    };
+
+    var getMedications = function(patientId, justCurrentMeds) {
+      console.log('getMedications is being run.');
+      var justCurrentMeds = justCurrentMeds || 'true';
+
+      return $http({
+        url: apiPaths.medications,
+        method: 'POST',
+        data: {
+          'PatientId': {
+            'Value': patientId,
+            'Type': 'MRN'
+          },
+          'IncludeCurrentMedicationsOnly': justCurrentMeds
+        }
+      });
+    };
+
+    var getProblems = function(patientId) {
+      console.log('getProblems is being run.');
+      var justCurrentMeds = justCurrentMeds || 'true';
+
+      return $http({
+        url: apiPaths.medications,
+        method: 'POST',
+        data: {'PatientId': 
+          {
+            'Value': patientId,
+            'Type': 'MRN'
+          }
         }
       });
     };

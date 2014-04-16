@@ -25,6 +25,9 @@
   <script src="js/directives.js"></script>
 </head>
 <body>
+  <div class="page-header">
+    <h1>JNC8 Treatment Calculator</h1>
+  </div>
   <div class="splash container" ng-init="showSplash=true" ng-show="showSplash" >
     <img src="img/pageloader.gif" class="loading">
     <p class="loading">One moment while your patient's data is retrieved...</p>
@@ -32,10 +35,10 @@
 
   <div ng-view class="container"></div>
   
-  <div class="page-footer cf">
+  <div class="page-footer cf" ng-show="!showSplash">
     <ul class="cf">
-      <li>About this JNC8 Calculator</li>
-      <li>&copy; 2014 Moxe Health</li>
+      <li><a href="#/about" target="_self">About this JNC8 Calculator</a></li>
+      <li>&copy; 2014 <a href="http://moxehealth.com" target="_blank">Moxe Health</a></li>
     </ul>
   </div>
 

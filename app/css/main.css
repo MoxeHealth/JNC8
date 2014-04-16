@@ -8,7 +8,7 @@ body {
   width: 810px;
   height: auto;
   padding: 18px 40px;
-  margin: 20px auto 0px;
+  margin: 0 auto;
   border: solid #d7d7d7 1px;
   background-color: #fff;
   color: #4d4d4d;
@@ -30,6 +30,16 @@ body {
 
 div.viz {
   margin-bottom: 42px;
+}
+
+div.page-header {
+  width: 810px;
+  padding: 0px 40px;
+  margin: 20px auto 6px;
+}
+
+div.page-header h1 {
+  margin-bottom: 8px;
 }
 
 div.page-footer {
@@ -116,7 +126,7 @@ form select {
 }
 
 form div.medications select {
-  min-width: 120px;
+  min-width: 88px;
 }
 
 /* Medication input styling */
@@ -466,8 +476,12 @@ a {
 /* For mobile and small screens */
 
 @media screen and (max-width: 500px) {
-  .container {
+  .container, .page-header {
     width: 380px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
   }
 
   div.bp-goal-comparison {
