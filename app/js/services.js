@@ -29,7 +29,7 @@ angular.module('myApp.services', [])
         console.log(response);
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
-        ptData.db = response[1].data;
+        ptData.db = response[1];
 
         console.log('substrate', ptData.substrate);
         console.log('db', ptData.db);
@@ -48,13 +48,18 @@ angular.module('myApp.services', [])
     this.getEncounters = function(ptIdentifier, callback) {
       // ptIdentifier should be an object in the form {ptId: number[, orgId: orgIdentifier]}
 
-      return $http({
+      var result = $http({
         url: '/db/encounters',
         method: 'GET',
         params: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId
         }
+      });
+
+      return result.then(function(response){
+        console.log('re', response.data);
+        return response.data;
       });
     };
 
@@ -84,7 +89,6 @@ angular.module('myApp.services', [])
       problems: '/patient/problems'
     };
 
-
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
@@ -97,7 +101,14 @@ angular.module('myApp.services', [])
         vitals: getSubstrateData('vitals', patientId),
         labs: getSubstrateData('labs', patientId)
       });
-      return result;
+      return result.then(function(response) {
+        var substrateData = {};
+
+        for (var service in response){
+          substrateData[service] = response[service].data;
+        }
+        return substrateData;
+      });
     };
 
     var getSubstrateData = function(type, patientId, justCurrentMeds){
@@ -171,7 +182,7 @@ angular.module('myApp.services', [])
       /////////information that will be written to database at end of session:
       //'ids' needed to save information from session to the database 
       ids: startup.ptIdentifier,
-      emails: startup.ptData.substrate.demographics.data.EmailAddresses,
+      emails: startup.ptData.substrate.demographics.EmailAddresses,
       encounter: encounter,
       //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
 
@@ -179,8 +190,8 @@ angular.module('myApp.services', [])
       // targetBP: startup.ptData.db[db.length - 1].targetBP;
 
       /////////other information
-      race: startup.ptData.substrate.demographics.data.Race.Text || null,
-      // age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
+      race: startup.ptData.substrate.demographics.Race.Text || null,
+      // age: parseInt(startup.ptData.substrate.demographics.Age.substring(0,startup.ptData.substrate.demographics.Age.length-1), 10),
       age: 45,
       hasDiabetes: true,
       //todo - hook up to db 

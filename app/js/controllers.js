@@ -17,6 +17,8 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 
   $scope.pt = pt;
 
+  console.log('pt ', pt);
+
   // $scope.addDrugField = function(){
   //   var newDrugField = $compile('<tr drugInput></tr>')
   //   angular.element('tbody').append('<tr><td>Thing</td></tr>')
