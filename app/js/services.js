@@ -30,6 +30,9 @@ angular.module('myApp.services', [])
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1].data;
+
+        console.log('substrate', ptData.substrate);
+        console.log('db', ptData.db);
       });
     };
 
@@ -81,85 +84,52 @@ angular.module('myApp.services', [])
       problems: '/patient/problems'
     };
 
+
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
       var result = $q.all({
-        demographics: getPatientDemographics(patientId),
-        vitals: getVitals(patientId),
-        problems: getProblems(patientId),
-        medications: getMedications(patientId)
-        // lab: getLabs(patientId) // LABS IS DOWN
+        // problems: getProblems(patientId),
+        // medications: getMedications(patientId),
+        problems: getSubstrateData('problems', patientId),
+        medications: getSubstrateData('medications', patientId),
+        demographics: getSubstrateData('demographics', patientId),
+        vitals: getSubstrateData('vitals', patientId),
+        labs: getSubstrateData('labs', patientId)
       });
       return result;
     };
 
-    var getPatientDemographics = function(patientId) {
-      console.log('getPatientDemographics is being run.');
-      return $http({
-        url: apiPaths.demographics,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
+    var getSubstrateData = function(type, patientId, justCurrentMeds){
+      console.log('getting ' + type + ' data');
 
-    var getLabs = function(patientId) {
-      console.log('getLabs is being run.');
-      return $http({
-        url: apiPaths.labs,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
-
-    var getVitals = function(patientId) {
-      console.log('getVitals is being run.');
-      return $http({
-        url: apiPaths.vitals,
-        method: 'POST',
-        data: {
-          'Value': patientId,
-          'Type': 'MRN'
-        }
-      });
-    };
-
-    var getMedications = function(patientId, justCurrentMeds) {
-      console.log('getMedications is being run.');
-      var justCurrentMeds = justCurrentMeds || 'true';
-
-      return $http({
-        url: apiPaths.medications,
-        method: 'POST',
-        data: {
+    //medications and problems endpoints have slightly different request format
+      if(type === 'medications'){
+        var justCurrentMeds = justCurrentMeds || 'true';
+        var data = {
           'PatientId': {
             'Value': patientId,
             'Type': 'MRN'
           },
           'IncludeCurrentMedicationsOnly': justCurrentMeds
-        }
-      });
-    };
-
-    var getProblems = function(patientId) {
-      console.log('getProblems is being run.');
-      var justCurrentMeds = justCurrentMeds || 'true';
-
-      return $http({
-        url: apiPaths.medications,
-        method: 'POST',
-        data: {'PatientId': 
-          {
+        };
+      }else if(type === 'problems'){
+        var data = {
+          'PatientId': {
             'Value': patientId,
             'Type': 'MRN'
           }
         }
+      }else{
+        data = {
+          'Value': patientId,
+          'Type': 'MRN'
+        }
+      }
+      return $http({
+        url: apiPaths[type],
+        method: 'POST',
+        data: data
       });
     };
 
@@ -172,11 +142,6 @@ angular.module('myApp.services', [])
   //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
   .factory('pt', ['startup', function(startup) {
-    // console.log('pt factory called');
-
-    //need access to BP readings multiple times
-    var vitalsBP = startup.ptData.substrate.vitals.data.BloodPressure;
-    var currentEncounterDate = new Date().toISOString().slice(0, 19).replace('T', ' '); //vitalsBP.Systolic[vitalsBP.Systolic.length - 1].ResultDateTime.DateTime;
 
     //todo- stub for now, waiting on currentMeds service to be added to Moxe
     // var bloodPressure = {
@@ -184,15 +149,23 @@ angular.module('myApp.services', [])
     //   Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
     // };
 
-    var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
+    if(startup.ptData.db.length){
+      var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
 
-    var encounter = {
-      emails: encounterDbData.emails[0],
-      encounterDate: encounterDbData.encounter_date,
-      bloodPressure: encounterDbData.blood_pressure,
-      targetBP: encounterDbData.target_bp,
-      currentMeds: encounterDbData.current_meds
-    };
+      var encounter = {
+        emails: encounterDbData.emails[0],
+        encounterDate: encounterDbData.encounter_date,
+        bloodPressure: encounterDbData.blood_pressure,
+        targetBP: encounterDbData.target_bp,
+        currentMeds: encounterDbData.current_meds
+      };
+    }else{
+      encounter = {
+        bloodPressure: null,
+        targetBP: null,
+        currentMeds: null
+      };
+    }
 
     return {
       /////////information that will be written to database at end of session:
@@ -201,18 +174,17 @@ angular.module('myApp.services', [])
       emails: startup.ptData.substrate.demographics.data.EmailAddresses,
       encounter: encounter,
       //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
-      currentEncounterDate: currentEncounterDate,
 
       //todo - populate this variable from the database
       // targetBP: startup.ptData.db[db.length - 1].targetBP;
 
       /////////other information
-      race: startup.ptData.substrate.demographics.data.Race.Text,
+      race: startup.ptData.substrate.demographics.data.Race.Text || null,
       // age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
-      age: 70,
-      hasDiabetes: false,
+      age: 45,
+      hasDiabetes: true,
       //todo - hook up to db 
-      isOnMedication: true,
+      isOnMedication: false,
 
       //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use an isFirstVisit method. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
       hasCKD: true,

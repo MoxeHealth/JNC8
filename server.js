@@ -10,7 +10,9 @@ var Request = require('tedious').Request;
 
 var api = {
   moxe: {
-    baseUrl: 'http://substratestaging.moxehealth.com/api/2013-1/get',
+    baseUrl: 'http://substratestaging.moxehealth.com/api',
+    year2013: '/2013-1/get',
+    year2014: '/2014-1/get',
     headers: {
       'Content-type': 'application/json',
       'Authorization': 'Basic SFJKU0M4VGVzdEFwcDowN2FhODJiZTI4ODY=',
@@ -148,7 +150,14 @@ app.post('/db/encounters',  function(req, res){
 //will handle post requests from unique urls that are given to people who sign up for the standalone app 
 app.post('/*',  function(req, res){
   console.log("Serving app.post...");
-  var url = api.moxe.baseUrl + req.url;
+
+  //labs endpoint is now year2014
+  if(req.url === '/patient/labs'){
+    var url = api.moxe.baseUrl + api.moxe.year2014 + req.url;
+  //other endpoints are still year2013 but will be changed soon (comment 4/16/14)
+  }else{
+    var url = api.moxe.baseUrl + api.moxe.year2013 + req.url;
+  }
   console.log("The url: " + url);
   req.pipe(request.post({uri: url, json: req.body, headers: api.moxe.headers})).pipe(res);
 });
