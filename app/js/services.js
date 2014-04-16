@@ -9,12 +9,13 @@ angular.module('myApp.services', [])
     }
   }])
 
-  // .factory('orgId', ['$rootScope', function(orgId, $rootScope){
-  //   return $rootScope.orgId;
-  // }])
+  .service('startup', ['$http', '$q', '$rootScope', '$location', '$route', 'substrate', 'db', function($http, $q, $rootScope, $location, $route, substrate, db) {
+    
+    if($location.path() === '/dataViz') {
+      $location.path('/');
+      $route.reload();
+    } 
 
-  .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
-    console.log("into startup");
     var ptData = {};
     //TODO - wrap following code in post request from Epic
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
@@ -26,13 +27,9 @@ angular.module('myApp.services', [])
     ]);
 
       return result.then(function(response) {
-        console.log(response);
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1].data;
-
-        console.log('substrate', ptData.substrate);
-        console.log('db', ptData.db);
       });
     };
 
@@ -141,15 +138,16 @@ angular.module('myApp.services', [])
 
   //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
-  .factory('pt', ['startup', function(startup) {
+  .factory('pt', ['startup','userData', function(startup, userData) {
 
     //todo- stub for now, waiting on currentMeds service to be added to Moxe
     // var bloodPressure = {
     //   Systolic: parseInt(vitalsBP.Systolic.Value, 10),
     //   Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
     // };
+    // userData.dataCheck();
 
-    if(startup.ptData.db.length){
+    if(startup.ptData.db && startup.ptData.db.length){
       var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
 
       var encounter = {
@@ -294,8 +292,9 @@ angular.module('myApp.services', [])
   .service('goodRx', ['$http', function($http) {
     this.getPricing = function(name, dosage, callback) {
       
-      var params = {};
-      params.name = name;
+      var params = {
+        name: name
+      };
       // if(dosage) params.dosage = dosage;
 
       $http({
@@ -303,10 +302,8 @@ angular.module('myApp.services', [])
         method: 'GET',
         params: params
       }).success(function(data, status) {
-        console.log("The GoodRx API responded successfully.");
         if(callback) callback(data);
       }).error(function(data, status) {
-        console.warn("The goodRx API errored: ", data, status);
         if(callback) callback(data);
       })
     };
