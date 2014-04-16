@@ -26,7 +26,6 @@ angular.module('myApp.services', [])
     ]);
 
       return result.then(function(response) {
-        console.log(response);
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1];
@@ -58,7 +57,6 @@ angular.module('myApp.services', [])
       });
 
       return result.then(function(response){
-        console.log('re', response.data);
         return response.data;
       });
     };
@@ -155,63 +153,102 @@ angular.module('myApp.services', [])
   .factory('pt', ['startup', function(startup) {
 
     //todo- stub for now, waiting on currentMeds service to be added to Moxe
-    // var bloodPressure = {
-    //   Systolic: parseInt(vitalsBP.Systolic.Value, 10),
-    //   Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
-    // };
 
-    if(startup.ptData.db.length){
-      var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
+    //'pt' properties defined (or assigned null value) in this function:
+    
+      //from substrate or database if data exists: age, race, hasDiabetes, hasCKD, onMedication, 
+      //most recent encounter object with current medications, current blood pressure, encounter date
+      //from database if data exists: target blood pressure
 
-      var encounter = {
-        emails: encounterDbData.emails[0],
-        encounterDate: encounterDbData.encounter_date,
-        bloodPressure: encounterDbData.blood_pressure,
-        targetBP: encounterDbData.target_bp,
-        currentMeds: encounterDbData.current_meds
-      };
-    }else{
-      encounter = {
-        bloodPressure: null,
-        targetBP: null,
-        currentMeds: null
-      };
+    var pt = {};
+
+    //get encounter from moxe user 
+    var getProblems = function(problemsArray){
+      var problems = {};
+
+      for(var i = 0; i < problemsArray.length; i++){
+        problems[problemsArray[i].ProblemName] = true;
+      }
+      console.log('problems', problems);
+      return problems;
     }
 
-    return {
-      /////////information that will be written to database at end of session:
-      //'ids' needed to save information from session to the database 
-      ids: startup.ptIdentifier,
-      emails: startup.ptData.substrate.demographics.EmailAddresses,
-      encounter: encounter,
+    //searching for string "Chronic kidney disease"
+    var problemListContainsCKD = function(problems){
+      for(var problem in problems){
+        var name = problem.split(' ').slice(0,3).join(' ');
+        if(name === 'Chronic kidney disease'){
+          return true;
+        }
+      }
+      return false;
+    };
+
+    //searching for string "Diabetes mellitus"
+    var problemListContainsDiabetes = function(problems){
+      for(var problem in problems){
+        var name = problem.split(' ').slice(0,2).join(' ');
+        if(name === 'Diabetes mellitus'){
+          return true;
+        }
+      }
+      return false;
+    };
+
+    //todo- where to get information on race choices available for standalone app? 
+
+    pt.races =  ['Black or African American', 'Asian', 'Caucasian'];
+
+    if(startup.ptData.substrate){
+      var problems = getProblems(startup.ptData.substrate.problems);
+
+      var vitalsBP = startup.ptData.substrate.vitals.BloodPressure;
+
       //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
+      var bloodPressure = {
+        Systolic: parseInt(vitalsBP.Systolic.Value, 10) || null,
+        Diastolic: parseInt(vitalsBP.Diastolic.Value, 10) || null
+      };
+
+      var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1] || null;
+      var encounter = {
+        encounterDate: encounterDbData.encounter_date || null,
+        bloodPressure: encounterDbData.blood_pressure || bloodPressure ||null,
+        // targetBP: startup.ptData.db[db.length - 1].targetBP;
+        targetBP: encounterDbData.target_bp || null,
+        currentMeds: encounterDbData.current_meds || null
+      };
+      //'ids' needed to save information from session to the database 
+      pt.ids = startup.ptIdentifier;
+      pt.emails = startup.ptData.substrate.demographics.EmailAddresses;
+      pt.encounter = encounter;
 
       //todo - populate this variable from the database
       // targetBP: startup.ptData.db[db.length - 1].targetBP;
 
-      /////////other information
-      race: startup.ptData.substrate.demographics.Race.Text || null,
-      // age: parseInt(startup.ptData.substrate.demographics.Age.substring(0,startup.ptData.substrate.demographics.Age.length-1), 10),
-      age: 45,
-      hasDiabetes: true,
-      //todo - hook up to db 
-      isOnMedication: false,
+      pt.race = startup.ptData.substrate.demographics.Race.Text || null;
+      //age is a string ending in "y"
+      pt.age = parseInt(startup.ptData.substrate.demographics.Age.substring(0,startup.ptData.substrate.demographics.Age.length-1), 10) || null;
+      pt.hasCKD = problemListContainsCKD(problems);
+      pt.hasDiabetes = problemListContainsDiabetes(problems);
+      pt.isOnMedication = false;
+    }
 
-      //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use an isFirstVisit method. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
-      hasCKD: true,
-      races: ['Black or African American', 'Asian', 'Caucasian'],
-      
-      isAtBPGoal: function() {
-        if(this.encounter.targetBP) {
-          if(this.encounter.bloodPressure.Systolic >= this.encounter.targetBP.Systolic || this.encounter.bloodPressure.Diastolic >= this.encounter.targetBP.Diastolic) {
-            return false;
-          }
-          return true;
-        } else {
-          throw new Error ("Patient's target BP hasn't been set.");
-        }
-      },
-    };
+    //get encounter from new or current user of standalone app
+
+    if(startup.ptData.substrate){
+      var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1] || null;
+
+      var encounter = {
+        emails: encounterDbData.emails[0] || null,
+        encounterDate: encounterDbData.encounter_date || null,
+        bloodPressure: encounterDbData.blood_pressure || null,
+        targetBP: encounterDbData.target_bp || null,
+        currentMeds: encounterDbData.current_meds || null
+      };
+    }
+
+    return pt;
   }])
 
   .service('graphHelpers', [function() {
