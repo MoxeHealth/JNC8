@@ -401,8 +401,13 @@ tr.diastolic td.goal {
   fill: none;
 }
 
+<<<<<<< HEAD
 #bp-graph {
   height:236px;
+=======
+bp-graph {
+height:250px;
+>>>>>>> emailconf
   display: block;
   width: 380px;
 }

@@ -1,8 +1,9 @@
 var nodemailer = require('nodemailer');
+var crypto = require('crypto');
 
 var emailAuth = {
-	user: 'example@gmail.com',
-	pass: 'thepassword'
+	user: 'ianlyo@gmail.com',
+	pass: '4nd1am0!!'
 };
 
 var smtpTransport = nodemailer.createTransport('SMTP', {
@@ -13,13 +14,15 @@ var smtpTransport = nodemailer.createTransport('SMTP', {
 	}
 });
 
-exports.sendMail = function(userEmail) {
+exports.sendNewUserMail = function(userEmail, emailHash) {
+	var returnLink = "http://jnc8.azurewebsites.net?u=" + emailHash;	
+
 	var emailOptions = {
 		from: emailAuth.user,
 		to: userEmail,
 		subject: 'Your information from the JNC8 treatment application',
-		text: 'Plaintext body about how to log back into the application',
-		html: 'HTML body about how to log back into the application'
+		text: 'Plaintext body about how to log back into the application: ' + returnLink,
+		html: 'HTML body about how to log back into the application: <a href="' + returnLink + '">' + returnLink + '</a>'
 	};
 
 	smtpTransport.sendMail(emailOptions, function(error, response) {
@@ -28,7 +31,8 @@ exports.sendMail = function(userEmail) {
 		} else {
 			console.log('Message sent: ' + response.message);
 		}
-
 		smtpTransport.close();
 	});
 };
+
+

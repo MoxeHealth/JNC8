@@ -23,7 +23,7 @@ angular.module('myApp.services', [])
     var initialize = function(){
       console.log('Initialize called');
 
-    var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
+      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
     ]);
 
       return result.then(function(response) {
@@ -85,7 +85,7 @@ angular.module('myApp.services', [])
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
-      var result = $q.all({
+      var result = $q.['all']({
         // problems: getProblems(patientId),
         // medications: getMedications(patientId),
         problems: getSubstrateData('problems', patientId),
@@ -149,7 +149,9 @@ angular.module('myApp.services', [])
 
     if(startup.ptData.db && startup.ptData.db.length){
       var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
+    }
 
+    if(encounterDbData) {
       var encounter = {
         emails: encounterDbData.emails[0],
         encounterDate: encounterDbData.encounter_date,
@@ -164,7 +166,7 @@ angular.module('myApp.services', [])
         currentMeds: null
       };
     }
-
+      
     return {
       /////////information that will be written to database at end of session:
       //'ids' needed to save information from session to the database 

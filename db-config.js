@@ -23,6 +23,16 @@ exports.poolconfig = {
 	idleTimeoutMillis: 30000
 }
 
+exports.msString = function(target) {
+  if(typeof target === 'string') {
+    return target;
+  } else if(target instanceof Date) {
+    return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
+  } else {
+    return '\'' + JSON.stringify(target) + '\'' || 'NULL';
+  }
+};
+
 var pool = new ConnectionPool(exports.poolconfig, exports.config);
 
 var parseData = function(array) {

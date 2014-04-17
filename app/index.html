@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" ng-app="myApp">
+<html lang="en" id="ng-app" ng-app="myApp">
 <head>
   <meta charset="utf-8">
   <title>JNC8 Risk Calculator</title>
@@ -11,7 +11,11 @@
   <script src="../bower_components/angular-route/angular-route.js"></script>
   <script src="../bower_components/angular-bootstrap/ui-bootstrap.js"></script>
   <script src="../bower_components/underscore/underscore.js"></script>
-  <!--[if lte IE 8]><script src="../bower_components/r2d3/r2d3.js" charset="utf-8"></script><![endif]-->
+  <!--[if lte IE 8]>
+  <script src="../bower_components/r2d3/r2d3.js" charset="utf-8"></script>
+  <script src="../lib/console-fill.js" charset="utf-8"></script>
+  <script src="../node_module/es5-shim/es5-shim.min.js" charset="utf-8"></script>
+  <![endif]-->
       <!--[if gte IE 9]><!-->
       <script src="../bower_components/d3/d3.js"></script>
       <!--<![endif]-->
