@@ -153,7 +153,7 @@ angular.module('myApp.services', [])
 
     if(encounterDbData) {
       var encounter = {
-        emails: encounterDbData.emails[0],
+        emails: encounterDbData.emails,
         encounterDate: encounterDbData.encounter_date,
         bloodPressure: encounterDbData.blood_pressure,
         targetBP: encounterDbData.target_bp,
