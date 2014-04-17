@@ -401,9 +401,10 @@ tr.diastolic td.goal {
   fill: none;
 }
 
-bp-graph {
-  height:250px;
+#bp-graph {
+  height:236px;
   display: block;
+  width: 380px;
 }
 
 /* Typography and coloring */

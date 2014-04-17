@@ -138,7 +138,7 @@ angular.module('myApp.services', [])
 
   //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
-  .factory('pt', ['startup','userData', function(startup, userData) {
+  .factory('pt', ['startup', function(startup) {
 
     //todo- stub for now, waiting on currentMeds service to be added to Moxe
     // var bloodPressure = {

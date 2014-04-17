@@ -63,8 +63,6 @@ angular.module('myApp.directives', []).
         goodRxErr: '@'
       },
       link: function(scope, element, attrs) {
-        // get the pricing for this drug
-        console.log(scope.med);
         goodRx.getPricing(scope.med.medName, scope.med.initialDoseRecs, function(res) {
           scope.err = false;
           if(!res.errors.length && !res.errors.sig){
@@ -198,7 +196,7 @@ angular.module('myApp.directives', []).
 
     return {
       restrict: 'AE',
-      template: '<div id="bp-graph" class="graph" style="position: relative"></div>',
+      template: '<div id="bp-graph" class="graph" style="position: relative"></div><img src="../app/img/bp-legend.gif" class="graph-legend">',
       scope: {
         data: '=data',
         targetSys: '=targetSys',

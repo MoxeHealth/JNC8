@@ -5,7 +5,6 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$scope', '$q','$location', '$compile','pt', 'orgId',
 function($scope, $q, $location, $compile, pt, orgId, drugInput) {
-  console.log('dataEntryPt', pt);
 
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
@@ -39,6 +38,10 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
+  //before loading anything, check that we have user data:
+  // userData.dataCheck();
+  console.log($scope);
+
   $scope.saveToDB = function(){
     $scope.clicked = true;
     // console.log('saveToDB');
@@ -58,8 +61,7 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
     db.addEncounter(pt.ids, pt.encounter); 
   }
 
-  console.log('datavizpt', pt);
-  
+
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
   console.log(pt.encounter.currentMeds);
