@@ -329,8 +329,7 @@ div.bp-goal-comparison td:nth-child(1) {
 }
 
 input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button,
- { 
+input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
 }
@@ -374,7 +373,7 @@ tr.diastolic td.goal {
 
 #bp-graph line.targetLine {
   stroke-opacity: 0.5;
-  stroke-width:1px;
+  stroke-width: 1px;
 }
 
 #bp-graph .diasLine {
@@ -382,7 +381,6 @@ tr.diastolic td.goal {
 }
 
 #bp-graph .sysLine {
-
   stroke: steelblue;
 }
 
@@ -401,13 +399,8 @@ tr.diastolic td.goal {
   fill: none;
 }
 
-<<<<<<< HEAD
 #bp-graph {
   height:236px;
-=======
-bp-graph {
-height:250px;
->>>>>>> emailconf
   display: block;
   width: 380px;
 }

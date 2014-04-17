@@ -120,10 +120,10 @@ app.post('/*',  function(req, res){
 
   //labs endpoint is now year2014
   if(req.url === '/patient/labs'){
-    var url = api.moxe.baseUrl + api.moxe.year2014 + req.url;
+    var url = exports.api.moxe.baseUrl + exports.api.moxe.year2014 + req.url;
   //other endpoints are still year2013 but will be changed soon (comment 4/16/14)
   }else{
-    var url = api.moxe.baseUrl + api.moxe.year2013 + req.url;
+    var url = exports.api.moxe.baseUrl + exports.api.moxe.year2013 + req.url;
   }
 
   console.log("The url: " + url);

@@ -85,7 +85,7 @@ angular.module('myApp.services', [])
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
-      var result = $q.['all']({
+      var result = $q.all({
         // problems: getProblems(patientId),
         // medications: getMedications(patientId),
         problems: getSubstrateData('problems', patientId),
