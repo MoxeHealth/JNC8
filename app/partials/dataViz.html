@@ -1,8 +1,8 @@
 
-<div class="cf viz" ng-view="dataVizCtrl">
+<div class="cf viz">
   <h2>Treatment overview</h2>
   <div class="top-div patient-status {{ recs.recStatus }}">
-    <b class="title">{{ recs.recStatus }}.</b> {{ recs.recMsg }}
+    <b class="title">{{ recs.recMsg }}
   </div>
 </div>
 
@@ -10,7 +10,7 @@
   <h2>Medication</h2>
   <ul class="single" ng-if="ptOnMeds">
     <lh><h3>Patient's current medications</h3></lh>
-    <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.encounter.currentMeds">
+    <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.curMeds">
       <ul>
         <lh>{{ medObj.className }}</lh>
           <div drug-details med="medObj"></div>
@@ -47,23 +47,23 @@
         </td>
       </tr>
       <tr class="info-row systolic">
-        <td>Systolic:</td>
-        <td class="info-column current">{{ pt.encounter.bloodPressure.Systolic }}</td>
+        <td>systolic:</td>
+        <td class="info-column current">{{ pt.curBP.systolic }}</td>
         <td class="info-column goal" width="35%">
-            <input type="number" ng-model="targetSys" id="goal-systolic">
+            <input type="number" ng-model="pt.curTargetBP.systolic" id="goal-systolic">
         </td>
       </tr>
       <tr class="info-row diastolic">
-        <td>Diastolic:</td>
-        <td class="info-column current">{{ pt.encounter.bloodPressure.Diastolic }}</td>
+        <td>diastolic:</td>
+        <td class="info-column current">{{ pt.curBP.diastolic }}</td>
         <td class="info-column goal" width="35%">
-            <input type="number" id="goal-diastolic" ng-model="targetDias">
+            <input type="number" id="goal-diastolic" ng-model="pt.curTargetBP.diastolic">
         </td>
       </tr>
     </table>
   </div>
   <div>
-    <bp-graph data="dbData" target-sys="targetSys" target-dias="targetDias"></bp-graph>
+    <bp-graph data="dbData" target-sys="pt.targetBP.systolic" target-dias="pt.targetBP.diastolic"></bp-graph>
   </div>
 </div>
 

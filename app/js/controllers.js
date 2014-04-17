@@ -17,6 +17,8 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 
   $scope.pt = pt;
 
+  console.log('pt ', pt);
+
   // $scope.addDrugField = function(){
   //   var newDrugField = $compile('<tr drugInput></tr>')
   //   angular.element('tbody').append('<tr><td>Thing</td></tr>')
@@ -40,43 +42,37 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
   //before loading anything, check that we have user data:
   // userData.dataCheck();
-  console.log($scope);
 
   $scope.saveToDB = function(){
     $scope.clicked = true;
-    // console.log('saveToDB');
-    // db.addEncounter(pt.ids, pt.encounter); 
+    console.log('saveToDB');
+    var encounter = pt;
+    db.addEncounter(pt.ids, encounter); 
   };
 
-  //only want to save targetBP and date
+  //only want to save targetBP and date for moxe users
   $scope.saveTargetToDB = function(){
     $scope.clicked = true;
-    pt.encounter = {
-      targetBP: {
-        Systolic: $scope.targetSys,
-        Diastolic: $scope.targetDias
-      },
-      encounterDate: pt.encounter.encounterDate
-    }
-    db.addEncounter(pt.ids, pt.encounter); 
-  }
 
+    //other pt information is saved in moxe substrate
+    //moxe substrate should be single source of truth for 
+    //as much information as possible 
+    var encounter = {
+      targetBP: pt.curTargetBP
+    }
+    db.addEncounter(pt.ids, encounter); 
+  }
 
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
-  console.log(pt.encounter.currentMeds);
-
+  $scope.pt = pt;
   $scope.standAlone = orgId ? false : true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
+  $scope.medRecs = algoResults.recs.medRecs;
   $scope.showMeds = $scope.recs.medRecs.length ? true : false;
 
-  $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  $scope.targetDias = parseInt(algoResults.targetBP.Diastolic, 10);
-  $scope.targetSys = parseInt(algoResults.targetBP.Systolic, 10);
-  $scope.pt = pt;
-  $scope.encounter = pt.encounter;
   console.log(parseInt(pt.isOnMedication));
 
   // if(typeof pt.isOnMedication === 'string') {
@@ -85,9 +81,6 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   //   $scope.ptOnMeds = pt.isOnMedication;
   // }
 
-  $scope.ptOnMeds = pt.encounter.currentMeds.length ? true : false;
-
-  console.log('end pt', pt)
-
+  $scope.ptOnMeds = pt.curMeds.length ? true : false;
 
 }]);

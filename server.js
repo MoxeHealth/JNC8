@@ -38,7 +38,6 @@ app.get('/', function(req,res){
 //The SQL database stores any information that must be persisted but cannot be written back to the EMR
 app.get('/db/encounters',  function(req, res){
 
-  //todo - parse back into correct var names "blood_pressure" --> "bloodPressure"
   console.log('get db/encounters');
   var ptId = req.query.ptId;
   var orgIdString;
@@ -51,12 +50,13 @@ app.get('/db/encounters',  function(req, res){
   }
 
   // prep the query
-  var query  = 'SELECT * FROM dbo.encounters WHERE pt_id = ' + ptId + ' AND org_id' + orgIdString;
+  var query  = 'SELECT * FROM dbo.encounters WHERE ptId = ' + ptId + ' AND orgId' + orgIdString;
 
   db.queryHelper(query, function(err, rows, other) {
     if(err) {
       res.send(err);
     } else {
+      console.log('query rows', rows);
       res.send(rows);
     }
   });
@@ -81,18 +81,35 @@ app.get('/goodrx/low-price', function(req, res) {
   req.pipe(request.get(urlString)).pipe(res);
 });
 
-
 app.post('/db/encounters',  function(req, res){
-  console.log('handling POST req...');
+  console.log('post db/encounters');
+
+  var msString = function(target) {
+    if(typeof target === 'string') {
+      console.log('target string', target );
+      return target;
+    } else if(target instanceof Date) {
+      console.log('target Date', target );
+      return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
+    } else {
+      return '\'' + JSON.stringify(target) + '\'' || 'NULL';
+    }
+  };
+
+  console.log('req', req.body);
+  // there must be a better way to do this...
   var ptId = req.body.ptId;
   var orgId = req.body.orgId || 'NULL';
-  var email = db.msString(req.body.encounter.email);
-  var encounterDate = db.msString(new Date(req.body.encounter.encounterDate)) || db.msString(new Date());
-  var bloodPressure = db.msString(req.body.encounter.bloodPressure);
-  var targetBP = db.msString(req.body.encounter.targetBP);
-  var prescribedMeds = db.msString(req.body.encounter.prescribedMeds);
-  var removedMeds = db.msString(req.body.encounter.removedMeds);
-  var currentMeds = db.msString(req.body.encounter.currentMeds);
+  var emails = msString(req.body.encounter.emails) || 'NULL';
+  var emailHash = msString(req.body.encounter.emailHash) || 'NULL';
+  var encounterDate = msString(new Date());
+  var curBP = msString(req.body.encounter.curBP) || 'NULL';
+  var targetBP = msString(req.body.encounter.targetBP) || 'NULL';
+  var curMeds = msString(req.body.encounter.curMeds) || 'NULL';
+  var age = msString(req.body.encounter.age) || 'NULL';
+  var race = msString(req.body.encounter.race) || 'NULL';
+  var hasCKD = msString(req.body.encounter.hasCKD) || 'NULL';
+  var hasDiabetes = msString(req.body.encounter.hasDiabetes) || 'NULL';
 
   if(req.body.orgId) {
     var userHash = encrypt.makeEmailHash(req.body.encounter.email[0]) ;
@@ -100,8 +117,7 @@ app.post('/db/encounters',  function(req, res){
     var userHash = undefined;
   }
 
-
-  var query = 'INSERT INTO dbo.encounters (pt_id, org_id, emails, encounter_date, blood_pressure, target_bp, prescribed_meds, removed_meds, current_meds) VALUES (' + ptId + ',' + orgId + ',' + email +',' + encounterDate + ',' + bloodPressure + ',' + targetBP +',' + prescribedMeds + ',' + removedMeds + ',' + currentMeds + ')';
+  var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, targetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + targetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
 
   db.queryHelper(query, function(err, data){
     if(err) {

@@ -29,7 +29,10 @@ angular.module('myApp.services', [])
       return result.then(function(response) {
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
-        ptData.db = response[1].data;
+        ptData.db = response[1];
+
+        console.log('substrate', ptData.substrate);
+        console.log('db', ptData.db);
       });
     };
 
@@ -45,13 +48,17 @@ angular.module('myApp.services', [])
     this.getEncounters = function(ptIdentifier, callback) {
       // ptIdentifier should be an object in the form {ptId: number[, orgId: orgIdentifier]}
 
-      return $http({
+      var result = $http({
         url: '/db/encounters',
         method: 'GET',
         params: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId
         }
+      });
+
+      return result.then(function(response){
+        return response.data;
       });
     };
 
@@ -65,7 +72,7 @@ angular.module('myApp.services', [])
         data: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId,
-          //encounter object expects multiple values: bloodPressure, currentMeds, targetBP
+          //encounter object expects multiple values: bloodPressure, curMeds, targetBP
           encounter: encounter
         }
       });
@@ -81,7 +88,6 @@ angular.module('myApp.services', [])
       problems: '/patient/problems'
     };
 
-
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
@@ -94,7 +100,14 @@ angular.module('myApp.services', [])
         vitals: getSubstrateData('vitals', patientId),
         labs: getSubstrateData('labs', patientId)
       });
-      return result;
+      return result.then(function(response) {
+        var substrateData = {};
+
+        for (var service in response){
+          substrateData[service] = response[service].data;
+        }
+        return substrateData;
+      });
     };
 
     var getSubstrateData = function(type, patientId, justCurrentMeds){
@@ -136,129 +149,318 @@ angular.module('myApp.services', [])
     };
   }])
 
+  //parse substrate data to get necessary information for algorithm
+  //used by 'pt' service
+  .service('substrateHelpers', function(){
+    var getProblems = function(problemsArray){
+      var problems = {};
+
+      for(var i = 0; i < problemsArray.length; i++){
+        problems[problemsArray[i].ProblemName] = true;
+      }
+      return problems;
+    }
+
+    //search for string "Chronic kidney disease"
+    var problemListContainsCKD = function(problems){
+      for(var problem in problems){
+        var name = problem.split(' ').slice(0,3).join(' ');
+        if(name === 'Chronic kidney disease'){
+          return true;
+        }
+      }
+      return false;
+    };
+
+    //search for string "Diabetes mellitus"
+    var problemListContainsDiabetes = function(problems){
+      for(var problem in problems){
+        var name = problem.split(' ').slice(0,2).join(' ');
+        if(name === 'Diabetes mellitus'){
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // expects susbstrate vitals service
+    var getBPs = function(vitals){
+      var bps = [];
+      var vitalsBP = vitals.BloodPressure;
+
+      //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
+      // for(var i = 0; i < vitalsBP.length; i++){
+      //   //need to guard against missing substrate data 
+      //   if(!vitalsBP[i]){
+      //     continue;
+      //   }
+      //   var bpObj = {
+      //     systolic: parseInt(vitalsBP[i].systolic.Value, 10) || null,
+      //     diastolic: parseInt(vitalsBP[i].diastolic.Value, 10) || null,
+      //     ResultDateTime: vitalsBP[i].ResultDateTime.DateTime || null
+      //   };
+      //   bps.push(bpObj);
+      // }
+
+      //for now, only one BP reading
+      var bloodPressure = {
+        systolic: parseInt(vitalsBP.Systolic.Value, 10) || null,
+        diastolic: parseInt(vitalsBP.Diastolic.Value, 10) || null,
+        //each BloodPressure object will have the same ResultDateTime for both Sys and Dias 
+      };
+      bps.push(bloodPressure)
+      return bps;
+    };
+
+    //todo- only place I can find all of the dates 
+    var getDates = function(vitals){
+      var dates = [];
+      var vitalsBP = vitals.BloodPressure;
+
+      //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
+      // for(var i = 0; i < vitalsBP.length; i++){
+ 
+      //   var date = vitalsBP[i].Diastolic.ResultDateTime.DateTime || null;
+      //   bps.push(date);
+      // }
+
+      //for now, only one BP reading
+      var date = vitalsBP.Diastolic.ResultDateTime.DateTime || null;
+      dates.push(date);
+      return dates;
+    };
+
+    //in request to medications service in 'substrate' service, determine whether active medications are returned or not
+
+    //todo - finish - currently necessary because substrate doesn't store the class name for each medication, but the JNC8 algorithm requires class names to work properly 
+    var getclassName = function(medication){
+
+    };
+
+    var getMeds = function(medications){
+      var meds = [];
+      for(var i = 0; i < medications.length; i++){
+        var medObj = {
+          //only want the first name for now for JNC8 algo to work.
+          //some substrate entries are appended with 'extended release'
+          medicationName: medications[i].MedicationName.split(' ')[0] || null,
+
+          //todo- hard code dose, units, className, atMax, targetDoseRecs for now
+          dose: 30,
+          units: 'mg',
+          className: 'ACEI',
+          atMax: medAtMax(),
+          targetDoseRecs: [50],
+          startDate: medications[i].StartDate.DateTime || null
+        }
+        meds.push(medObj);
+      }
+      return meds;
+    };
+
+    //todo - finish - this function uses the targetdoseRec property of each med object in 'meds_jnc8' to determine if medication is at max dose or not
+    var medAtMax = function(medication, dose){
+      return true;
+    };
+
+    return {
+      getProblems: getProblems,
+      problemListContainsDiabetes: problemListContainsDiabetes,
+      problemListContainsCKD: problemListContainsCKD,
+      getBPs: getBPs,
+      getDates: getDates,
+      getMeds: getMeds,
+      getclassName: getclassName,
+      medAtMax: medAtMax,
+    };
+  })
+
+  .service('dbHelpers', function(){
+
+    // 'attr' can either be targetBP or curBP
+    var getBPs = function(dbData, attr){
+      var bps = [];
+      //default 
+      var attr = attr || 'curBP';
+
+      for(var i = 0; i < dbData.length; i++){
+        var bpObj;
+        if(!dbData[i][attr]){
+          bpObj = {
+            systolic: null,
+            diastolic: null,
+            encounterDate: null
+          }
+        }else{
+          bpObj = {
+            systolic: parseInt(dbData[i][attr].systolic, 10) || null,
+            diastolic: parseInt(dbData[i][attr].diastolic, 10) || null,
+            //note slightly different structure from substrate 
+            encounterDate: dbData[i].encounterDate || null
+          };
+        }
+        bps.push(bpObj);
+      }
+      return bps;
+    };
+
+    var getMeds = function(dbData){
+      var meds = [];
+      var curMeds = dbData[dbData.length - 1].curMeds;
+      for(var i = 0; i < curMeds.length; i++){
+        var medObj = {
+          //only want the first name for now for JNC8 algo to work.
+          medicationName: curMeds[i].medicationName,
+
+          //todo- hard code dose, units, className, atMax, targetDoseRecs for now
+          dose: curMeds[i].dose,
+          units: curMeds[i].units,
+          className: curMeds[i].className,
+          atMax: medAtMax(),
+          targetDoseRecs: [50],
+          startDate: medications[i].startDate
+        }
+        meds.push(medObj);
+      }
+      return meds;
+    };
+
+    var getDates = function(dbData){
+      var dates = [];
+
+      for(var i = 0; i < dbData.length; i++){
+        meds.push(dbData.encounterDate);
+      }
+      return meds;
+    };
+
+    return {
+      getBPs: getBPs,
+      getMeds: getMeds,
+      getDates: getDates
+    };
+  })
+
   //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
-  .factory('pt', ['startup', function(startup) {
+  .factory('pt', ['startup', 'substrateHelpers', 'dbHelpers', function(startup, substrateHelpers, dbHelpers) {
 
-    //todo- stub for now, waiting on currentMeds service to be added to Moxe
-    // var bloodPressure = {
-    //   Systolic: parseInt(vitalsBP.Systolic.Value, 10),
-    //   Diastolic: parseInt(vitalsBP.Diastolic.Value, 10)
-    // };
-    // userData.dataCheck();
+    //'pt' properties defined (or assigned null value) in this function:
+    
+      //from substrate or database if data exists: 
+        //age, race, hasDiabetes, hasCKD, onMedication, 
+        //most recent encounter object with current medications, current blood pressure, encounter date
 
-    if(startup.ptData.db && startup.ptData.db.length){
-      var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
-    }
+      //from database if data exists: 
+        //target blood pressure
 
-    if(encounterDbData) {
-      var encounter = {
-        emails: encounterDbData.emails,
-        encounterDate: encounterDbData.encounter_date,
-        bloodPressure: encounterDbData.blood_pressure,
-        targetBP: encounterDbData.target_bp,
-        currentMeds: encounterDbData.current_meds
-      };
-    }else{
-      encounter = {
-        bloodPressure: null,
-        targetBP: null,
-        currentMeds: null
-      };
-    }
+    var pt = {};
+
+    //todo- where to get information on race choices available for standalone app? 
+    pt.races =  ['Black or African American', 'Asian', 'Caucasian'];
+
+    //get data from moxe user 
+    if(startup.ptData.substrate){
+      var substrateData = startup.ptData.substrate;
+      var problems = substrateHelpers.getProblems(substrateData.problems);
+
+      pt.bps = substrateHelpers.getBPs(substrateData.vitals);
+      //assume blood pressure data is in chronological order
+      pt.curBP = pt.bps[pt.bps.length - 1];
       
-    return {
-      /////////information that will be written to database at end of session:
+      pt.curMeds = substrateHelpers.getMeds(substrateData.medications);
+
+      pt.dates = substrateHelpers.getDates(substrateData.vitals);
+      pt.curDate = pt.dates[pt.dates.length - 1];
+
       //'ids' needed to save information from session to the database 
-      ids: startup.ptIdentifier,
-      emails: startup.ptData.substrate.demographics.data.EmailAddresses,
-      encounter: encounter,
-      //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
+      pt.ids = startup.ptIdentifier;
+      pt.emails = substrateData.demographics.EmailAddresses;
 
-      //todo - populate this variable from the database
-      // targetBP: startup.ptData.db[db.length - 1].targetBP;
+      pt.race = substrateData.demographics.Race.Text || null;
+      //age is a string ending in "y"
+      pt.age = parseInt(substrateData.demographics.Age.substring(0, substrateData.demographics.Age.length-1), 10) || null;
+      pt.hasCKD = substrateHelpers.problemListContainsCKD(problems);
+      pt.hasDiabetes = substrateHelpers.problemListContainsDiabetes(problems);
+      pt.isOnMedication = false;
+    }
 
-      /////////other information
-      race: startup.ptData.substrate.demographics.data.Race.Text || null,
-      // age: parseInt(startup.ptData.substrate.demographics.data.Age.substring(0,startup.ptData.substrate.demographics.data.Age.length-1), 10),
-      age: 45,
-      hasDiabetes: true,
-      //todo - hook up to db 
-      isOnMedication: false,
+    //get data from current user of standalone app, or moxe user 
+    if(startup.ptData.db.length){
+      var dbData = startup.ptData.db;
 
-      //todo - is there ever a scenario in which a doctor would enter patient data into the db, but not prescribe a medication? if so, we can use an isFirstVisit method. Otherwise, use currentMeds.length (currently using currentMeds.length property) to determine algorithm flow. 
-      hasCKD: true,
-      races: ['Black or African American', 'Asian', 'Caucasian'],
-      
-      isAtBPGoal: function() {
-        if(this.encounter.targetBP) {
-          if(this.encounter.bloodPressure.Systolic >= this.encounter.targetBP.Systolic || this.encounter.bloodPressure.Diastolic >= this.encounter.targetBP.Diastolic) {
-            return false;
-          }
-          return true;
-        } else {
-          throw new Error ("Patient's target BP hasn't been set.");
-        }
-      },
-    };
+      //both user types (moxe and standalone) get this info from database 
+      pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP')
+
+      //in case for some reason the most recent curTargetBP's properties has 'null' values
+      if(pt.curTargetBP){
+        pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
+      }
+
+      //user of stand alone app 
+      if(!startup.ptData.substrate){
+        pt.bps = dbHelpers.getBPs(dbData, 'curBP');
+        pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP');
+        pt.curMeds = dbHelpers.getMeds(dbData);
+        pt.encounterDates = dbHelpers.getDates(dbData);
+
+        //assume blood pressure data is in chronological order
+        pt.curBP = pt.bps[pt.bps.length - 1];
+
+        //'ids' needed to save information from session to the database 
+        pt.ids = startup.ptIdentifier;
+        pt.emails = dbData[0].Emails
+
+        pt.race = dbData.race || null;
+        //age is a string ending in "y"
+        pt.age = dbData.age || null;
+        pt.hasCKD = substrateHelpers.problemListContainsCKD(problems);
+        pt.hasDiabetes = substrateHelpers.problemListContainsDiabetes(problems);
+        pt.isOnMedication = false;
+      }
+    }
+    return pt;
   }])
 
   .service('graphHelpers', [function() {
 
-    this.getBPExtreme = function(array, keyName) {
-      var numArray = [];
+    //expects array of bp objects and string that is either 'systolic' or 'diastolic'
+    this.getBPExtreme = function(bpsArray, keyName) {
+      var bpValues = [];
 
-      for(var i = 0; i < array.length; i++) {
-        numArray.push(array[i].blood_pressure[keyName]);
+      for(var i = 0; i < bpsArray.length; i++) {
+        bpValues.push(bpsArray[i][keyName]);
       }
 
-      if(keyName === 'Systolic') {
-        var max = Math.max.apply(Math, numArray);
-        return Math.max.apply(Math, numArray);
-      } else if (keyName === 'Diastolic') {
-        return Math.min.apply(Math, numArray);
+      if(keyName === 'systolic') {
+        var max = Math.max.apply(Math, bpValues);
+        return Math.max.apply(Math, bpValues);
+      } else if (keyName === 'diastolic') {
+        return Math.min.apply(Math, bpValues);
       } else {
-        throw new Error("getBPExtreme requires either 'Systolic' or 'Diastolic' as a key name.");
+        throw new Error("getBPExtreme requires either 'systolic' or 'diastolic' as a key name.");
       }
     };
 
-    //currently assuming that every encounter in the database
-    //will have a value in the blood_pressure field and an encounter_date field
-    this.parseBPData = function(bpDataArr, targetBP) {
+    //expects result of 'pt' service, which is an object containing keys whose values are arrays
+    //iterates through arrays  
+    this.parseBPData = function(pt) {
       var results = [];
-      var targetSys = 120;
-      var targetDias = 80;
 
-      for(var i = 0; i < bpDataArr.length; i++) {
-        var bp = JSON.parse(bpDataArr[i].blood_pressure);
-        var date = new Date(bpDataArr[i].encounter_date);
+      //use 'bps' to determine how many iterations
+      //todo- possible that a patient will have more encounter dates than bp readings? 
+      for(var i = 0; i < pt.bps.length; i++) {
+        var bp = pt.bps[i];
+        var targetBP = pt.targetBPs[i];
+        var encounterDate = new Date(pt.dates[i]);
 
         results.push({
-          date: date,
+          encounterDate: encounterDate,
           systolic: bp.systolic,
           diastolic: bp.diastolic,
-          targetDias: targetDias,
-          targetSys: targetSys
+          targetDias: targetBP.systolic,
+          targetSys: targetBP.diastolic
         });
-      }
-      return results;
-    };
-
-    this.parseGraphData = function(array) {
-      var results = [];
-      for(var i = 0; i < array.length; i++) {
-        var obj = array[i];
-        for(var key in obj) {
-          if(typeof obj[key] === "string") {
-            try{
-              obj[key] = JSON.parse(obj[key]);
-            }
-            catch (e) {
-              obj[key] = new Date(obj[key]);
-            }
-          }
-        }
-        results.push(array[i]);
       }
       return results;
     };
@@ -289,6 +491,7 @@ angular.module('myApp.services', [])
         graph.removeChild(graph.firstChild);
       }
     };
+
   }])
 
   .service('goodRx', ['$http', function($http) {
