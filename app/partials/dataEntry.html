@@ -1,7 +1,7 @@
 <form name="dataForm" class="data-form" novalidate ng-model="dataForm">
-  <div class="section email-capture" ng-if="standAlone">
-    <p>If you're interested in using this application throughout your treatment, please enter your email so we can maintain a history of your treatment.</p>
-    <input type="email" placeholder="you@example.com" />
+  <div class="section emailss-capture" ng-if="standAlone">
+    <p>If you're interested in using this application throughout your treatment, please enter your emailss so we can maintain a history of your treatment.</p>
+    <input type="emailss" placeholder="you@example.com" />
   </div>
   <div class="section">
     <label for="age">Patient's age:</label>
@@ -30,28 +30,28 @@
     <label for="blood-pressure">Patient's blood pressure:</label>
     <div class="blood-pressure" id="blood-pressure">
       <div class="input-wrapper">
-        <span class="field-label">Systolic:</span>
-        <input type="text" required name="systolicBP" ng-model="pt.encounter.bloodPressure.Systolic" id="blood-pressure-syst" min="50" max="400"/>    
+        <span class="field-label">systolic:</span>
+        <input type="text" required name="systolicBP" ng-model="pt.curBP.systolic" id="blood-pressure-syst" min="50" max="400"/>    
       </div>
       <div ng-show="dataForm.systolicBP.$dirty && dataForm.systolicBP.$invalid">
         <span class="error" ng-show="dataForm.systolicBP.$error.required">
         Please input a number between 50-400.
         </span>
         <span class="error" ng-show="dataForm.systolicBP.$error.min || dataForm.systolicBP.$error.max">
-        Number outside systolic BP range. Systolic BP must be a number between 50-400. 
+        Number outside systolic BP range. systolic BP must be a number between 50-400. 
         </span>
       </div> 
 
       <div class="input-wrapper">
-        <span class="field-label">Diastolic:</span>
-        <input type="text" required name="diastolicBP" ng-model="pt.encounter.bloodPressure.Diastolic" id="blood-pressure-diast" min="0" max="200"/>
+        <span class="field-label">diastolic:</span>
+        <input type="text" required name="diastolicBP" ng-model="pt.curBP.diastolic" id="blood-pressure-diast" min="0" max="200"/>
       </div>
       <div ng-show="dataForm.diastolicBP.$dirty && dataForm.diastolicBP.$invalid">
         <span class="error" ng-show="dataForm.diastolicBP.$error.required">
         Please input a number between 0-200.
         </span>
         <span class="error" ng-show="dataForm.diastolicBP.$error.min || dataForm.diastolicBP.$error.max">
-        Number outside diastolic BP range. Diastolic BP must be a number between 0-200. 
+        Number outside diastolic BP range. diastolic BP must be a number between 0-200. 
         </span>
       </div>   
     </div>
@@ -101,9 +101,9 @@
         <td class="info-column" width="20%">JNC8 target dose</td>
         <td class="info-column" width="15%">At max dose?</td>
       </tr>
-      <tr class="med-entry" ng-repeat="med in pt.encounter.currentMeds">
+      <tr class="med-entry" ng-repeat="med in pt.curMeds">
         <td width="25%">  
-          <input type="text" value="{{ med.medName }}" class="med-name" ng-disabled="!standAlone">
+          <input type="text" value="{{ med.medicationName }}" class="med-name" ng-disabled="!standAlone">
         </td>
         <td width="25%">
           <select ng-model="med.className" ng-options="med for med in possibleMeds" class="med-class-name" ng-disabled="!standAlone">

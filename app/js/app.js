@@ -51,14 +51,14 @@ angular.module('myApp', [
   // db.addEncounter(ptIdentifier, {
   //   emails: ['ilyons@gmail.com'],
   //   bloodPressure: { 
-  //     Systolic: '170',
-  //     Diastolic: '100'
+  //     systolic: '170',
+  //     diastolic: '100'
   //   },
   //   targetBP: { 
-  //     Systolic: '150',
-  //     Diastolic: '90'
+  //     systolic: '150',
+  //     diastolic: '90'
   //   },
-  //   currentMeds: {
+  //   curMeds: {
   //   },
   //   encounterDate: new Date("February 2 2014")
   // });
@@ -68,15 +68,15 @@ angular.module('myApp', [
   // db.addEncounter(ptIdentifier, {
   //   emails: ['ilyons@gmail.com'],
   //   bloodPressure: { 
-  //     Systolic: '165',
-  //     Diastolic: '100'
+  //     systolic: '165',
+  //     diastolic: '100'
   //   },
   //   targetBP: { 
-  //     Systolic: '150',
-  //     Diastolic: '90'
+  //     systolic: '150',
+  //     diastolic: '90'
   //   },
-  //   currentMeds: [
-  //     {medName: 'lisinopril', dose: 50, units: 'mg', className: 'ACEI', atMax: true, targetDoseRecs: [50]}
+  //   curMeds: [
+  //     {medicationName: 'lisinopril', dose: 50, units: 'mg', className: 'ACEI', atMax: true, targetdoseRecs: [50]}
   //   ],
   //   encounterDate: new Date("March 1 2014")
   // });
@@ -85,16 +85,16 @@ angular.module('myApp', [
   // db.addEncounter(ptIdentifier, {
   //   emails: ['ilyons@gmail.com'],
   //   bloodPressure: { 
-  //     Systolic: '157',
-  //     Diastolic: '95'
+  //     systolic: '157',
+  //     diastolic: '95'
   //   },
   //   targetBP: { 
-  //     Systolic: '150',
-  //     Diastolic: '90'
+  //     systolic: '150',
+  //     diastolic: '90'
   //   },
-  //   currentMeds: [
-  //     {medName: 'lisinopril', dose: 50, units: 'mg', className: 'ACEI', atMax: true, targetDoseRecs: [50]},
-  //     {medName: 'amlodipine', dose: 20, units: 'mg', className: 'CCB', atMax: true, targetDoseRecs: [20]}
+  //   curMeds: [
+  //     {medicationName: 'lisinopril', dose: 50, units: 'mg', className: 'ACEI', atMax: true, targetdoseRecs: [50]},
+  //     {medicationName: 'amlodipine', dose: 20, units: 'mg', className: 'CCB', atMax: true, targetdoseRecs: [20]}
   //   ],
   //   encounterDate: new Date("March 31 2014")
   // });
@@ -103,17 +103,17 @@ angular.module('myApp', [
   // db.addEncounter(ptIdentifier, {
   //   emails: ['ilyons@gmail.com'],
   //   bloodPressure: { 
-  //     Systolic: '145',
-  //     Diastolic: '85'
+  //     systolic: '145',
+  //     diastolic: '85'
   //   },
   //   targetBP: { 
-  //     Systolic: '150',
-  //     Diastolic: '90'
+  //     systolic: '150',
+  //     diastolic: '90'
   //   },
-  //   currentMeds: [
-  //     {medName: 'lisinopril', dose: 50, units: 'mg', className: 'ACEI', atMax: true, targetDoseRecs: [50]},
-  //     {medName: 'amlodipine', dose: 20, units: 'mg', className: 'CCB', atMax: true, targetDoseRecs: [20]},
-  //     {medName: 'bendroflumethiazide', dose: 10, units: 'mg', className: 'Thiazide', atMax: false, targetDoseRecs: [20]}
+  //   curMeds: [
+  //     {medicationName: 'lisinopril', dose: 50, units: 'mg', className: 'ACEI', atMax: true, targetdoseRecs: [50]},
+  //     {medicationName: 'amlodipine', dose: 20, units: 'mg', className: 'CCB', atMax: true, targetdoseRecs: [20]},
+  //     {medicationName: 'bendroflumethiazide', dose: 10, units: 'mg', className: 'Thiazide', atMax: false, targetdoseRecs: [20]}
   //   ],
   //   encounterDate: new Date("April 27 2014")
   // });

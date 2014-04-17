@@ -53,7 +53,7 @@ angular.module('myApp.directives', []).
     };
 
     //make sure the following bindings to the med model are up to date with the data structure defined in algorithm_jnc8 and meds_jnc8. Example:
-    //{ className: 'ACEI', meds: [{medName: 'valsartan', initialDoseOpts: [5],targetDoseOpts: [20]: }]})
+    //{ className: 'ACEI', meds: [{medicationName: 'valsartan', initialdoseOpts: [5],targetdoseOpts: [20]: }]})
     return {
       templateUrl: 'partials/drugDetails.html',
       replace: true,
@@ -64,7 +64,7 @@ angular.module('myApp.directives', []).
       },
       link: function(scope, element, attrs) {
         // get the pricing for this drug
-        goodRx.getPricing(scope.med.medName, scope.med.initialDoseRecs, function(res) {
+        goodRx.getPricing(scope.med.medicationName, scope.med.initialdoseRecs, function(res) {
           scope.err = false;
           if(!res.errors.length && !res.errors.sig){
             scope.med.searchError = false;
@@ -79,7 +79,7 @@ angular.module('myApp.directives', []).
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           } else {
             scope.err = true;
-            var searchedMedName = scope.med.medName;
+            var searchedMedName = scope.med.medicationName;
 
             scope.med.searchError = 'Medication lookup error: "' + searchedMedName + '" was not found on GoodRx\'s website.';
 
@@ -121,8 +121,8 @@ angular.module('myApp.directives', []).
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
-            graphHelpers.getBPExtreme(data, 'Diastolic')-10,
-            graphHelpers.getBPExtreme(data, 'Systolic')+10
+            graphHelpers.getBPExtreme(data, 'diastolic')-10,
+            graphHelpers.getBPExtreme(data, 'systolic')+10
           ]).range([height, 0]);
 
         var diasLine = d3.svg.line()
@@ -131,7 +131,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-          return y(d.blood_pressure.Diastolic);
+          return y(d.blood_pressure.diastolic);
         });
 
         var sysLine = d3.svg.line()
@@ -139,7 +139,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounter_date));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.Systolic);
+            return y(d.blood_pressure.systolic);
         });
 
           // add the SVG element

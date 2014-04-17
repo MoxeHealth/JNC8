@@ -49,29 +49,26 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   //only want to save targetBP and date
   $scope.saveTargetToDB = function(){
     $scope.clicked = true;
-    pt.encounter = {
-      targetBP: {
-        Systolic: $scope.targetSys,
-        Diastolic: $scope.targetDias
-      },
-      encounterDate: pt.encounter.encounterDate
-    }
-    db.addEncounter(pt.ids, pt.encounter); 
+    // pt.encounter = {
+    //   targetBP: {
+    //     systolic: $scope.targetSys,
+    //     diastolic: $scope.targetDias
+    //   },
+    //   encounterDate: pt.encounter.encounterDate
+    // }
+    // db.addEncounter(pt.ids, pt.encounter); 
   }
 
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
+  $scope.pt = pt;
   $scope.standAlone = orgId ? false : true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
+  $scope.medRecs = algoResults.recs.medRecs;
   $scope.showMeds = $scope.recs.medRecs.length ? true : false;
 
-  $scope.medRecs = algoResults.recs.medRecs;
   $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  $scope.targetDias = parseInt(algoResults.targetBP.Diastolic, 10);
-  $scope.targetSys = parseInt(algoResults.targetBP.Systolic, 10);
-  $scope.pt = pt;
-  $scope.encounter = pt.encounter;
   console.log(parseInt(pt.isOnMedication));
 
   // if(typeof pt.isOnMedication === 'string') {
@@ -80,6 +77,6 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   //   $scope.ptOnMeds = pt.isOnMedication;
   // }
 
-  $scope.ptOnMeds = pt.encounter.currentMeds.length ? true : false;
+  $scope.ptOnMeds = pt.curMeds.length ? true : false;
 
 }]);

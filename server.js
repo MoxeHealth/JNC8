@@ -129,13 +129,13 @@ app.post('/db/encounters',  function(req, res){
   var orgId = req.body.orgId || 'NULL';
   var email = msString(req.body.encounter.email);
   var encounterDate = msString(new Date(req.body.encounter.encounterDate)) || msString(new Date());
-  var bloodPressure = msString(req.body.encounter.bloodPressure);
+  var bloodPressure = msString(req.body.curBP);
   var targetBP = msString(req.body.encounter.targetBP);
   var prescribedMeds = msString(req.body.encounter.prescribedMeds);
   var removedMeds = msString(req.body.encounter.removedMeds);
-  var currentMeds = msString(req.body.encounter.currentMeds);
+  var curMeds = msString(req.body.encounter.curMeds);
 
-  var query = 'INSERT INTO dbo.encounters (pt_id, org_id, emails, encounter_date, blood_pressure, target_bp, prescribed_meds, removed_meds, current_meds) VALUES (' + ptId + ',' + orgId + ',' + email +',' + encounterDate + ',' + bloodPressure + ',' + targetBP +',' + prescribedMeds + ',' + removedMeds + ',' + currentMeds + ')';
+  var query = 'INSERT INTO dbo.encounters (pt_id, org_id, emails, encounter_date, blood_pressure, target_bp, prescribed_meds, removed_meds, current_meds) VALUES (' + ptId + ',' + orgId + ',' + email +',' + encounterDate + ',' + bloodPressure + ',' + targetBP +',' + prescribedMeds + ',' + removedMeds + ',' + curMeds + ')';
 
   db.queryHelper(query, function(err, data){
     if(err) {
