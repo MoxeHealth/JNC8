@@ -355,11 +355,10 @@ angular.module('myApp.services', [])
 
     var pt = {};
 
-    //----------methods for parsing substrate data-----------
-
     //todo- where to get information on race choices available for standalone app? 
     pt.races =  ['Black or African American', 'Asian', 'Caucasian'];
 
+    //get data from moxe user 
     if(startup.ptData.substrate){
       var substrateData = startup.ptData.substrate;
       var problems = substrateHelpers.getProblems(substrateData.problems);
@@ -424,63 +423,65 @@ angular.module('myApp.services', [])
 
   .service('graphHelpers', [function() {
 
-    this.getBPExtreme = function(array, keyName) {
-      var numArray = [];
+    //expects array of bp objects and string that is either 'systolic' or 'diastolic'
+    this.getBPExtreme = function(bpsArray, keyName) {
+      var bpValues = [];
 
-      for(var i = 0; i < array.length; i++) {
-        numArray.push(array[i].curBP[keyName]);
+      for(var i = 0; i < bpsArray.length; i++) {
+        bpValues.push(bpsArray[i][keyName]);
       }
 
       if(keyName === 'systolic') {
-        var max = Math.max.apply(Math, numArray);
-        return Math.max.apply(Math, numArray);
+        var max = Math.max.apply(Math, bpValues);
+        return Math.max.apply(Math, bpValues);
       } else if (keyName === 'diastolic') {
-        return Math.min.apply(Math, numArray);
+        return Math.min.apply(Math, bpValues);
       } else {
         throw new Error("getBPExtreme requires either 'systolic' or 'diastolic' as a key name.");
       }
     };
 
-    //currently assuming that every encounter in the database
-    //will have a value in the curBP field and an encounter_date field
-    this.parseBPData = function(bpDataArr, targetBP) {
+    //expects result of 'pt' service, which is an object containing keys whose values are arrays
+    //iterates through arrays  
+    this.parseBPData = function(pt) {
       var results = [];
-      var targetSys = 120;
-      var targetDias = 80;
 
-      for(var i = 0; i < bpDataArr.length; i++) {
-        var bp = JSON.parse(bpDataArr[i].curBP);
-        var date = new Date(bpDataArr[i].encounterDate);
+      //use 'bps' to determine how many iterations
+      //todo- possible that a patient will have more encounter dates than bp readings? 
+      for(var i = 0; i < pt.bps.length; i++) {
+        var bp = pt.bps[i];
+        var targetBP = pt.targetBPs[i];
+        var encounterDate = new Date(pt.dates[i]);
 
         results.push({
-          date: date,
+          encounterDate: encounterDate,
           systolic: bp.systolic,
           diastolic: bp.diastolic,
-          targetDias: targetDias,
-          targetSys: targetSys
+          targetDias: targetBP.systolic,
+          targetSys: targetBP.diastolic
         });
       }
       return results;
     };
 
-    this.parseGraphData = function(array) {
-      var results = [];
-      for(var i = 0; i < array.length; i++) {
-        var obj = array[i];
-        for(var key in obj) {
-          if(typeof obj[key] === "string") {
-            try{
-              obj[key] = JSON.parse(obj[key]);
-            }
-            catch (e) {
-              obj[key] = new Date(obj[key]);
-            }
-          }
-        }
-        results.push(array[i]);
-      }
-      return results;
-    };
+    // this.parseGraphData = function(array) {
+    //   var results = [];
+    //   for(var i = 0; i < array.length; i++) {
+    //     var obj = array[i];
+    //     for(var key in obj) {
+    //       if(typeof obj[key] === "string") {
+    //         try{
+    //           obj[key] = JSON.parse(obj[key]);
+    //         }
+    //         catch (e) {
+    //           obj[key] = new Date(obj[key]);
+    //         }
+    //       }
+    //     }
+    //     results.push(array[i]);
+    //   }
+    //   return results;
+    // };
   }])
 
   .service('goodRx', ['$http', function($http) {

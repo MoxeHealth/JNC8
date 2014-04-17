@@ -3,8 +3,10 @@
 /* Directives */
 
 
-angular.module('myApp.directives', []).
-  directive('appVersion', ['version', function(version) {
+angular.module('myApp.directives', [
+  'myApp.services'
+  ])
+  .directive('appVersion', ['version', function(version) {
     return function(scope, elm, attrs) {
       elm.text(version);
     };
@@ -98,7 +100,7 @@ angular.module('myApp.directives', []).
 
   }])
 
-  .directive('bpGraph', ['graphHelpers', function(graphHelpers) {
+  .directive('bpGraph', ['graphHelpers', 'pt', function(graphHelpers, pt) {
       
       var renderGraph = function(scope) {
         // set the width/height of the graph based on the size of the containing element
@@ -106,9 +108,10 @@ angular.module('myApp.directives', []).
         var elWidth = 350;
 
         //handle case when patient has no entries in database 
-       if(!scope.data.ptData.db.length){ return; }
+        if(!pt.bps){ return; }
 
-        var data = graphHelpers.parseGraphData(scope.data.ptData.db);
+        var data = graphHelpers.parseBPData(pt);
+        console.log('data', data)
 
         var margins = [30, 30, 30, 40];
         var width = elWidth - margins[1];
@@ -121,8 +124,8 @@ angular.module('myApp.directives', []).
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
-            graphHelpers.getBPExtreme(data, 'diastolic')-10,
-            graphHelpers.getBPExtreme(data, 'systolic')+10
+            graphHelpers.getBPExtreme(pt.bps, 'diastolic')-10,
+            graphHelpers.getBPExtreme(pt.bps, 'systolic')+10
           ]).range([height, 0]);
 
         var diasLine = d3.svg.line()
@@ -131,7 +134,7 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounterDate));
           })
           .y(function(d, i) {
-          return y(d.curBP.diastolic);
+          return y(d.diastolic);
         });
 
         var sysLine = d3.svg.line()
@@ -139,8 +142,24 @@ angular.module('myApp.directives', []).
             return x(new Date(d.encounterDate));
           })
           .y(function(d, i) {
-            return y(d.curBP.systolic);
+            return y(d.systolic);
         });
+
+        var targetDiasLine = d3.svg.line()
+          .x(function(d,i) {
+            return x(new Date(d.encounterDate));
+          })
+          .y(function(d, i) {
+            return y(d.targetDias);
+        });
+        
+        var targetSysLine = d3.svg.line()
+          .x(function(d,i) {
+            return x(new Date(d.encounterDate));
+          })
+          .y(function(d, i) {
+            return y(d.targetSys);
+        });  
 
           // add the SVG element
         var graph = d3.select('#bp-graph').append('svg:svg')
@@ -179,20 +198,22 @@ angular.module('myApp.directives', []).
 
         graph.append('svg:path').attr('d', diasLine(data)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
         graph.append('svg:path').attr('d', sysLine(data)).attr('class', 'plotline sysLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', targetDiasLine(data)).attr('class', 'plotline targetDiasLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', targetSysLine(data)).attr('class', 'plotline targetSysLine').attr('transform','translate(40,0)');
         
-        graph.append('line')
-          .attr('x1', 0)
-          .attr('y1', function() { return y(scope.targetDias); })
-          .attr('x2', width)
-          .attr('y2', function() { return y(scope.targetDias); })
-          .attr('class', 'plotline diasLine targetLine');
+        // graph.append('line')
+        //   .attr('x1', 0)
+        //   .attr('y1', function() { return y(scope.targetDias); })
+        //   .attr('x2', width)
+        //   .attr('y2', function() { return y(scope.targetDias); })
+        //   .attr('class', 'plotline diasLine targetLine');
 
-        graph.append('line')
-          .attr('x1', 0)
-          .attr('y1', function() { return y(scope.targetSys); })
-          .attr('x2', width)
-          .attr('y2', function() { return y(scope.targetSys); })
-          .attr('class', 'plotline sysLine targetLine');
+        // graph.append('line')
+        //   .attr('x1', 0)
+        //   .attr('y1', function() { return y(scope.targetSys); })
+        //   .attr('x2', width)
+        //   .attr('y2', function() { return y(scope.targetSys); })
+        //   .attr('class', 'plotline sysLine targetLine');
 
     };
 
