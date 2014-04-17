@@ -10,7 +10,7 @@ exports.config = {
 	server: 'hjk6ivqh8d.database.windows.net',
 	port: 1433,
 	options: {
-		database: 'JNC8DB',
+		database: 'JNC8DB',	
 		encrypt: true,
 		rowCollectionOnRequestCompletion: true,
 		useColumnNames: true
@@ -39,7 +39,7 @@ var parseData = function(array) {
 	for (var i = 0; i < array.length; i++) {
 		for(key in array[i]) {
 			if(array[i][key].value !== 'undefined'){
-				if(key === 'encounter_date') { // it's the date
+				if(key === 'encounterDate') { // it's the date
 					array[i][key] = array[i][key].value;
 				} else { // it's any of the others; parse
 					array[i][key] = JSON.parse(array[i][key].value);
