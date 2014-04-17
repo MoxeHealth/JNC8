@@ -5,6 +5,7 @@ var db = require('./db-config')
 var app = express();
 var encrypt = require('./encrypt');
 var email = require('./email');
+var saml = require('saml20');
 
 
 exports.api = {
@@ -29,7 +30,7 @@ exports.api = {
 };
 
 app.use(express.static(__dirname));
-app.use(bodyParser());
+app.use(bodyParser({strict: false}));
 
 app.get('/', function(req,res){
   res.redirect('/app/index.html');
@@ -37,7 +38,6 @@ app.get('/', function(req,res){
 
 //The SQL database stores any information that must be persisted but cannot be written back to the EMR
 app.get('/db/encounters',  function(req, res){
-
   console.log('get db/encounters');
   var ptId = req.query.ptId;
   var orgIdString;
@@ -56,7 +56,6 @@ app.get('/db/encounters',  function(req, res){
     if(err) {
       res.send(err);
     } else {
-      console.log('query rows', rows);
       res.send(rows);
     }
   });
@@ -128,6 +127,44 @@ app.post('/db/encounters',  function(req, res){
       res.send(data);
     }
   });
+});
+
+app.post('/authenticate', function(req, res) {
+  console.log('fielding /authenticate request');
+  // this should be the base64 assertion to pass into saml.validate
+  // req.headers["Content-Type"] = '/x-www-form-urlencoded';
+
+  var thumbprint = "MIIC2jCCAcKgAwIBAgIQFC2VkNtdfJtAMS1n4G1JYDANBgkqhkiG9w0BAQUFADAWMRQwEgYDVQQDEwtNYXVsaWstTW94ZTAeFw0xMzExMjIwMTI3MTJaFw0xNDExMjEwMDAwMDBaMBYxFDASBgNVBAMTC01hdWxpay1Nb3hlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3J1ns4AcOsQ2UYXqNxtLHVoQwUqFC/d15t06xN378OO0wByuHsBC43NANr3leqJW7AOr0YQ30ZmlavXu8kuYjYo7aPT15SzQNKJJla5KngngLb0r0W54eh/dkX2/iaFRp9ACD62F+mPVmiSWr8NuScvMc6oqeAcAUdZAkpwr+TjY3EXvqbrSUydnJiBcfc+ZCAcfLj1zpxmY4vl44isE/qFq2cRbo3+Wdal3i4LHZVuT1lR3usb2oKlIr1phyMcQR03He/S9l//ysMS6v+FaPWnM7rtxMOAQ6jgQeYjS6k72oXpjIpIbNKM9/K4EOENyK/SlRLhto1Vmp8AMfyA5QIDAQABoyQwIjALBgNVHQ8EBAMCBDAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQEFBQADggEBACwk4fpW6yPZJKtifdIP5kbCVS+JMw6/ROxt8QbWeQ37uEiexq6jfuunumEW3WtlUjgNcQ7gpSd1Sv6bIRS+KDgyFJAtxwiV1Mad8yYuutgJrXblX/6v6yQImg6d+Zru91Defef9Kg3LaJdJJCIqONolm9eDlAMrOIIEiKZY3tfnjfy5QeXAAdQjaHeQ9HUblyjLhbSjPypXvgcfMyD8pPXnRXg9jKQMkq+RxWZRWvW5YE5sexLsZEEOL21BV1aU2uE7epCf1+czJtSJkJpJhxRh17JYNZsYAU1XIai7oJbdkto2dzFl3VvULlfxdR0WoBw0I";
+  var options = { thumbprint: thumbprint,
+    audience: 'https://jnc8.azurewebsites.net/authenticate'
+  };
+  
+  var body = '';
+  req.on('data', function(data){ 
+    body += data;
+  });
+
+  req.on('end', function() {
+    var b64Assertion = body.split('=')[1];
+    b64Assertion = decodeURIComponent(b64Assertion);
+    var rawAssertion = new Buffer(b64Assertion, 'base64').toString('utf8');
+
+    console.log('rawAssertion: ', rawAssertion);
+
+    saml.validate(rawAssertion, options, function(err, profile) {
+      if(err) throw new Error('SAML error:' + err);
+
+      console.log("SAML profile: ", profile);
+      var claims = profile.claims;
+      var issuer = profile.issuer;
+
+      console.log('SAML claims:', claims);
+    });
+  });
+
+  console.log(rawAssertion);
+
+
 });
 
 //will handle post requests from unique urls that are given to people who sign up for the standalone app 
