@@ -117,7 +117,7 @@ angular.module('myApp.directives', []).
         // set up the axes based on the data. will need to adjust where it grabs min/max
         // may need to scale d3.time.day.offset to d3.time.month.offset or similar, depending on range of dates
         var x = d3.time.scale()
-            .domain([data[0].encounter_date, d3.time.month.offset(data[data.length-1].encounter_date, 1)])
+            .domain([data[0].encounterDate, d3.time.month.offset(data[data.length-1].encounterDate, 1)])
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
@@ -128,18 +128,18 @@ angular.module('myApp.directives', []).
         var diasLine = d3.svg.line()
           .x(function(d,i) {
             // using/returning time to fake time spacing on our database data
-            return x(new Date(d.encounter_date));
+            return x(new Date(d.encounterDate));
           })
           .y(function(d, i) {
-          return y(d.blood_pressure.diastolic);
+          return y(d.curBP.diastolic);
         });
 
         var sysLine = d3.svg.line()
           .x(function(d,i) {
-            return x(new Date(d.encounter_date));
+            return x(new Date(d.encounterDate));
           })
           .y(function(d, i) {
-            return y(d.blood_pressure.systolic);
+            return y(d.curBP.systolic);
         });
 
           // add the SVG element

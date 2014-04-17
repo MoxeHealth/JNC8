@@ -187,19 +187,19 @@ angular.module('myApp.services', [])
       var bps = [];
       var vitalsBP = vitals.BloodPressure;
 
-    //   //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
-    //   for(var i = 0; i < vitalsBP.length; i++){
-    //     //need to guard against missing substrate data 
-    //     if(!vitalsBP[i]){
-    //       continue;
-    //     }
-    //     var bpObj = {
-    //       systolic: parseInt(vitalsBP[i].systolic.Value, 10) || null,
-    //       diastolic: parseInt(vitalsBP[i].diastolic.Value, 10) || null,
-    //       ResultDateTime: vitalsBP[i].ResultDateTime.DateTime || null
-    //     };
-    //     bps.push(bpObj);
-    //   }
+      //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
+      // for(var i = 0; i < vitalsBP.length; i++){
+      //   //need to guard against missing substrate data 
+      //   if(!vitalsBP[i]){
+      //     continue;
+      //   }
+      //   var bpObj = {
+      //     systolic: parseInt(vitalsBP[i].systolic.Value, 10) || null,
+      //     diastolic: parseInt(vitalsBP[i].diastolic.Value, 10) || null,
+      //     ResultDateTime: vitalsBP[i].ResultDateTime.DateTime || null
+      //   };
+      //   bps.push(bpObj);
+      // }
 
       //for now, only one BP reading
       var bloodPressure = {
@@ -216,12 +216,12 @@ angular.module('myApp.services', [])
       var dates = [];
       var vitalsBP = vitals.BloodPressure;
 
-    //   //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
-    //   for(var i = 0; i < vitalsBP.length; i++){
+      //currently only one BP reading in vitals. Soon Moxe vitals service will return an array of BP readings
+      // for(var i = 0; i < vitalsBP.length; i++){
  
-    //     var date = vitalsBP[i].Diastolic.ResultDateTime.DateTime || null;
-    //     bps.push(date);
-    //   }
+      //   var date = vitalsBP[i].Diastolic.ResultDateTime.DateTime || null;
+      //   bps.push(date);
+      // }
 
       //for now, only one BP reading
       var date = vitalsBP.Diastolic.ResultDateTime.DateTime || null;
@@ -267,6 +267,7 @@ angular.module('myApp.services', [])
       problemListContainsDiabetes: problemListContainsDiabetes,
       problemListContainsCKD: problemListContainsCKD,
       getBPs: getBPs,
+      getDates: getDates,
       getMeds: getMeds,
       getclassName: getclassName,
       medAtMax: medAtMax,
@@ -364,10 +365,13 @@ angular.module('myApp.services', [])
       var problems = substrateHelpers.getProblems(substrateData.problems);
 
       pt.bps = substrateHelpers.getBPs(substrateData.vitals);
-      pt.curMeds = substrateHelpers.getMeds(substrateData.medications);
-
       //assume blood pressure data is in chronological order
       pt.curBP = pt.bps[pt.bps.length - 1];
+      
+      pt.curMeds = substrateHelpers.getMeds(substrateData.medications);
+
+      pt.dates = substrateHelpers.getDates(substrateData.vitals);
+      pt.curDate = pt.dates[pt.dates.length - 1];
 
       //'ids' needed to save information from session to the database 
       pt.ids = startup.ptIdentifier;
@@ -382,12 +386,16 @@ angular.module('myApp.services', [])
     }
 
     //get data from current user of standalone app, or moxe user 
-    if(startup.ptData.db){
+    if(startup.ptData.db.length){
       var dbData = startup.ptData.db;
 
       //both user types (moxe and standalone) get this info from database 
       pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP')
-      pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
+
+      //in case for some reason the most recent curTargetBP's properties has 'null' values
+      if(pt.curTargetBP){
+        pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
+      }
 
       //user of stand alone app 
       if(!startup.ptData.substrate){
@@ -411,7 +419,6 @@ angular.module('myApp.services', [])
         pt.isOnMedication = false;
       }
     }
-
     return pt;
   }])
 
@@ -421,7 +428,7 @@ angular.module('myApp.services', [])
       var numArray = [];
 
       for(var i = 0; i < array.length; i++) {
-        numArray.push(array[i].blood_pressure[keyName]);
+        numArray.push(array[i].curBP[keyName]);
       }
 
       if(keyName === 'systolic') {
@@ -435,15 +442,15 @@ angular.module('myApp.services', [])
     };
 
     //currently assuming that every encounter in the database
-    //will have a value in the blood_pressure field and an encounter_date field
+    //will have a value in the curBP field and an encounter_date field
     this.parseBPData = function(bpDataArr, targetBP) {
       var results = [];
       var targetSys = 120;
       var targetDias = 80;
 
       for(var i = 0; i < bpDataArr.length; i++) {
-        var bp = JSON.parse(bpDataArr[i].blood_pressure);
-        var date = new Date(bpDataArr[i].encounter_date);
+        var bp = JSON.parse(bpDataArr[i].curBP);
+        var date = new Date(bpDataArr[i].encounterDate);
 
         results.push({
           date: date,

@@ -42,21 +42,22 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
   $scope.saveToDB = function(){
     $scope.clicked = true;
-    // console.log('saveToDB');
-    // db.addEncounter(pt.ids, pt.encounter); 
+    console.log('saveToDB');
+    var encounter = pt;
+    db.addEncounter(pt.ids, encounter); 
   };
 
-  //only want to save targetBP and date
+  //only want to save targetBP and date for moxe users
   $scope.saveTargetToDB = function(){
     $scope.clicked = true;
-    // pt.encounter = {
-    //   targetBP: {
-    //     systolic: $scope.targetSys,
-    //     diastolic: $scope.targetDias
-    //   },
-    //   encounterDate: pt.encounter.encounterDate
-    // }
-    // db.addEncounter(pt.ids, pt.encounter); 
+
+    //other pt information is saved in moxe substrate
+    //moxe substrate should be single source of truth for 
+    //as much information as possible 
+    var encounter = {
+      targetBP: pt.curTargetBP
+    }
+    db.addEncounter(pt.ids, encounter); 
   }
 
   var algoResults = algorithm.methods.runAlgorithm(pt);
