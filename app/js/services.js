@@ -13,7 +13,7 @@ angular.module('myApp.services', [])
   //   return $rootScope.orgId;
   // }])
 
-  .service('startup', ['$http', '$q','$rootScope', 'substrate', 'db', function($http, $q, $rootScope, substrate, db) {
+  .service('startup', ['$http', '$q','$rootScope', '$location', 'substrate', 'db', function($http, $q, $rootScope, $location, substrate, db) {
     console.log("into startup");
     var ptData = {};
     //TODO - wrap following code in post request from Epic
@@ -22,7 +22,7 @@ angular.module('myApp.services', [])
     var initialize = function(){
       console.log('Initialize called');
 
-    var result = $q.all([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
+      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
     ]);
 
       return result.then(function(response) {
@@ -84,7 +84,7 @@ angular.module('myApp.services', [])
     var getPatientData = function(patientId, callback){
       console.log('into getPatientData');
 
-      var result = $q.all({
+      var result = $q["all"]({
         demographics: getPatientDemographics(patientId),
         vitals: getVitals(patientId),
         problems: getProblems(patientId),
@@ -186,13 +186,16 @@ angular.module('myApp.services', [])
 
     var encounterDbData = startup.ptData.db[startup.ptData.db.length - 1];
 
-    var encounter = {
-      emails: encounterDbData.emails[0],
-      encounterDate: encounterDbData.encounter_date,
-      bloodPressure: encounterDbData.blood_pressure,
-      targetBP: encounterDbData.target_bp,
-      currentMeds: encounterDbData.current_meds
-    };
+    if(encounterDbData) {
+      var encounter = {
+        emails: encounterDbData.emails[0],
+        encounterDate: encounterDbData.encounter_date,
+        bloodPressure: encounterDbData.blood_pressure,
+        targetBP: encounterDbData.target_bp,
+        currentMeds: encounterDbData.current_meds
+      };
+    }
+      
 
     return {
       /////////information that will be written to database at end of session:
