@@ -146,33 +146,7 @@ angular.module('myApp.directives', [
           })
           .y(function(d, i) {
             return y(d.systolic);
-        });
-
-        var targetDiasLine = d3.svg.line()
-          .x(function(d,i) {
-            return x(d.encounterDate);
-          })
-          .y(function(d, i) {
-            return y(d.targetDias);
-        });
-        
-        var targetSysLine = d3.svg.line()
-          .x(function(d,i) {
-            return x(d.encounterDate);
-          })
-          .y(function(d, i) {
-            return y(d.targetSys);
-        });  
-
-        var dummyLine = d3.svg.line()
-          .x(function(d,i) {
-            return x(d.date);
-          })
-          .y(function(d, i) {
-            return y(d.bp);
         }); 
-
-        var dummyData = [{date: new Date(), bp: 90}, {date: new Date(), bp: 130}];
 
           // add the SVG element
         var graph = d3.select('#bp-graph').append('svg:svg')
@@ -209,69 +183,53 @@ angular.module('myApp.directives', [
           .attr('transform', 'translate(0,0)')
           .call(yAxisLeft);
 
-        //dummy line
-        graph.append('svg:path').attr('d', dummyLine(dummyData)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
 
         //add the lines
         graph.append('svg:path').attr('d', diasLine(data)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
         graph.append('svg:path').attr('d', sysLine(data)).attr('class', 'plotline sysLine').attr('transform','translate(40,0)');
-        graph.append('svg:path').attr('d', targetDiasLine(data)).attr('class', 'plotline diasLine targetLine').attr('transform','translate(40,0)');
-        graph.append('svg:path').attr('d', targetSysLine(data)).attr('class', 'plotline sysLine targetLine').attr('transform','translate(40,0)');
 
         //add circles for each point on each line
         //type can be 'targetDias', 'targetSys', 'dias', or 'sys'
         var drawPoints = function(data, type) {
-          var classNames = function(){
-            var classNames = [];
-            classNames[0] = '.' + type + 'Circle';
+          var className = type + 'Circle';
 
-            if(type === 'targetDias' || 'targetSys'){
-              classNames[1] = '.targetCircle';
-
-              return classNames;
-            }else{
-              return classNames;
-            }
-          };
-
-          var circles = graph.selectAll('.' + type)
+          var circles = graph.selectAll(className)
             .data(data)
             .enter()
             .append('circle');
 
           var circleAttributes = circles
-            .attr('class', classNames) 
+            .attr('class', className) 
             .attr('cx', function(d){
               return x(d.encounterDate);
             })
             .attr('cy', function(d){ 
               if(type === 'dias') return y(d.diastolic); 
               if(type === 'sys') return y(d.systolic); 
-              if(type === 'targetDias') return y(d.targetDias); 
-              if(type === 'targetSys') return y(d.targetSys); 
             })
-            .attr('r', circleRadius);
+            .attr('r', circleRadius)
+            .attr('transform','translate(40,0)');
         };
 
-        var circleTypes = ['sys', 'dias', 'targetDias', 'targetSys'];
+        var circleTypes = ['sys', 'dias'];
 
         for(var i = 0; i < circleTypes.length; i++){
           drawPoints(data, circleTypes[i]);
         }
         
-        // graph.append('line')
-        //   .attr('x1', 0)
-        //   .attr('y1', function() { return y(scope.targetDias); })
-        //   .attr('x2', width)
-        //   .attr('y2', function() { return y(scope.targetDias); })
-        //   .attr('class', 'plotline diasLine targetLine');
+        graph.append('line')
+          .attr('x1', 0)
+          .attr('y1', function() { return y(data[0].targetDias); })
+          .attr('x2', width)
+          .attr('y2', function() { return y(data[0].targetDias); })
+          .attr('class', 'plotline diasLine targetLine');
 
-        // graph.append('line')
-        //   .attr('x1', 0)
-        //   .attr('y1', function() { return y(scope.targetSys); })
-        //   .attr('x2', width)
-        //   .attr('y2', function() { return y(scope.targetSys); })
-        //   .attr('class', 'plotline sysLine targetLine');
+        graph.append('line')
+          .attr('x1', 0)
+          .attr('y1', function() { return y(data[0].targetSys); })
+          .attr('x2', width)
+          .attr('y2', function() { return y(data[0].targetSys); })
+          .attr('class', 'plotline sysLine targetLine');
 
     };
 
