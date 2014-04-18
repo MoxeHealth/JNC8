@@ -110,8 +110,8 @@ app.post('/db/encounters',  function(req, res){
   var hasCKD = msString(req.body.encounter.hasCKD) || 'NULL';
   var hasDiabetes = msString(req.body.encounter.hasDiabetes) || 'NULL';
 
-  if(req.body.orgId) {
-    var userHash = encrypt.makeEmailHash(req.body.encounter.emails[0]) || null ;
+  if(!req.body.orgId && req.body.encounter.emails) {
+    var userHash = encrypt.makeEmailHash(req.body.encounter.emails[0]);
   } else {
     var userHash = null;
   }
