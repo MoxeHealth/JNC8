@@ -123,7 +123,7 @@ angular.module('myApp.directives', [
          console.log('timeScale', timeScale);
 
         var x = d3.time.scale()
-            .domain([data[0].encounterDate, d3.time[timeScale].offset(data[data.length-1].encounterDate, 1)])
+            .domain([data[0].encounterDate, d3.time[timeScale].offset(data[data.length-1].encounterDate, 3)])
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
@@ -163,7 +163,7 @@ angular.module('myApp.directives', [
             .orient('bottom')
             .ticks(d3.time[timeScale + 's'], 1)
             .tickFormat(d3.time.format('%m/%d/%y'))
-            .tickSize(4)
+            .tickSize(5)
             .tickPadding(5);
 
         //add the x axis...

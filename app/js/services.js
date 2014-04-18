@@ -467,7 +467,8 @@ angular.module('myApp.services', [])
 
         var targetBP = pt.targetBPs[i];
 
-        var encounterDate = pt.encounterDates[i];
+        // var encounterDate = pt.encounterDates[i];
+        var encounterDate = new Date("April 17 2014");
 
         results.push({
           encounterDate: encounterDate,
