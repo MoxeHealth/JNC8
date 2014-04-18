@@ -9,35 +9,46 @@ angular.module('myApp.services', [])
     }
   }])
 
+
   .service('startup', ['$http', '$q', '$rootScope', '$location', '$route', 'substrate', 'db', function($http, $q, $rootScope, $location, $route, substrate, db) {
     
-    if($location.path() === '/dataViz') {
-      $location.path('/');
-      $route.reload();
-    } 
+    // if($location.path() === '/dataViz') {
+    //   $location.path('/');
+    //   $route.reload();
+    // } 
 
+
+  // 
     var ptData = {};
-    //TODO - wrap following code in post request from Epic
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
-    var initialize = function(){
-      console.log('Initialize called');
-
-      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
-    ]);
+    var initializeMoxe = function(){
+      console.log('initializeMoxe called');
+      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)]);
 
       return result.then(function(response) {
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1];
-
         console.log('substrate', ptData.substrate);
         console.log('db', ptData.db);
       });
     };
 
+    var initializeReturning = function(){
+      console.log('initializeReturning called');
+      var result = $q["all"]([db.getEncounters(ptIdentifier)]);
+
+      return result.then(function(response) {
+        $rootScope.showSplash = false;
+        ptData.db = response[0];
+        console.log('db', ptData.db);
+      });
+    };
+
     return {
-      initialize: initialize,
+      initializeMoxe: initializeMoxe,
+      initializeReturning: initializeReturning,
       ptData: ptData,
       ptIdentifier: ptIdentifier
     };
@@ -386,11 +397,11 @@ angular.module('myApp.services', [])
     }
 
     //get data from current user of standalone app, or moxe user 
-    if(startup.ptData.db.length){
+    if(startup.pbData && startup.ptData.db.length){
       var dbData = startup.ptData.db;
 
       //both user types (moxe and standalone) get this info from database 
-      pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP')
+      pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP') || [];
 
       //in case for some reason the most recent curTargetBP's properties has 'null' values
       if(pt.curTargetBP){
@@ -449,6 +460,7 @@ angular.module('myApp.services', [])
 
       //use 'bps' to determine how many iterations
       //todo- possible that a patient will have more encounter dates than bp readings? 
+      // if(!pt.bps) return;
       for(var i = 0; i < pt.bps.length; i++) {
         var bp = pt.bps[i];
         var targetBP = pt.targetBPs[i];

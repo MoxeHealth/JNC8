@@ -5,7 +5,11 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location','pt', 'orgId',
 function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
+
+
+  console.log('into DataEntry');
   $rootScope.showSplash = false;
+
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
@@ -65,6 +69,8 @@ function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
   $scope.pt = pt;
+  console.log(pt);
+  console.log(algoResults);
   $scope.standAlone = orgId ? false : true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;

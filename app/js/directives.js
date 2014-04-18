@@ -94,7 +94,7 @@ angular.module('myApp.directives', [
 
   }])
 
-  .directive('bpGraph', ['graphHelpers', 'pt', function(graphHelpers, pt) {
+  .directive('bpGraph', ['$timeout', 'pt', 'graphHelpers', function($timeout, pt, graphHelpers) {
       
       var renderGraph = function(scope) {
         // set the width/height of the graph based on the size of the containing element
@@ -226,16 +226,25 @@ angular.module('myApp.directives', [
         targetDias: '=targetDias'
       },
       link: function (scope, element, attrs) {
-        scope.$watch('targetSys', function(newVal, oldVal) {
-          // console.log('targetSys changed.');
-          renderGraph(scope);
-          graphHelpers.removeFirstGraphChild();
-        });
+        // because we need to run to 
+        
+          if(!pt.targetBPs) {
+            algorithm.methods.runAlgorithm(pt);
+            console.log(pt);
+          }
+        $timeout(function() {
+          console.log('running the timeout');
+          scope.$watch('targetSys', function(newVal, oldVal) {
+            // console.log('targetSys changed.');
+            renderGraph(scope);
+            graphHelpers.removeFirstGraphChild();
+          });
 
-        scope.$watch('targetDias', function(newVal, oldVal) {
-          renderGraph(scope);
-          graphHelpers.removeFirstGraphChild();
-        });
+          scope.$watch('targetDias', function(newVal, oldVal) {
+            renderGraph(scope);
+            graphHelpers.removeFirstGraphChild();
+          });
+        }, 1000);
       }
     }
 

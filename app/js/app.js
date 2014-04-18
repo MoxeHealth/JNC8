@@ -18,25 +18,43 @@ angular.module('myApp', [
 .config(['$routeProvider', function($routeProvider) {
   console.log('config called');
 
-  $routeProvider.when('/', {
-    templateUrl: 'partials/dataEntry.html',
+  $routeProvider.when('/moxe', {
+    templateUrl: 'partials/dataViz.html',
     resolve: {
       setUpApp: function(startup){
         console.log("setUpApp");
-        return startup.initialize();
+        return startup.initializeMoxe();
       }
     },
     controller: 'dataEntryCtrl'
   });
 
+  $routeProvider.when('/returning', {
+    templateUrl: 'partials/dataEntry.html',
+    resolve: {
+      setUpApp: function(startup) {
+        console.log("Set up app for returning user.");
+        return startup.initializeReturning();
+      }
+    },
+    controller: 'dataEntryCtrl'
+  })
+
   $routeProvider.when('/dataViz', {
     templateUrl: 'partials/dataViz.html',
     controller: 'dataVizCtrl'
   });
+
+  $routeProvider.when('/', {
+    templateUrl: 'partials/dataEntry.html',
+    controller: 'dataEntryCtrl'
+  })
+
   $routeProvider.otherwise({
     redirectTo: '/'
   });
 }])
+
 .run(['$rootScope', 'db', 'goodRx', 'orgId', function($rootScope, db, goodRx, orgId) {
   console.log('run called');
   $rootScope.patientId = 3230000;

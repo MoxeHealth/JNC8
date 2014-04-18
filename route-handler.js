@@ -1,5 +1,4 @@
 var request = require('request');
-var bodyParser = require('body-parser');
 var db = require('./db-config')
 var encrypt = require('./encrypt');
 var email = require('./email');
@@ -30,7 +29,29 @@ module.exports = function(app) {
   };
 
   app.get('/', function(req,res){
-    res.redirect('/app/index.html');
+    // check to see if there's a user id parameter
+    // if there is, run a query through the DB to see if that user id exists; return with data if it does
+    // send res.redirect to '/new with information'
+    if(req.query.uid) {
+      console.log(req.query.uid);
+      var query = db.makeUserQuery(req.query.uid);
+      db.queryHelper(query, function(err, rows) {
+        if(err) {
+          console.log('Error in uid query: ', err);
+        } else {
+          if(rows.length > 0){ 
+            res.params = rows;
+            console.log(rows);
+            res.redirect('/app/#/returning');
+          } else {
+            res.redirect('/app')
+          }
+        }
+      });
+    } else {
+      console.log("Serving a vanilla GET to '/'")
+      res.redirect('/app');
+    }
   });
 
   //The SQL database stores any information that must be persisted but cannot be written back to the EMR
@@ -158,13 +179,12 @@ module.exports = function(app) {
     });
 
     console.log(rawAssertion);
-
-
   });
+
 
   //will handle post requests from unique urls that are given to people who sign up for the standalone app 
   app.post('/*',  function(req, res){
-    console.log("Serving app.post...");
+    // console.log("Serving app.post...");
 
     //labs endpoint is now year2014
     if(req.url === '/patient/labs'){
@@ -174,7 +194,7 @@ module.exports = function(app) {
       var url = api.moxe.baseUrl + api.moxe.year2013 + req.url;
     }
 
-    console.log("The url: " + url);
+    // console.log("The url: " + url);
     req.pipe(request.post({uri: url, json: req.body, headers: api.moxe.headers})).pipe(res);
   });
 };
