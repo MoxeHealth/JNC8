@@ -101,7 +101,7 @@
         <td class="info-column" width="20%">JNC8 target dose</td>
         <td class="info-column" width="15%">At max dose?</td>
       </tr>
-      <tr class="med-entry" ng-repeat="med in pt.curMeds">
+      <tr class="med-entry" drug-input curmeds="pt.curMeds" possiblemeds="possibleMeds">
         <td width="25%">  
           <input type="text" value="{{ med.medicationName }}" class="med-name" ng-disabled="!standAlone">
         </td>
@@ -120,7 +120,7 @@
       </tr>
 
     </table>
-    <a href="#" ng-if="standAlone" drugAdder>+ Add another medication</a>
+    <a href="#" ng-click="addDrugInput()" ng-if="standAlone">+ Add a medication</a>
   </div>
 <button class="submit-button" ng-click="goToDataViz()" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">Get Treatment Recommendations</button>
 </form>

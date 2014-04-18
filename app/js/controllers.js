@@ -3,26 +3,25 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$scope', '$q','$location', '$compile','pt', 'orgId',
-function($scope, $q, $location, $compile, pt, orgId, drugInput) {
-
+.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location','pt', 'orgId',
+function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
+  $rootScope.showSplash = false;
   $scope.goToDataViz = function() {
     $location.path('/dataViz');
   };
 
   //visitors to stand alone website will not have an ordId 
   //todo- why not orgId.orgId?????
-  $scope.standAlone = orgId ? false : true;
-  // $scope.standAlone = true;
-
+  // $scope.standAlone = orgId ? false : true;
+  $scope.standAlone = true;
   $scope.pt = pt;
+  console.log($scope);
 
-  console.log('pt ', pt);
+  $scope.addDrugInput = function(){
+    console.log("Adding drug field...");
+    pt.curMeds.push({});
+  };
 
-  // $scope.addDrugField = function(){
-  //   var newDrugField = $compile('<tr drugInput></tr>')
-  //   angular.element('tbody').append('<tr><td>Thing</td></tr>')
-  // };
   $scope.possibleMeds = [
     'ACEI',
     'ARB',

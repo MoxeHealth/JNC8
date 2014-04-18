@@ -15,20 +15,14 @@ angular.module('myApp.directives', [
   .directive('drugInput', [ function() {
     return {
       templateUrl: 'partials/drugInput.html',
-      restrict: 'EA'
-    }
-  }])
-
-  .directive('drugAdder', [ function() {
-    return {
-      template: 'ng-click="addDrugField()"',
       restrict: 'EA',
-      link: function(){
-        // $element.parent().append( newElement );
-        console.log('yes');
+      scope: {
+        curMeds: '=curmeds',
+        possibleMeds: '=possiblemeds'
       },
-      addDrugField: function(){
-        console.log('yes');
+      replace: true,
+      link: function(scope, element) {
+        if(!scope.curMeds) scope.curMeds = [{}];
       }
     }
   }])
