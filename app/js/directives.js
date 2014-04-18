@@ -106,10 +106,12 @@ angular.module('myApp.directives', [
         // set the width/height of the graph based on the size of the containing element
         // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
         var elWidth = 350;
+        var circleRadius = 5;
 
         //when patient has no entries in database, bps array will have length 0 
         if(!pt.bps.length){ return; }
 
+        //todo - refactor renderGraph so that pt arrays (bps, targetBPs, encounterDates) are used for graph data instead of 'data'
         var data = graphHelpers.parseBPData(pt);
         console.log('data', data)
 
@@ -118,19 +120,21 @@ angular.module('myApp.directives', [
         var height = (elWidth/1.5) - margins[0] - margins[2];
         var timeScale = graphHelpers.getTimeScale(data[0].encounterDate, data[data.length-1].encounterDate);
 
+         console.log('timeScale', timeScale);
+
         var x = d3.time.scale()
             .domain([data[0].encounterDate, d3.time[timeScale].offset(data[data.length-1].encounterDate, 1)])
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
-            graphHelpers.getBPExtreme(pt.bps, 'diastolic')-10,
-            graphHelpers.getBPExtreme(pt.bps, 'systolic')+10
+            graphHelpers.getBPExtreme(pt.bps, 'diastolic')-20,
+            graphHelpers.getBPExtreme(pt.bps, 'systolic')+20
           ]).range([height, 0]);
 
         var diasLine = d3.svg.line()
           .x(function(d,i) {
             // using/returning time to fake time spacing on our database data
-            return x(new Date(d.encounterDate));
+            return x(d.encounterDate);
           })
           .y(function(d, i) {
           return y(d.diastolic);
@@ -138,7 +142,7 @@ angular.module('myApp.directives', [
 
         var sysLine = d3.svg.line()
           .x(function(d,i) {
-            return x(new Date(d.encounterDate));
+            return x(d.encounterDate);
           })
           .y(function(d, i) {
             return y(d.systolic);
@@ -146,7 +150,7 @@ angular.module('myApp.directives', [
 
         var targetDiasLine = d3.svg.line()
           .x(function(d,i) {
-            return x(new Date(d.encounterDate));
+            return x(d.encounterDate);
           })
           .y(function(d, i) {
             return y(d.targetDias);
@@ -154,11 +158,21 @@ angular.module('myApp.directives', [
         
         var targetSysLine = d3.svg.line()
           .x(function(d,i) {
-            return x(new Date(d.encounterDate));
+            return x(d.encounterDate);
           })
           .y(function(d, i) {
             return y(d.targetSys);
         });  
+
+        var dummyLine = d3.svg.line()
+          .x(function(d,i) {
+            return x(d.date);
+          })
+          .y(function(d, i) {
+            return y(d.bp);
+        }); 
+
+        var dummyData = [{date: new Date(), bp: 90}, {date: new Date(), bp: 130}];
 
           // add the SVG element
         var graph = d3.select('#bp-graph').append('svg:svg')
@@ -195,10 +209,55 @@ angular.module('myApp.directives', [
           .attr('transform', 'translate(0,0)')
           .call(yAxisLeft);
 
+        //dummy line
+        graph.append('svg:path').attr('d', dummyLine(dummyData)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
+
+        //add the lines
         graph.append('svg:path').attr('d', diasLine(data)).attr('class', 'plotline diasLine').attr('transform','translate(40,0)');
         graph.append('svg:path').attr('d', sysLine(data)).attr('class', 'plotline sysLine').attr('transform','translate(40,0)');
-        graph.append('svg:path').attr('d', targetDiasLine(data)).attr('class', 'plotline targetDiasLine').attr('transform','translate(40,0)');
-        graph.append('svg:path').attr('d', targetSysLine(data)).attr('class', 'plotline targetSysLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', targetDiasLine(data)).attr('class', 'plotline diasLine targetLine').attr('transform','translate(40,0)');
+        graph.append('svg:path').attr('d', targetSysLine(data)).attr('class', 'plotline sysLine targetLine').attr('transform','translate(40,0)');
+
+        //add circles for each point on each line
+        //type can be 'targetDias', 'targetSys', 'dias', or 'sys'
+        var drawPoints = function(data, type) {
+          var classNames = function(){
+            var classNames = [];
+            classNames[0] = '.' + type + 'Circle';
+
+            if(type === 'targetDias' || 'targetSys'){
+              classNames[1] = '.targetCircle';
+
+              return classNames;
+            }else{
+              return classNames;
+            }
+          };
+
+          var circles = graph.selectAll('.' + type)
+            .data(data)
+            .enter()
+            .append('circle');
+
+          var circleAttributes = circles
+            .attr('class', classNames) 
+            .attr('cx', function(d){
+              return x(d.encounterDate);
+            })
+            .attr('cy', function(d){ 
+              if(type === 'dias') return y(d.diastolic); 
+              if(type === 'sys') return y(d.systolic); 
+              if(type === 'targetDias') return y(d.targetDias); 
+              if(type === 'targetSys') return y(d.targetSys); 
+            })
+            .attr('r', circleRadius);
+        };
+
+        var circleTypes = ['sys', 'dias', 'targetDias', 'targetSys'];
+
+        for(var i = 0; i < circleTypes.length; i++){
+          drawPoints(data, circleTypes[i]);
+        }
         
         // graph.append('line')
         //   .attr('x1', 0)
