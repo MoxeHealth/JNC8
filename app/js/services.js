@@ -6,7 +6,7 @@ angular.module('myApp.services', [])
   .service('orgId', ['$rootScope', function($rootScope){
     return {
       orgId: $rootScope.orgId
-    }
+    };
   }])
 
   .service('startup', ['$http', '$q', '$rootScope', '$location', '$route', 'substrate', 'db', function($http, $q, $rootScope, $location, $route, substrate, db) {
@@ -72,7 +72,7 @@ angular.module('myApp.services', [])
         data: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId,
-          //encounter object expects multiple values: bloodPressure, curMeds, targetBP
+          //encounter object expects multiple values: curBP, curMeds, curTargetBP
           encounter: encounter
         }
       });
@@ -277,11 +277,11 @@ angular.module('myApp.services', [])
 
   .service('dbHelpers', function(){
 
-    // 'attr' can either be targetBP or curBP
+    // 'attr' can either be targetBP or bp
     var getBPs = function(dbData, attr){
       var bps = [];
       //default 
-      var attr = attr || 'curBP';
+      var attr = attr || 'bp';
 
       for(var i = 0; i < dbData.length; i++){
         var bpObj;
@@ -329,9 +329,9 @@ angular.module('myApp.services', [])
       var dates = [];
 
       for(var i = 0; i < dbData.length; i++){
-        meds.push(dbData.encounterDate);
+        dates.push(dbData.encounterDate);
       }
-      return meds;
+      return dates;
     };
 
     return {
@@ -340,6 +340,19 @@ angular.module('myApp.services', [])
       getDates: getDates
     };
   })
+
+  .factory('ptHelpers', ['pt', 'orgId', function(pt, orgId) {
+    var updatePt = function(pt){
+      //stand alone app user
+      if(!orgId){
+        pt.bps.push(pt.curBP);
+      }
+    }
+
+    return {
+      updatePt: updatePt
+    }
+  }])
 
   //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
@@ -366,12 +379,13 @@ angular.module('myApp.services', [])
 
       pt.bps = substrateHelpers.getBPs(substrateData.vitals);
       //assume blood pressure data is in chronological order
+      //user of app does not input bp, because patient's bp has already been input into substrate previously in the encounter, before the app was initiated 
       pt.curBP = pt.bps[pt.bps.length - 1];
       
       pt.curMeds = substrateHelpers.getMeds(substrateData.medications);
 
-      pt.dates = substrateHelpers.getDates(substrateData.vitals);
-      pt.curDate = pt.dates[pt.dates.length - 1];
+      pt.encounterDates = substrateHelpers.getDates(substrateData.vitals);
+      pt.curDate = pt.encounterDates[pt.encounterDates.length - 1];
 
       //'ids' needed to save information from session to the database 
       pt.ids = startup.ptIdentifier;
@@ -391,21 +405,16 @@ angular.module('myApp.services', [])
 
       //both user types (moxe and standalone) get this info from database 
       pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP')
-
-      //in case for some reason the most recent curTargetBP's properties has 'null' values
-      if(pt.curTargetBP){
-        pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
-      }
+      pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
 
       //user of stand alone app 
       if(!startup.ptData.substrate){
-        pt.bps = dbHelpers.getBPs(dbData, 'curBP');
+        pt.bps = dbHelpers.getBPs(dbData, 'bp');
         pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP');
         pt.curMeds = dbHelpers.getMeds(dbData);
         pt.encounterDates = dbHelpers.getDates(dbData);
-
-        //assume blood pressure data is in chronological order
-        pt.curBP = pt.bps[pt.bps.length - 1];
+        //add the current encounter date
+        pt.encounterDates.push(new Date());
 
         //'ids' needed to save information from session to the database 
         pt.ids = startup.ptIdentifier;
@@ -414,10 +423,14 @@ angular.module('myApp.services', [])
         pt.race = dbData.race || null;
         //age is a string ending in "y"
         pt.age = dbData.age || null;
-        pt.hasCKD = substrateHelpers.problemListContainsCKD(problems);
-        pt.hasDiabetes = substrateHelpers.problemListContainsDiabetes(problems);
-        pt.isOnMedication = false;
+        pt.hasCKD = dbData.hasCKD;
+        pt.hasDiabetes = dbData.hasDiabetes;
       }
+    }else{
+      //app does not allow user to enter encounter date
+      pt.encounterDates = [new Date()];
+      pt.bps = [];
+      pt.targetBPs = [];
     }
     return pt;
   }])
@@ -448,11 +461,13 @@ angular.module('myApp.services', [])
       var results = [];
 
       //use 'bps' to determine how many iterations
-      //todo- possible that a patient will have more encounter dates than bp readings? 
+      //assume that the number of bp and target BP readings are the same 
       for(var i = 0; i < pt.bps.length; i++) {
         var bp = pt.bps[i];
+
         var targetBP = pt.targetBPs[i];
-        var encounterDate = new Date(pt.dates[i]);
+
+        var encounterDate = pt.encounterDates[i];
 
         results.push({
           encounterDate: encounterDate,

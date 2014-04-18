@@ -107,8 +107,8 @@ angular.module('myApp.directives', [
         // var elWidth = document.getElementsByTagName('bp-graph')[0].clientWidth;
         var elWidth = 350;
 
-        //handle case when patient has no entries in database 
-        if(!pt.bps){ return; }
+        //when patient has no entries in database, bps array will have length 0 
+        if(!pt.bps.length){ return; }
 
         var data = graphHelpers.parseBPData(pt);
         console.log('data', data)
@@ -116,10 +116,10 @@ angular.module('myApp.directives', [
         var margins = [30, 30, 30, 40];
         var width = elWidth - margins[1];
         var height = (elWidth/1.5) - margins[0] - margins[2];
-        var timeScale = graphHelpers.getTimeScale(data[0].encounter_date, data[data.length-1].encounter_date);
-        
+        var timeScale = graphHelpers.getTimeScale(data[0].encounterDate, data[data.length-1].encounterDate);
+
         var x = d3.time.scale()
-            .domain([data[0].encounterDate, d3.time.month.offset(data[data.length-1].encounterDate, 1)])
+            .domain([data[0].encounterDate, d3.time[timeScale].offset(data[data.length-1].encounterDate, 1)])
             .range([0, width]);
 
         var y = d3.scale.linear().domain([
