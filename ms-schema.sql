@@ -11,7 +11,7 @@ CREATE TABLE [dbo].[Encounters] (
 	[emailHash] [nvarchar] (200) NULL,
 	[encounterDate] [datetime] NOT NULL,
 	[curBP] [nvarchar] (200) NULL,
-	[targetBP] [nvarchar] (200) NULL,
+	[curTargetBP] [nvarchar] (200) NULL,
 	[curMeds] [nvarchar] (2000) NULL,
 	[age] [nvarchar] (50) NULL,
 	[race] [nvarchar] (50) NULL,

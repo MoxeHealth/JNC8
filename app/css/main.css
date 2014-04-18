@@ -371,7 +371,7 @@ tr.diastolic td.goal {
   fill: none;
 }
 
-#bp-graph line.targetLine {
+#bp-graph .targetLine {
   stroke-opacity: 0.5;
   stroke-width: 1px;
 }
@@ -382,6 +382,18 @@ tr.diastolic td.goal {
 
 #bp-graph .sysLine {
   stroke: steelblue;
+}
+
+#bp-graph .diasCircle {
+  fill: red;
+}
+
+#bp-graph .sysCircle {
+  fill: steelblue;
+}
+
+#bp-graph .targetCircle {
+  fill-opacity: 0.5;
 }
 
 #bp-graph .axis {
