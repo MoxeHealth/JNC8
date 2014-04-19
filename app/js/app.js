@@ -11,10 +11,6 @@ angular.module('myApp', [
   'ui.bootstrap'
 ])
 
-.value('patientId', 323000)
-
-.value('orgId', 3)
-
 .config(['$routeProvider', function($routeProvider) {
   console.log('config called');
 
@@ -53,7 +49,7 @@ angular.module('myApp', [
   })
 
   $routeProvider.otherwise({
-    redirectTo: '/fuck'
+    redirectTo: '/'
   });
 }])
 

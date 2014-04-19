@@ -13,6 +13,7 @@ angular.module('myApp.services', [])
   .service('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
     
     var ptData = {};
+    console.log($rootScope);
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
 
@@ -431,7 +432,7 @@ angular.module('myApp.services', [])
     }
 
     //get data from current user of standalone app, or moxe user 
-    if(startup.ptData && startup.ptData.db.length){
+    if(startup.ptData.db && startup.ptData.db.length){
       console.log("into the startup");
       console.log('Theoretical dbData: ', startup.ptData.db);
       var dbData = startup.ptData.db;
