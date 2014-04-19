@@ -259,16 +259,17 @@ angular.module('myApp.services', [])
         var medObj = {
           //only want the first name for now for JNC8 algo to work.
           //some substrate entries are appended with 'extended release'
-          medicationName: medications[i].MedicationName.split(' ')[0] || null,
+          //also, all of the medicationName properties in 'meds_jnc8.js' are lowercase 
+          medicationName: medications[i].MedicationName.split(' ')[0].toLowerCase() || null,
 
           //todo- hard code dose, units, className, atMax, targetDoseRecs for now
           dose: 30,
           units: 'mg',
-          className: 'ACEI',
           atMax: medAtMax(),
           targetDoseRecs: [50],
           startDate: medications[i].StartDate.DateTime || null
-        }
+        };
+        medObj.className = meds_jnc8.medAndClassNames[medObj.medicationName] || null, //null if className is not relevant to JNC8 calculator
         meds.push(medObj);
       }
       return meds;

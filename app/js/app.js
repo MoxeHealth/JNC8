@@ -53,13 +53,13 @@ angular.module('myApp', [
   })
 
   $routeProvider.otherwise({
-    redirectTo: '/fuck'
+    redirectTo: '/'
   });
 }])
 
 .run(['$rootScope', 'db', 'goodRx', 'orgId', function($rootScope, db, goodRx, orgId) {
   console.log('run called');
   $rootScope.patientId = 3230000;
-  // $rootScope.orgId = 3;
+  $rootScope.orgId = 3;
 }]);
 
