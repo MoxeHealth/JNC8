@@ -15,6 +15,7 @@ angular.module('myApp.services', [])
     var ptData = {};
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
+
     var initializeMoxe = function(){
       console.log('initializeMoxe called');
       var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)]);
@@ -489,8 +490,7 @@ angular.module('myApp.services', [])
 
         var targetBP = pt.targetBPs[i];
 
-        // var encounterDate = pt.encounterDates[i];
-        var encounterDate = new Date("April 17 2014");
+        var encounterDate = pt.encounterDates[i];
 
         results.push({
           encounterDate: encounterDate,

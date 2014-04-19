@@ -58,11 +58,6 @@ angular.module('myApp', [
 .run(['$rootScope', 'db', 'goodRx', 'orgId', function($rootScope, db, goodRx, orgId) {
   console.log('run called');
   $rootScope.patientId = 3230000;
-  $rootScope.orgId = 3;
-
-  var ptIdentifier = {
-    ptId: $rootScope.patientId,
-    orgId: $rootScope.orgId
-  };
+  // $rootScope.orgId = 3;
 }]);
 
