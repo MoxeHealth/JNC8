@@ -10,15 +10,8 @@ angular.module('myApp.services', [])
   }])
 
 
-  .service('startup', ['$http', '$q', '$rootScope', '$location', '$route', 'substrate', 'db', function($http, $q, $rootScope, $location, $route, substrate, db) {
+  .service('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
     
-    // if($location.path() === '/dataViz') {
-    //   $location.path('/');
-    //   $route.reload();
-    // } 
-
-
-  // 
     var ptData = {};
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
@@ -37,7 +30,10 @@ angular.module('myApp.services', [])
 
     var initializeReturning = function(){
       console.log('initializeReturning called');
-      var result = $q["all"]([db.getEncounters(ptIdentifier)]);
+      // get the uid out of the query
+      var uid = $location.$$search.uid;
+      
+      var result = $q["all"]([db.getUserByHash(uid)]);
 
       return result.then(function(response) {
         $rootScope.showSplash = false;
@@ -71,6 +67,20 @@ angular.module('myApp.services', [])
       return result.then(function(response){
         return response.data;
       });
+    };
+
+    this.getUserByHash = function(uid, callback) {
+      var result = $http({
+        url: '/db/returning',
+        method: 'GET',
+        params: {
+          uid: uid
+        }
+      });
+
+      return result.then(function(response) {
+        return response.data
+      })
     };
 
     this.addEncounter = function(ptIdentifier, encounter, callback) {

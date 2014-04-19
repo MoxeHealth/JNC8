@@ -33,25 +33,24 @@ module.exports = function(app) {
     // if there is, run a query through the DB to see if that user id exists; return with data if it does
     // send res.redirect to '/new with information'
     if(req.query.uid) {
-      console.log(req.query.uid);
-      var query = db.makeUserQuery(req.query.uid);
-      db.queryHelper(query, function(err, rows) {
-        if(err) {
-          console.log('Error in uid query: ', err);
-        } else {
-          if(rows.length > 0){ 
-            res.params = rows;
-            console.log(rows);
-            res.redirect('/app/#/returning');
-          } else {
-            res.redirect('/app')
-          }
-        }
-      });
+      res.redirect('/app/#/returning?uid='+req.query.uid);
+      
     } else {
       console.log("Serving a vanilla GET to '/'")
       res.redirect('/app');
     }
+  });
+
+  app.get('/db/returning', function(req, res) {
+    console.log('get db/returning');
+    var query = db.makeUserQuery(req.query.uid);
+    db.queryHelper(query, function(err, rows) {
+      if(err) {
+        res.send(err);
+      } else {
+        res.send(rows);
+      }
+    });
   });
 
   //The SQL database stores any information that must be persisted but cannot be written back to the EMR
