@@ -3,17 +3,31 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location','pt', 'orgId',
-function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
-  $rootScope.showSplash = false;
+// <<<<<<< HEAD
+// .controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location','pt', 'orgId',
+// function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
+//   $rootScope.showSplash = false;
+// =======
+.controller('dataEntryCtrl', ['$scope', '$q','$location', '$compile','pt', 'orgId',
+function($scope, $q, $location, $compile, pt, orgId, drugInput) {
+  //visitors to stand alone website will not have an ordId 
+  //todo- why not orgId.orgId?????
+  $scope.standAlone = orgId ? false : true;
+  // $scope.standAlone = true;
+
+// >>>>>>> d3a319d656a734cf9eb5da1c2e8cdbad40e5821a
   $scope.goToDataViz = function() {
+    //moxe user already has curBP stored in substrate database 
+    if(!$scope.standAlone){
+      pt.bps.push(pt.curBP);
+    }
     $location.path('/dataViz');
   };
 
   //visitors to stand alone website will not have an ordId 
   //todo- why not orgId.orgId?????
   // $scope.standAlone = orgId ? false : true;
-  $scope.standAlone = true;
+  // $scope.standAlone = true;
   $scope.pt = pt;
   console.log($scope);
 
@@ -39,33 +53,26 @@ function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
-  //before loading anything, check that we have user data:
-  // userData.dataCheck();
 
   $scope.saveToDB = function(){
     $scope.clicked = true;
     console.log('saveToDB');
-    var encounter = pt;
-    db.addEncounter(pt.ids, encounter); 
-  };
-
-  //only want to save targetBP and date for moxe users
-  $scope.saveTargetToDB = function(){
-    $scope.clicked = true;
-
-    //other pt information is saved in moxe substrate
-    //moxe substrate should be single source of truth for 
-    //as much information as possible 
-    var encounter = {
-      targetBP: pt.curTargetBP
+    if($scope.standAlone){
+      //other pt information is already saved in moxe substrate,
+      //and moxe substrate should be single source of truth for 
+      //as much information as possible 
+      var encounter = {
+        curTargetBP: pt.curTargetBP
+      }
+    }else{
+      var encounter = pt;
     }
     db.addEncounter(pt.ids, encounter); 
-  }
+  };
 
   var algoResults = algorithm.methods.runAlgorithm(pt);
 
   $scope.pt = pt;
-  $scope.standAlone = orgId ? false : true;
   $scope.recommendationMsg = algoResults.recs.recMsg;
   $scope.recs = algoResults.recs;
   $scope.medRecs = algoResults.recs.medRecs;

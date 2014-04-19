@@ -101,22 +101,22 @@ app.post('/db/encounters',  function(req, res){
   var orgId = req.body.orgId || 'NULL';
   var emails = msString(req.body.encounter.emails) || 'NULL';
   var emailHash = msString(req.body.encounter.emailHash) || 'NULL';
-  var encounterDate = msString(new Date());
+  var encounterDate = msString(req.body.encounter.encounterDate) || 'NULL';
   var curBP = msString(req.body.encounter.curBP) || 'NULL';
-  var targetBP = msString(req.body.encounter.targetBP) || 'NULL';
+  var curTargetBP = msString(req.body.encounter.curTargetBP) || 'NULL';
   var curMeds = msString(req.body.encounter.curMeds) || 'NULL';
   var age = msString(req.body.encounter.age) || 'NULL';
   var race = msString(req.body.encounter.race) || 'NULL';
   var hasCKD = msString(req.body.encounter.hasCKD) || 'NULL';
   var hasDiabetes = msString(req.body.encounter.hasDiabetes) || 'NULL';
 
-  if(req.body.orgId) {
-    var userHash = encrypt.makeEmailHash(req.body.encounter.email[0]) ;
+  if(!req.body.orgId && req.body.encounter.emails) {
+    var userHash = encrypt.makeEmailHash(req.body.encounter.emails[0]);
   } else {
-    var userHash = undefined;
+    var userHash = null;
   }
 
-  var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, targetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + targetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
+  var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, curTargetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + curTargetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
 
   db.queryHelper(query, function(err, data){
     if(err) {
