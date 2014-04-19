@@ -253,13 +253,6 @@ angular.module('myApp.services', [])
       return dates;
     };
 
-    //in request to medications service in 'substrate' service, determine whether active medications are returned or not
-
-    //todo - finish - currently necessary because substrate doesn't store the class name for each medication, but the JNC8 algorithm requires class names to work properly 
-    var getclassName = function(medication){
-
-    };
-
     var getMeds = function(medications){
       var meds = [];
       for(var i = 0; i < medications.length; i++){
@@ -293,7 +286,6 @@ angular.module('myApp.services', [])
       getBPs: getBPs,
       getDates: getDates,
       getMeds: getMeds,
-      getclassName: getclassName,
       medAtMax: medAtMax,
     };
   })
