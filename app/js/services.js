@@ -18,7 +18,10 @@ angular.module('myApp.services', [])
 
     var ptData = {};
     //TODO - wrap following code in post request from Epic
-    var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
+    var ptIdentifier = {
+      ptId: $rootScope.patientId
+      // orgId: $rootScope.orgId
+    };
 
     var initialize = function(){
       console.log('Initialize called');
@@ -467,8 +470,7 @@ angular.module('myApp.services', [])
 
         var targetBP = pt.targetBPs[i];
 
-        // var encounterDate = pt.encounterDates[i];
-        var encounterDate = new Date("April 17 2014");
+        var encounterDate = pt.encounterDates[i];
 
         results.push({
           encounterDate: encounterDate,

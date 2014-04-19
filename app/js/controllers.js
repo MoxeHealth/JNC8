@@ -49,14 +49,15 @@ function($scope, $q, $location, $compile, pt, orgId, drugInput) {
     $scope.clicked = true;
     console.log('saveToDB');
     if($scope.standAlone){
+      var encounter = pt;
+    }else{
       //other pt information is already saved in moxe substrate,
       //and moxe substrate should be single source of truth for 
       //as much information as possible 
       var encounter = {
-        curTargetBP: pt.curTargetBP
+        curTargetBP: pt.curTargetBP ,
+        encounterDate: pt.curDate
       }
-    }else{
-      var encounter = pt;
     }
     db.addEncounter(pt.ids, encounter); 
   };
