@@ -39,7 +39,7 @@ var parseData = function(array) {
 	for (var i = 0; i < array.length; i++) {
 		for(key in array[i]) {
 			if(array[i][key].value !== 'undefined'){
-				if(key === 'encounterDate') { // it's the date
+				if(key === 'encounterDate' || key === 'emailHash' || key === 'race') { // it's the date
 					array[i][key] = array[i][key].value;
 				} else { // it's any of the others; parse
 					array[i][key] = JSON.parse(array[i][key].value);
@@ -60,6 +60,7 @@ exports.queryHelper = function(query, callback) {
 			      callback(err);
 			    } else {
 			      console.log('Successful request. Returning ' + rowCount + ' rows...');
+			      console.log(rows);
 			     	rows = parseData(rows);
 			      callback(err, rows);
 						connection.close();
@@ -71,4 +72,13 @@ exports.queryHelper = function(query, callback) {
 		}
 	});
 
+};
+
+// takes a UID and constructs a db query with it
+exports.makeUserQuery = function(uid) {
+	if(uid.indexOf(' ') > -1) {
+		throw new Error('There can\'t be spaces in the uid.');
+	} else {
+		return 'SELECT * FROM dbo.Encounters WHERE emailHash= \'' + uid + '\'';
+	}
 };

@@ -3,22 +3,17 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-// <<<<<<< HEAD
-// .controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location','pt', 'orgId',
-// function($rootScope, $scope, $q, $location, pt, orgId, drugInput) {
-//   $rootScope.showSplash = false;
-// =======
 .controller('dataEntryCtrl', ['$scope', '$q','$location', '$compile','pt', 'orgId',
 function($scope, $q, $location, $compile, pt, orgId, drugInput) {
   //visitors to stand alone website will not have an ordId 
   //todo- why not orgId.orgId?????
+  $rootScope.showSplash = false;
   $scope.standAlone = orgId ? false : true;
   // $scope.standAlone = true;
 
-// >>>>>>> d3a319d656a734cf9eb5da1c2e8cdbad40e5821a
   $scope.goToDataViz = function() {
     //moxe user already has curBP stored in substrate database 
-    if(!$scope.standAlone){
+    if($scope.standAlone){
       pt.bps.push(pt.curBP);
     }
     $location.path('/dataViz');

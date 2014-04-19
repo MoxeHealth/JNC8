@@ -9,35 +9,42 @@ angular.module('myApp.services', [])
     };
   }])
 
-  .service('startup', ['$http', '$q', '$rootScope', '$location', '$route', 'substrate', 'db', function($http, $q, $rootScope, $location, $route, substrate, db) {
-    
-    if($location.path() === '/dataViz') {
-      $location.path('/');
-      $route.reload();
-    } 
 
+  .service('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
+    
     var ptData = {};
-    //TODO - wrap following code in post request from Epic
     var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
 
-    var initialize = function(){
-      console.log('Initialize called');
-
-      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)
-    ]);
+    var initializeMoxe = function(){
+      console.log('initializeMoxe called');
+      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)]);
 
       return result.then(function(response) {
         $rootScope.showSplash = false;
         ptData.substrate = response[0];
         ptData.db = response[1];
-
         console.log('substrate', ptData.substrate);
         console.log('db', ptData.db);
       });
     };
 
+    var initializeReturning = function(){
+      console.log('initializeReturning called');
+      // get the uid out of the query
+      var uid = $location.$$search.uid;
+      
+      var result = $q["all"]([db.getUserByHash(uid)]);
+
+      return result.then(function(response) {
+        $rootScope.showSplash = false;
+        ptData.db = response[0];
+        console.log('db', ptData.db);
+      });
+    };
+
     return {
-      initialize: initialize,
+      initializeMoxe: initializeMoxe,
+      initializeReturning: initializeReturning,
       ptData: ptData,
       ptIdentifier: ptIdentifier
     };
@@ -60,6 +67,20 @@ angular.module('myApp.services', [])
       return result.then(function(response){
         return response.data;
       });
+    };
+
+    this.getUserByHash = function(uid, callback) {
+      var result = $http({
+        url: '/db/returning',
+        method: 'GET',
+        params: {
+          uid: uid
+        }
+      });
+
+      return result.then(function(response) {
+        return response.data
+      })
     };
 
     this.addEncounter = function(ptIdentifier, encounter, callback) {
@@ -400,12 +421,13 @@ angular.module('myApp.services', [])
     }
 
     //get data from current user of standalone app, or moxe user 
-    if(startup.ptData.db.length){
+    if(startup.pbData && startup.ptData.db.length){
       var dbData = startup.ptData.db;
 
       //both user types (moxe and standalone) get this info from database 
       pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP')
       pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
+
 
       //user of stand alone app 
       if(!startup.ptData.substrate){
