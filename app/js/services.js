@@ -37,6 +37,7 @@ angular.module('myApp.services', [])
 
       return result.then(function(response) {
         $rootScope.showSplash = false;
+        console.log(response);
         ptData.db = response[0];
         console.log('db', ptData.db);
       });
@@ -346,6 +347,13 @@ angular.module('myApp.services', [])
       return meds;
     };
 
+    var getMedsStatus = function(dbData) {
+      if(dbData[dbData.length-1].curMeds.length > 0) {
+        return true;
+      }
+      return false;
+    };
+
     var getDates = function(dbData){
       var dates = [];
 
@@ -358,7 +366,8 @@ angular.module('myApp.services', [])
     return {
       getBPs: getBPs,
       getMeds: getMeds,
-      getDates: getDates
+      getDates: getDates,
+      getMedsStatus: getMedsStatus
     };
   })
 
@@ -421,18 +430,21 @@ angular.module('myApp.services', [])
     }
 
     //get data from current user of standalone app, or moxe user 
-    if(startup.pbData && startup.ptData.db.length){
+    if(startup.ptData && startup.ptData.db.length){
+      console.log("into the startup");
+      console.log('Theoretical dbData: ', startup.ptData.db);
       var dbData = startup.ptData.db;
 
       //both user types (moxe and standalone) get this info from database 
-      pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP')
+      pt.targetBPs = dbHelpers.getBPs(dbData, 'curTargetBP')
       pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
 
 
       //user of stand alone app 
       if(!startup.ptData.substrate){
-        pt.bps = dbHelpers.getBPs(dbData, 'bp');
-        pt.targetBPs = dbHelpers.getBPs(dbData, 'targetBP');
+        pt.bps = dbHelpers.getBPs(dbData, 'curBP');
+        pt.targetBPs = dbHelpers.getBPs(dbData, 'curTargetBP');
+        pt.isOnMedication = dbHelpers.getMedsStatus(dbData);
         pt.curMeds = dbHelpers.getMeds(dbData);
         pt.encounterDates = dbHelpers.getDates(dbData);
         //add the current encounter date
@@ -440,13 +452,13 @@ angular.module('myApp.services', [])
 
         //'ids' needed to save information from session to the database 
         pt.ids = startup.ptIdentifier;
-        pt.emails = dbData[0].Emails
+        pt.emails = dbData[dbData.length - 1].Emails
 
-        pt.race = dbData.race || null;
+        pt.race = dbData[dbData.length - 1].race || null;
         //age is a string ending in "y"
-        pt.age = dbData.age || null;
-        pt.hasCKD = dbData.hasCKD;
-        pt.hasDiabetes = dbData.hasDiabetes;
+        pt.age = dbData[dbData.length - 1].age || null;
+        pt.hasCKD = dbData[dbData.length - 1].hasCKD;
+        pt.hasDiabetes = dbData[dbData.length - 1].hasDiabetes;
       }
     }else{
       //app does not allow user to enter encounter date

@@ -3,8 +3,8 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$scope', '$q','$location', '$compile','pt', 'orgId',
-function($scope, $q, $location, $compile, pt, orgId, drugInput) {
+.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt', 'orgId',
+function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
   //visitors to stand alone website will not have an ordId 
   //todo- why not orgId.orgId?????
   $rootScope.showSplash = false;

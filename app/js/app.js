@@ -22,6 +22,7 @@ angular.module('myApp', [
     templateUrl: 'partials/dataViz.html',
     resolve: {
       setUpApp: function(startup){
+        // setUpApp isn't passed into the controller because the pt factory is updated with side effects
         console.log("setUpApp");
         return startup.initializeMoxe();
       }
@@ -33,6 +34,7 @@ angular.module('myApp', [
     templateUrl: 'partials/dataEntry.html',
     resolve: {
       setUpApp: function(startup) {
+        // setUpApp isn't passed into the controller because the pt factory is updated with side effects
         console.log("Set up app for returning user.");
         return startup.initializeReturning();
       }
