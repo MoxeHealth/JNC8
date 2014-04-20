@@ -17,14 +17,14 @@ function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
     }
 
     //clear the meds in the meds array if they're empty
-    if(pt.curMeds) {
-      for(var i = 0; i < pt.curMeds.length; i++) {
-        var med = pt.curMeds[i];
-        if(!med.name || !med.dose) {
-          pt.curMeds[i] = undefined;
-        }
-      }
-    }
+    // if(pt.curMeds) {
+    //   for(var i = 0; i < pt.curMeds.length; i++) {
+    //     var med = pt.curMeds[i];
+    //     if(!med.medicationName || !med.dose) {
+    //       pt.curMeds[i] = undefined;
+    //     }
+    //   }
+    // }
 
     $location.path('/dataViz');
   };
@@ -38,7 +38,10 @@ function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
 
   $scope.addDrugInput = function(){
     console.log("Adding drug field...");
-    pt.curMeds.push({});
+    pt.curMeds.push({
+      //in case user doesn't click 'at max dose' checkbox
+      atMax: false
+    });
   };
 
   $scope.possibleMeds = [
