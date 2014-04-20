@@ -14,7 +14,10 @@ angular.module('myApp.services', [])
     
     var ptData = {};
     console.log($rootScope);
-    var ptIdentifier = {ptId: $rootScope.patientId, orgId: $rootScope.orgId};
+    var ptIdentifier = {
+      ptId: $rootScope.patientId || null, 
+      orgId: $rootScope.orgId || null
+    };
 
 
     var initializeMoxe = function(){

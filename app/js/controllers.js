@@ -5,18 +5,27 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt', 'orgId',
 function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
-  //visitors to stand alone website will not have an ordId 
   $rootScope.showSplash = false;
-  console.log(orgId);
+
+  // standalone users wo
   $scope.standAlone = orgId.orgId ? false : true;
-  console.log('standalone: ', $scope.standAlone);
-  // $scope.standAlone = true;
 
   $scope.goToDataViz = function() {
     //moxe user already has curBP stored in substrate database 
     if($scope.standAlone){
       pt.bps.push(pt.curBP);
     }
+
+    //clear the meds in the meds array if they're empty
+    if(pt.curMeds) {
+      for(var i = 0; i < pt.curMeds.length; i++) {
+        var med = pt.curMeds[i];
+        if(!med.name || !med.dose) {
+          pt.curMeds[i] = undefined;
+        }
+      }
+    }
+
     $location.path('/dataViz');
   };
 
@@ -51,16 +60,18 @@ function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
 
   $scope.saveToDB = function(){
+    
     $scope.clicked = true;
     console.log('saveToDB');
     if($scope.standAlone){
       var encounter = pt;
-    }else{
+
+    } else {
       //other pt information is already saved in moxe substrate,
       //and moxe substrate should be single source of truth for 
       //as much information as possible 
       var encounter = {
-        curTargetBP: pt.curTargetBP ,
+        curTargetBP: pt.curTargetBP,
         encounterDate: pt.curDate
       }
     }
