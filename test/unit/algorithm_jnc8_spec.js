@@ -36,7 +36,7 @@ describe('meds', function(){
     expect(type).toBe('object');
   });
 
-  //todo if time and clinician input received - finish checking meds data structure
+  //todo - finish checking meds data structure
 });
 
 describe('algorithm generateTarget', function(){
