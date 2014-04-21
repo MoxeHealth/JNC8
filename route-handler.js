@@ -124,7 +124,6 @@ module.exports = function(app) {
     console.log('req', JSON.stringify(req.body));
 
     // there must be a better way to do this... pulling data from the req object and normalizing it
-    // var ptId = msString(req.body.ptId);
     var ptId = msString(req.body.ptId);
     var orgId = msString(req.body.orgId);
     var emails = msString(req.body.encounter.emails);
@@ -147,8 +146,8 @@ module.exports = function(app) {
     } else {
       var emailHashString = undefined;
     }
-    console.log('email', email);
 
+    //first time user will have emailHash of 'NULL'
     if(!emailHash){
       emailHash = msString(emailHashString);
     }
@@ -159,13 +158,20 @@ module.exports = function(app) {
     var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, curTargetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + curTargetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
 
     console.log('query', query);
+
+    //get user email in format that can be used in smtp request made
+    //by sendNewUserEmail function
+    var messageRecipient = req.body.encounter.emails[0];
+    var returnLink = "http://jnc8.azurewebsites.net?u=" + emailHashString;
+    console.log('emailHash', emailHash)
     db.queryHelper(query, function(err, data){
       if(err) {
         console.log(err);
         res.send(err);
       } else {
-        email.sendNewUserEmail(email, emailHashString);
-        res.send(data);
+        //currently getting '[Error: Authentication required, invalid details provided]'
+        // email.sendNewUserEmail(messageRecipient, emailHashString);
+        res.send(returnLink);
       }
     });
   });
