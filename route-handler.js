@@ -112,7 +112,6 @@ module.exports = function(app) {
       }
     };
 
-    console.log('req', req.body);
     // there must be a better way to do this... pulling data from the req object and normalizing it
     var ptId = req.body.ptId;
     var orgId = req.body.orgId || 'NULL';
@@ -154,9 +153,10 @@ module.exports = function(app) {
       audience: 'https://jnc8.azurewebsites.net/authenticate'
     };
     
+    // get the data
     var body = '';
-    req.on('data', function(data){ 
-      body += data;
+    req.on('data', function(chunk){ 
+      body += chunk;
     });
 
     req.on('end', function() {
@@ -167,13 +167,17 @@ module.exports = function(app) {
       console.log('rawAssertion: ', rawAssertion);
 
       saml.validate(rawAssertion, options, function(err, profile) {
-        if(err) throw new Error('SAML error:' + err);
+        if(err) {
+          console.log('SAML error: ', err);
+        } else {
+          console.log("SAML profile: ", profile);
+          var claims = profile.claims;
+          var issuer = profile.issuer;
 
-        console.log("SAML profile: ", profile);
-        var claims = profile.claims;
-        var issuer = profile.issuer;
+          console.log('SAML claims:', claims);
+          
 
-        console.log('SAML claims:', claims);
+        }
       });
     });
 
