@@ -467,6 +467,15 @@ angular.module('myApp.services', [])
       pt.ids = {
         ptId: null
       }
+
+      //hard code for testing
+      pt.race = 'Black or African American';
+      pt.age = 45;
+      pt.hasCKD = true;
+      pt.hasDiabetes = true;
+      pt.curBP = { systolic: 155, diastolic: 55};
+      pt.emails[0] = 'skeller88@gmail.com';
+      pt.isOnMedication = false;
     }
     return pt;
   }])

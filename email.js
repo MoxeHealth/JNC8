@@ -14,7 +14,7 @@ var smtpTransport = nodemailer.createTransport('SMTP', {
 	}
 });
 
-exports.sendNewUserMail = function(userEmail, emailHash) {
+exports.sendNewUserEmail = function(userEmail, emailHash) {
 	var returnLink = "http://jnc8.azurewebsites.net?u=" + emailHash;	
 
 	var emailOptions = {

@@ -109,7 +109,7 @@ module.exports = function(app) {
     var msString = function(target) {
       if(typeof target === 'string') {
         console.log('target string', target );
-        return target;
+        return '\'' + target + '\'';
       } else if(target instanceof Date) {
         console.log('target Date', target );
         return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
@@ -128,9 +128,7 @@ module.exports = function(app) {
     var ptId = msString(req.body.ptId);
     var orgId = msString(req.body.orgId);
     var emails = msString(req.body.encounter.emails);
-    //emailHash will always be null
-    var emailHash = msString(req.body.emailHash);
-    // var emailHash = msString(req.body.encounter.emailHash);
+    var emailHash = msString(req.body.encounter.emailHash);
     var encounterDate = msString(new Date());
     var curBP = msString(req.body.encounter.curBP);
     var curTargetBP = msString(req.body.encounter.curTargetBP);
@@ -140,12 +138,22 @@ module.exports = function(app) {
     var hasCKD = msString(req.body.encounter.hasCKD);
     var hasDiabetes = msString(req.body.encounter.hasDiabetes);
 
+    console.log('emailHash before encrypt', emailHash);
+
     if(!req.body.orgId && req.body.ptId) {
-      emailHash = encrypt.makeEmailHash(ptId) ;
+      //emailHashString is the same as emailHash, but not stringified
+      var emailHashString = encrypt.makeEmailHash(ptId);
+      console.log('typeof emailHashString', typeof emailHashString);
     } else {
-      emailHash = undefined;
+      var emailHashString = undefined;
+    }
+    console.log('email', email);
+
+    if(!emailHash){
+      emailHash = msString(emailHashString);
     }
 
+    console.log('emailHash after encrypt', emailHash);
     console.log('ptId', ptId);
     console.log('orgId', orgId);
     var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, curTargetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + curTargetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
@@ -156,7 +164,7 @@ module.exports = function(app) {
         console.log(err);
         res.send(err);
       } else {
-        email.sendNewUserEmail(email, emailHash);
+        email.sendNewUserEmail(email, emailHashString);
         res.send(data);
       }
     });
