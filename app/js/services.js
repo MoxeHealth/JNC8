@@ -446,7 +446,8 @@ angular.module('myApp.services', [])
 
         //'ids' needed to save information from session to the database 
         pt.ids = startup.ptIdentifier;
-        pt.emails = dbData[dbData.length - 1].Emails
+        pt.emails = dbData[dbData.length - 1].emails;
+        pt.emailHash = dbData[dbData.length - 1].emailHash;
 
         pt.race = dbData[dbData.length - 1].race || null;
         //age is a string ending in "y"
@@ -500,7 +501,7 @@ angular.module('myApp.services', [])
       for(var i = 0; i < pt.bps.length; i++) {
         var bp = pt.bps[i];
 
-        var targetBP = pt.targetBPs[i];
+        var curTargetBP = pt.targetBPs[i];
 
         var encounterDate = pt.encounterDates[i];
 
@@ -508,8 +509,8 @@ angular.module('myApp.services', [])
           encounterDate: encounterDate,
           systolic: bp.systolic,
           diastolic: bp.diastolic,
-          targetDias: targetBP.diastolic,
-          targetSys: targetBP.systolic
+          targetDias: curTargetBP.diastolic,
+          targetSys: curTargetBP.systolic
         });
       }
       return results;

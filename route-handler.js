@@ -105,6 +105,7 @@ module.exports = function(app) {
   app.post('/db/encounters', function(req, res){
     console.log('post db/encounters');
 
+    //convert each target into a string that can be inserted into the database 
     var msString = function(target) {
       if(typeof target === 'string') {
         console.log('target string', target );
@@ -114,43 +115,48 @@ module.exports = function(app) {
         return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
         //without the following conditional, the target will be stringified to 'undefined'
       } else if(!target) {
-        return '\'' + JSON.stringify(target) + '\'';
-      } else {
         return 'NULL';
+      } else {
+        return '\'' + JSON.stringify(target) + '\'';
       }
     };
 
     console.log('req', JSON.stringify(req.body));
-    
+
     // there must be a better way to do this... pulling data from the req object and normalizing it
+    // var ptId = msString(req.body.ptId);
     var ptId = msString(req.body.ptId);
     var orgId = msString(req.body.orgId);
     var emails = msString(req.body.encounter.emails);
-    var emailHash = msString(req.body.encounter.emailHash);
+    //emailHash will always be null
+    var emailHash = msString(req.body.emailHash);
+    // var emailHash = msString(req.body.encounter.emailHash);
     var encounterDate = msString(new Date());
     var curBP = msString(req.body.encounter.curBP);
-    var targetBP = msString(req.body.encounter.targetBP);
+    var curTargetBP = msString(req.body.encounter.curTargetBP);
     var curMeds = msString(req.body.encounter.curMeds);
     var age = msString(req.body.encounter.age);
     var race = msString(req.body.encounter.race);
     var hasCKD = msString(req.body.encounter.hasCKD);
     var hasDiabetes = msString(req.body.encounter.hasDiabetes);
 
-    if(!req.body.orgId) {
-      var userHash = encrypt.makeEmailHash(ptId) ;
+    if(!req.body.orgId && req.body.ptId) {
+      emailHash = encrypt.makeEmailHash(ptId) ;
     } else {
-      var userHash = undefined;
+      emailHash = undefined;
     }
 
+    console.log('ptId', ptId);
     console.log('orgId', orgId);
-    var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, targetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + targetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
+    var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, curTargetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + curTargetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
 
+    console.log('query', query);
     db.queryHelper(query, function(err, data){
       if(err) {
         console.log(err);
         res.send(err);
       } else {
-        email.sendNewUserEmail(email, userHash);
+        email.sendNewUserEmail(email, emailHash);
         res.send(data);
       }
     });
