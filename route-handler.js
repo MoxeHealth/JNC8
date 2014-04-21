@@ -29,6 +29,7 @@ module.exports = function(app) {
   };
 
   app.get('/', function(req,res){
+    console.log('req', req);
     // check to see if there's a user id parameter
     // if there is, run a query through the DB to see if that user id exists; return with data if it does
     // send res.redirect to '/new with information'
@@ -97,6 +98,7 @@ module.exports = function(app) {
     req.pipe(request.get(urlString)).pipe(res);
   });
 
+  // standalone users and moxe users at the end of a patient encounter 
   app.post('/db/encounters',  function(req, res){
     console.log('post db/encounters');
 
@@ -146,11 +148,13 @@ module.exports = function(app) {
     });
   });
 
+  //moxe users access the app via a SAML POST request 
   app.post('/authenticate', function(req, res) {
     console.log('fielding /authenticate request');
 
     var thumbprint = "MIIC2jCCAcKgAwIBAgIQFC2VkNtdfJtAMS1n4G1JYDANBgkqhkiG9w0BAQUFADAWMRQwEgYDVQQDEwtNYXVsaWstTW94ZTAeFw0xMzExMjIwMTI3MTJaFw0xNDExMjEwMDAwMDBaMBYxFDASBgNVBAMTC01hdWxpay1Nb3hlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3J1ns4AcOsQ2UYXqNxtLHVoQwUqFC/d15t06xN378OO0wByuHsBC43NANr3leqJW7AOr0YQ30ZmlavXu8kuYjYo7aPT15SzQNKJJla5KngngLb0r0W54eh/dkX2/iaFRp9ACD62F+mPVmiSWr8NuScvMc6oqeAcAUdZAkpwr+TjY3EXvqbrSUydnJiBcfc+ZCAcfLj1zpxmY4vl44isE/qFq2cRbo3+Wdal3i4LHZVuT1lR3usb2oKlIr1phyMcQR03He/S9l//ysMS6v+FaPWnM7rtxMOAQ6jgQeYjS6k72oXpjIpIbNKM9/K4EOENyK/SlRLhto1Vmp8AMfyA5QIDAQABoyQwIjALBgNVHQ8EBAMCBDAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQEFBQADggEBACwk4fpW6yPZJKtifdIP5kbCVS+JMw6/ROxt8QbWeQ37uEiexq6jfuunumEW3WtlUjgNcQ7gpSd1Sv6bIRS+KDgyFJAtxwiV1Mad8yYuutgJrXblX/6v6yQImg6d+Zru91Defef9Kg3LaJdJJCIqONolm9eDlAMrOIIEiKZY3tfnjfy5QeXAAdQjaHeQ9HUblyjLhbSjPypXvgcfMyD8pPXnRXg9jKQMkq+RxWZRWvW5YE5sexLsZEEOL21BV1aU2uE7epCf1+czJtSJkJpJhxRh17JYNZsYAU1XIai7oJbdkto2dzFl3VvULlfxdR0WoBw0I";
-    var options = { thumbprint: thumbprint,
+    var options = { 
+      thumbprint: thumbprint,
       audience: 'https://jnc8.azurewebsites.net/authenticate'
     };
     
@@ -174,6 +178,8 @@ module.exports = function(app) {
         var issuer = profile.issuer;
 
         console.log('SAML claims:', claims);
+        //what happens after the successful SAML request 
+        // res.end('/moxe');
       });
     });
 
@@ -182,6 +188,7 @@ module.exports = function(app) {
 
 
   //will handle post requests from unique urls that are given to people who sign up for the standalone app 
+  //todo- shouldn't this be a get? 
   app.post('/*',  function(req, res){
     // console.log("Serving app.post...");
 
