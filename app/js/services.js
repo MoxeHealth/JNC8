@@ -24,11 +24,11 @@ angular.module('myApp.services', [])
     var initializeMoxe = function(){
       console.log('initializeMoxe called');
       var sid = $location.$$search.sid;
-      return $http.({
+      return $http({
         url: '/moxe/userData',
         method: 'GET',
         params: {
-          sid = sid
+          sid: sid
         }
       }).then(function(err, userData) {
         var result = $q["all"]([substrate.getPatientData(userData.patientId), db.getEncounters({ptId: userData.patientId, orgId: userData.orgId })]);
