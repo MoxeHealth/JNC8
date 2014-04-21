@@ -23,14 +23,23 @@ angular.module('myApp.services', [])
 
     var initializeMoxe = function(){
       console.log('initializeMoxe called');
-      var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)]);
+      var sid = $location.$$search.sid;
+      return $http.({
+        url: '/moxe/userData',
+        method: 'GET',
+        params: {
+          sid = sid
+        }
+      }).then(function(err, userData) {
+        var result = $q["all"]([substrate.getPatientData(userData.patientId), db.getEncounters({ptId: userData.patientId, orgId: userData.orgId })]);
 
-      return result.then(function(response) {
-        $rootScope.showSplash = false;
-        ptData.substrate = response[0];
-        ptData.db = response[1];
-        console.log('substrate', ptData.substrate);
-        console.log('db', ptData.db);
+        return result.then(function(response) {
+          $rootScope.showSplash = false;
+          ptData.substrate = response[0];
+          ptData.db = response[1];
+          console.log('substrate', ptData.substrate);
+          console.log('db', ptData.db);
+        });
       });
     };
 

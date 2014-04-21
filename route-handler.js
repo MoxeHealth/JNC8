@@ -4,7 +4,10 @@ var encrypt = require('./encrypt');
 var email = require('./email');
 var saml = require('saml20');
 var bodyParser = require('body-parser');
-var db = require('./db-config')
+var db = require('./db-config');
+var libxmljs = require('libxmljs');
+var crypto = require('crypto');
+var localStorage = {};
 
 module.exports = function(app) {
   api = {
@@ -112,7 +115,6 @@ module.exports = function(app) {
       }
     };
 
-    console.log('req', req.body);
     // there must be a better way to do this... pulling data from the req object and normalizing it
     var ptId = req.body.ptId;
     var orgId = req.body.orgId || 'NULL';
@@ -147,37 +149,48 @@ module.exports = function(app) {
   });
 
   app.post('/authenticate', function(req, res) {
-    console.log('fielding /authenticate request');
 
     var thumbprint = "MIIC2jCCAcKgAwIBAgIQFC2VkNtdfJtAMS1n4G1JYDANBgkqhkiG9w0BAQUFADAWMRQwEgYDVQQDEwtNYXVsaWstTW94ZTAeFw0xMzExMjIwMTI3MTJaFw0xNDExMjEwMDAwMDBaMBYxFDASBgNVBAMTC01hdWxpay1Nb3hlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3J1ns4AcOsQ2UYXqNxtLHVoQwUqFC/d15t06xN378OO0wByuHsBC43NANr3leqJW7AOr0YQ30ZmlavXu8kuYjYo7aPT15SzQNKJJla5KngngLb0r0W54eh/dkX2/iaFRp9ACD62F+mPVmiSWr8NuScvMc6oqeAcAUdZAkpwr+TjY3EXvqbrSUydnJiBcfc+ZCAcfLj1zpxmY4vl44isE/qFq2cRbo3+Wdal3i4LHZVuT1lR3usb2oKlIr1phyMcQR03He/S9l//ysMS6v+FaPWnM7rtxMOAQ6jgQeYjS6k72oXpjIpIbNKM9/K4EOENyK/SlRLhto1Vmp8AMfyA5QIDAQABoyQwIjALBgNVHQ8EBAMCBDAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQEFBQADggEBACwk4fpW6yPZJKtifdIP5kbCVS+JMw6/ROxt8QbWeQ37uEiexq6jfuunumEW3WtlUjgNcQ7gpSd1Sv6bIRS+KDgyFJAtxwiV1Mad8yYuutgJrXblX/6v6yQImg6d+Zru91Defef9Kg3LaJdJJCIqONolm9eDlAMrOIIEiKZY3tfnjfy5QeXAAdQjaHeQ9HUblyjLhbSjPypXvgcfMyD8pPXnRXg9jKQMkq+RxWZRWvW5YE5sexLsZEEOL21BV1aU2uE7epCf1+czJtSJkJpJhxRh17JYNZsYAU1XIai7oJbdkto2dzFl3VvULlfxdR0WoBw0I";
     var options = { thumbprint: thumbprint,
-      audience: 'https://jnc8.azurewebsites.net/authenticate'
+      audience: 'http://jnc8.azurewebsites.net/authenticate'
     };
+    var claimsDetails = {};
+    var randomHash = crypto.randomBytes(20).toString('hex');
     
+    // get the data
     var body = '';
-    req.on('data', function(data){ 
-      body += data;
+    req.on('data', function(chunk){ 
+      body += chunk;
     });
 
     req.on('end', function() {
       var b64Assertion = body.split('=')[1];
       b64Assertion = decodeURIComponent(b64Assertion);
-      var rawAssertion = new Buffer(b64Assertion, 'base64').toString('utf8');
+      var xml = new Buffer(b64Assertion, 'base64').toString('utf8');
+      var xmlDoc = libxmljs.parseXmlString(xml);
+      var assertionNode = xmlDoc.get('saml:Assertion', {saml: 'urn:oasis:names:tc:SAML:2.0:assertion'});
 
-      console.log('rawAssertion: ', rawAssertion);
 
-      saml.validate(rawAssertion, options, function(err, profile) {
-        if(err) throw new Error('SAML error:' + err);
-
-        console.log("SAML profile: ", profile);
-        var claims = profile.claims;
-        var issuer = profile.issuer;
-
-        console.log('SAML claims:', claims);
+      // okay, so this is interesting: the XML namespacing in the SAML response throws all kinds of errors with this saml20 library. on line 168, there's a workaround with the libxmljs library, but nothing for saml20. i have a temporary, hacky solution built directly into the parser in node_modules/saml20/lib/saml20.js, but am planning to write it into the library and submit a pull request
+      saml.parse(assertionNode, function(err, profile) {
+        if(err) console.log('saml parse error: ', err);
+        claimsDetails.userId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.userid']['#'];
+        claimsDetails.ptId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.patientid']['#'];
+        claimsDetails.orgId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.organizationcode']['#'].replace('ORG#', '');
+        claimsDetails.vendorId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.vendorid']['#'].replace('VEN#', '');
       });
+    
+      localStorage[randomHash] = claimsDetails;
+      console.log(localStorage);
     });
 
-    console.log(rawAssertion);
+    res.redirect('/app/#/moxe?sid='+randomHash);
+  });
+
+  app.get('/moxe/userData', function(req, res) {
+    var sid = req.query.sid;
+    var claimsInfo = localStorage[sid];
+    res.send(claimsInfo);
   });
 
 
