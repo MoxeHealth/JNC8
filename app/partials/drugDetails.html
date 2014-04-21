@@ -5,10 +5,8 @@
     <span class="rx-status rx-error right" ng-show="err" alt="There was an error getting the drug information from the GoodRx website."></span>
     <span ng-if="!med.searchError" ng-model="med.medicationName">{{med.medicationName}}</span>
     <span ng-if="med.searchError">{{med.searchError}}</span>
-    
-    <input class="add-med" ng-if="!med.searchError" type="checkbox" ng-model="med.addMed">Add Medication<br>
-
     <div class="inline-info price right med-detail" ng-if="!goodRxErr">{{ price | currency }}</div> 
+    <span class="add-medication" ng-if="!med.searchError"><input class="add-med" type="checkbox" ng-model="med.addMed">Add Medication</span>
   </div> 
   <div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">
       <div class="inline-info left">
