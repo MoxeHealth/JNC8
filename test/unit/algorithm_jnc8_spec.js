@@ -1,38 +1,8 @@
 //expected algorithm input with data types
 
-var ptStub = {
-  //template values for testing
-  //method is from 'pt' service in '/app/services.js'
-  isAtBPGoal: function() {
-    if(this.targetBP) {
-      if(this.bloodPressure.Systolic >= this.targetBP.Systolic || this.bloodPressure.Diastolic >= this.targetBP.Diastolic) {
-        return false;
-      }
-      return true;
-    } else {
-      throw new Error ("Patient's target BP hasn't been set.");
-    }
-  }
-  /* the following values are populated in the specs:
-  // possible races: 'Black or African American', 'Asian', 'Caucasian'
-  race: 'string' 
-  age: integer
-  bloodPressure: {
-    Systolic: integer
-    Diastolic: integer
-  },
-  curMeds: [{'ACEI': 'lisinopril', atMax: true}],
-  hasDiabetes: boolean,
-  hasCKD: boolean,
-  isAtBPGoal: boolean,
-  isOnMedication: boolean
-  targetBP: integer
-  */
-};
-
 describe('meds', function(){
   it('data structure is an object containing keys whose values are arrays of objects', function(){
-    var type = typeof meds;
+    var type = typeof meds_jnc8;
     expect(type).toBe('object');
   });
 

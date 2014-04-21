@@ -9,8 +9,8 @@ angular.module('myApp.services', [])
 
     var initializeMoxe = function(){
       //stub ptId and orgId. Soon will be populated by SAML request from Moxe dashboard 
-      ptIdentifier.ptId = $rootScope.patientId || null;
-      ptIdentifier.orgId = $rootScope.orgId || null;
+      ptIdentifier.ptId = $rootScope.patientId;
+      ptIdentifier.orgId = $rootScope.orgId;
 
       console.log('initializeMoxe called');
       var result = $q["all"]([substrate.getPatientData($rootScope.patientId), db.getEncounters(ptIdentifier)]);
@@ -30,7 +30,6 @@ angular.module('myApp.services', [])
       
       //only moxe users have an orgId
       ptIdentifier.ptId = null;
-      ptIdentifier.orgId = null;
 
       console.log('initializeReturning called');
       
@@ -93,12 +92,18 @@ angular.module('myApp.services', [])
       return $http({
         url: '/db/encounters',
         method: 'POST',
-        params: {
+        data: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId,
           //encounter object expects multiple values: curBP, curMeds, curTargetBP
           encounter: encounter
         }
+      })
+      .success(function(data, status, headers, config){
+        console.log('data', data);
+      })
+      .error(function(data, status, headers, config) {
+        console.log('error data', data);
       });
     };
 
@@ -284,6 +289,8 @@ angular.module('myApp.services', [])
 
     //todo - finish - this function uses the targetdoseRec property of each med object in 'meds_jnc8' to determine if medication is at max dose or not
     var medAtMax = function(medication, dose){
+      //look up recommended targetDose for drug name
+      //return dose >= targetDose[targetDose.length - 1]{ 
       return true;
     };
 
@@ -457,8 +464,7 @@ angular.module('myApp.services', [])
       pt.emails = [];
       pt.targetBPs = [];
       pt.ids = {
-        ptId: null,
-        orgId: null,
+        ptId: null
       }
     }
     return pt;

@@ -1,4 +1,5 @@
 var request = require('request');
+var express = require('express');
 var db = require('./db-config')
 var encrypt = require('./encrypt');
 var email = require('./email');
@@ -27,6 +28,9 @@ module.exports = function(app) {
       secret: 'bYiIVq2mv+GsSqtYrjjNqQ=='
     }
   };
+
+  app.use(express.static(__dirname));
+  app.use(bodyParser({strict: false}));
 
   app.get('/', function(req,res){
     console.log('req', req);
@@ -101,8 +105,6 @@ module.exports = function(app) {
   app.post('/db/encounters', function(req, res){
     console.log('post db/encounters');
 
-    console.log('req data', req.data);
-
     var msString = function(target) {
       if(typeof target === 'string') {
         console.log('target string', target );
@@ -110,32 +112,37 @@ module.exports = function(app) {
       } else if(target instanceof Date) {
         console.log('target Date', target );
         return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
+        //without the following conditional, the target will be stringified to 'undefined'
+      } else if(!target) {
+        return '\'' + JSON.stringify(target) + '\'';
       } else {
-        return '\'' + JSON.stringify(target) + '\'' || 'NULL';
+        return 'NULL';
       }
     };
 
-    console.log('req', msString(req.body));
+    console.log('req', JSON.stringify(req.body));
+    
     // there must be a better way to do this... pulling data from the req object and normalizing it
-    var ptId = msString(req.body.ptIdentifier.ptId) || 'NULL';
-    var orgId = req.body.orgId || 'NULL';
-    var emails = msString(req.body.encounter.emails) || 'NULL';
-    var emailHash = msString(req.body.encounter.emailHash) || 'NULL';
+    var ptId = msString(req.body.ptId);
+    var orgId = msString(req.body.orgId);
+    var emails = msString(req.body.encounter.emails);
+    var emailHash = msString(req.body.encounter.emailHash);
     var encounterDate = msString(new Date());
-    var curBP = msString(req.body.encounter.curBP) || 'NULL';
-    var targetBP = msString(req.body.encounter.targetBP) || 'NULL';
-    var curMeds = msString(req.body.encounter.curMeds) || 'NULL';
-    var age = msString(req.body.encounter.age) || 'NULL';
-    var race = msString(req.body.encounter.race) || 'NULL';
-    var hasCKD = msString(req.body.encounter.hasCKD) || 'NULL';
-    var hasDiabetes = msString(req.body.encounter.hasDiabetes) || 'NULL';
+    var curBP = msString(req.body.encounter.curBP);
+    var targetBP = msString(req.body.encounter.targetBP);
+    var curMeds = msString(req.body.encounter.curMeds);
+    var age = msString(req.body.encounter.age);
+    var race = msString(req.body.encounter.race);
+    var hasCKD = msString(req.body.encounter.hasCKD);
+    var hasDiabetes = msString(req.body.encounter.hasDiabetes);
 
     if(!req.body.orgId) {
-      var userHash = encrypt.makeEmailHash(req.body.encounter.email[0]) ;
+      var userHash = encrypt.makeEmailHash(ptId) ;
     } else {
       var userHash = undefined;
     }
 
+    console.log('orgId', orgId);
     var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, targetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + targetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
 
     db.queryHelper(query, function(err, data){
