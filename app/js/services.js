@@ -89,10 +89,11 @@ angular.module('myApp.services', [])
 
       console.log('addEncounter called');
       console.log('ptEncounter', encounter);
+      console.log('ptIdentifier', ptIdentifier);
       return $http({
         url: '/db/encounters',
         method: 'POST',
-        data: {
+        params: {
           ptId: ptIdentifier.ptId,
           orgId: ptIdentifier.orgId,
           //encounter object expects multiple values: curBP, curMeds, curTargetBP
@@ -451,7 +452,9 @@ angular.module('myApp.services', [])
       //app does not allow user to enter encounter date
       console.log('first time user');
       pt.encounterDates = [new Date()];
+      pt.curDate = pt.encounterDates[pt.encounterDates.length - 1];
       pt.bps = [];
+      pt.emails = [];
       pt.targetBPs = [];
       pt.ids = {
         ptId: null,
@@ -499,8 +502,8 @@ angular.module('myApp.services', [])
           encounterDate: encounterDate,
           systolic: bp.systolic,
           diastolic: bp.diastolic,
-          targetDias: targetBP.systolic,
-          targetSys: targetBP.diastolic
+          targetDias: targetBP.diastolic,
+          targetSys: targetBP.systolic
         });
       }
       return results;

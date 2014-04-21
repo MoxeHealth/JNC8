@@ -21,7 +21,6 @@ All users can adjust the target blood pressure, which affects both the visualiza
 
 At the end of an encounter, the user can save the data to an MSSQL database. The Moxe database should be the single source of truth for as much information as possible. It would be confusing if doctors could write information that already existed in the patient's EMR (accessed through Substrate) to the MSSQL database, so Moxe users can only save the target blood presure recorded and the encounter date. Standalone users do not have any information in an EMR accessed through Substrate, so in contrast to the workflow for Moxe users, all patient information recorded in the data entry view is saved to the database. 
 
-
 Stack:
 ==========
 - AngularJS: 1.2.x (IE 8 support dropped in later versions)

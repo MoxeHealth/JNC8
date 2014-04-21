@@ -8,17 +8,18 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
   console.log('dataEntry');
   $rootScope.showSplash = false;
 
-  // standalone users
+  //visitors to stand alone website will not have an ordId 
   $scope.standAlone = pt.ids.orgId ? false : true;
-
-  if($scope.standAlone){
-    pt.ids.ptId = pt.emails;
-  }
 
   $scope.goToDataViz = function() {
     //moxe user already has curBP stored in substrate database 
     if($scope.standAlone){
       pt.bps.push(pt.curBP);
+    }
+
+    //set ptId using email field 
+    if($scope.standAlone){
+      pt.ids.ptId = pt.emails[0];
     }
 
     //clear the meds in the meds array if they're empty
@@ -34,12 +35,8 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
     $location.path('/dataViz');
   };
 
-  //visitors to stand alone website will not have an ordId 
-  //todo- why not orgId.orgId?????
-  // $scope.standAlone = orgId ? false : true;
-  // $scope.standAlone = true;
   $scope.pt = pt;
-  console.log($scope);
+  console.log('scope', $scope);
 
   $scope.addDrugInput = function(){
     console.log("Adding drug field...");
@@ -62,11 +59,14 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
     }
     return false;
   };
-
 }])
 
 .controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', function($scope, pt, startup, db) {
 
+  //visitors to stand alone website will not have an ordId 
+  $scope.standAlone = pt.ids.orgId ? false : true;
+
+  console.log('scope', $scope);
   console.log('pt', pt);
 
   $scope.saveToDB = function(){

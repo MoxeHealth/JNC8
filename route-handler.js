@@ -35,7 +35,6 @@ module.exports = function(app) {
     // send res.redirect to '/new with information'
     if(req.query.uid) {
       res.redirect('/app/#/returning?uid='+req.query.uid);
-      
     } else {
       console.log("Serving a vanilla GET to '/'")
       res.redirect('/app');
@@ -99,8 +98,10 @@ module.exports = function(app) {
   });
 
   // standalone users and moxe users at the end of a patient encounter 
-  app.post('/db/encounters',  function(req, res){
+  app.post('/db/encounters', function(req, res){
     console.log('post db/encounters');
+
+    console.log('req data', req.data);
 
     var msString = function(target) {
       if(typeof target === 'string') {
@@ -114,9 +115,9 @@ module.exports = function(app) {
       }
     };
 
-    console.log('req', req.body);
+    console.log('req', msString(req.body));
     // there must be a better way to do this... pulling data from the req object and normalizing it
-    var ptId = req.body.ptId;
+    var ptId = msString(req.body.ptIdentifier.ptId) || 'NULL';
     var orgId = req.body.orgId || 'NULL';
     var emails = msString(req.body.encounter.emails) || 'NULL';
     var emailHash = msString(req.body.encounter.emailHash) || 'NULL';
@@ -129,7 +130,7 @@ module.exports = function(app) {
     var hasCKD = msString(req.body.encounter.hasCKD) || 'NULL';
     var hasDiabetes = msString(req.body.encounter.hasDiabetes) || 'NULL';
 
-    if(req.body.orgId) {
+    if(!req.body.orgId) {
       var userHash = encrypt.makeEmailHash(req.body.encounter.email[0]) ;
     } else {
       var userHash = undefined;
