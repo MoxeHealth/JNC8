@@ -1,4 +1,5 @@
 var request = require('request');
+var express = require('express');
 var db = require('./db-config')
 var encrypt = require('./encrypt');
 var email = require('./email');
@@ -31,13 +32,16 @@ module.exports = function(app) {
     }
   };
 
+  app.use(express.static(__dirname));
+  app.use(bodyParser({strict: false}));
+
   app.get('/', function(req,res){
     // check to see if there's a user id parameter
     // if there is, run a query through the DB to see if that user id exists; return with data if it does
     // send res.redirect to '/new with information'
     if(req.query.uid) {
+      console.log(req.query.uid);
       res.redirect('/app/#/returning?uid='+req.query.uid);
-      
     } else {
       console.log("Serving a vanilla GET to '/'")
       res.redirect('/app');
@@ -47,6 +51,7 @@ module.exports = function(app) {
   app.get('/db/returning', function(req, res) {
     console.log('get db/returning');
     var query = db.makeUserQuery(req.query.uid);
+    console.log('db returning query', query);
     db.queryHelper(query, function(err, rows) {
       if(err) {
         res.send(err);
@@ -100,59 +105,86 @@ module.exports = function(app) {
     req.pipe(request.get(urlString)).pipe(res);
   });
 
-  app.post('/db/encounters',  function(req, res){
+  // standalone users and moxe users at the end of a patient encounter 
+  app.post('/db/encounters', function(req, res){
     console.log('post db/encounters');
 
+    //convert each target into a string that can be inserted into the database 
     var msString = function(target) {
       if(typeof target === 'string') {
         console.log('target string', target );
-        return target;
+        return '\'' + target + '\'';
       } else if(target instanceof Date) {
         console.log('target Date', target );
         return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
+        //without the following conditional, the target will be stringified to 'undefined'
+      } else if(!target) {
+        return 'NULL';
       } else {
-        return '\'' + JSON.stringify(target) + '\'' || 'NULL';
+        return '\'' + JSON.stringify(target) + '\'';
       }
     };
 
     // there must be a better way to do this... pulling data from the req object and normalizing it
-    var ptId = req.body.ptId;
-    var orgId = req.body.orgId || 'NULL';
-    var emails = msString(req.body.encounter.emails) || 'NULL';
-    var emailHash = msString(req.body.encounter.emailHash) || 'NULL';
+    var ptId = msString(req.body.ptId);
+    var orgId = msString(req.body.orgId);
+    var emails = msString(req.body.encounter.emails);
+    var emailHash = msString(req.body.encounter.emailHash);
     var encounterDate = msString(new Date());
-    var curBP = msString(req.body.encounter.curBP) || 'NULL';
-    var targetBP = msString(req.body.encounter.targetBP) || 'NULL';
-    var curMeds = msString(req.body.encounter.curMeds) || 'NULL';
-    var age = msString(req.body.encounter.age) || 'NULL';
-    var race = msString(req.body.encounter.race) || 'NULL';
-    var hasCKD = msString(req.body.encounter.hasCKD) || 'NULL';
-    var hasDiabetes = msString(req.body.encounter.hasDiabetes) || 'NULL';
+    var curBP = msString(req.body.encounter.curBP);
+    var curTargetBP = msString(req.body.encounter.curTargetBP);
+    var curMeds = msString(req.body.encounter.curMeds);
+    var age = msString(req.body.encounter.age);
+    var race = msString(req.body.encounter.race);
+    var hasCKD = msString(req.body.encounter.hasCKD);
+    var hasDiabetes = msString(req.body.encounter.hasDiabetes);
 
-    if(req.body.orgId) {
-      var userHash = encrypt.makeEmailHash(req.body.encounter.email[0]) ;
+    console.log('emailHash before encrypt', emailHash);
+
+    if(!req.body.orgId && req.body.ptId) {
+      //emailHashString is the same as emailHash, but not stringified
+      var emailHashString = encrypt.makeEmailHash(ptId);
+      console.log('typeof emailHashString', typeof emailHashString);
     } else {
-      var userHash = undefined;
+      var emailHashString = undefined;
     }
 
-    var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, targetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + targetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
+    //first time user will have emailHash of 'NULL'
+    if(emailHash === 'NULL'){
+      emailHash = msString(emailHashString);
+    }
 
+    console.log('emailHash after encrypt', emailHash);
+    console.log('ptId', ptId);
+    console.log('orgId', orgId);
+    var query = 'INSERT INTO dbo.encounters (ptId, orgId, emails, emailHash, encounterDate, curBP, curTargetBP, curMeds, age, race, hasCKD, hasDiabetes) VALUES (' + ptId + ',' + orgId + ',' + emails + ',' + emailHash + ',' + encounterDate + ',' + curBP + ',' + curTargetBP +',' + curMeds +',' + age + ',' + race +',' + hasCKD +',' + hasDiabetes +')';
+
+    console.log('query', query);
+
+    //get user email in format that can be used in smtp request made
+    //by sendNewUserEmail function
+    var messageRecipient = req.body.encounter.emails[0];
+    var returnLink = "http://jnc8app.azurewebsites.net?uid=" + emailHashString;
+    console.log('emailHash', emailHash)
     db.queryHelper(query, function(err, data){
       if(err) {
         console.log(err);
         res.send(err);
       } else {
-        email.sendNewUserEmail(email, userHash);
-        res.send(data);
+        //currently getting '[Error: Authentication required, invalid details provided]'
+        // email.sendNewUserEmail(messageRecipient, emailHashString);
+        res.send(returnLink);
       }
     });
   });
 
+  //moxe users access the app via a SAML POST request 
   app.post('/authenticate', function(req, res) {
 
     var thumbprint = "MIIC2jCCAcKgAwIBAgIQFC2VkNtdfJtAMS1n4G1JYDANBgkqhkiG9w0BAQUFADAWMRQwEgYDVQQDEwtNYXVsaWstTW94ZTAeFw0xMzExMjIwMTI3MTJaFw0xNDExMjEwMDAwMDBaMBYxFDASBgNVBAMTC01hdWxpay1Nb3hlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3J1ns4AcOsQ2UYXqNxtLHVoQwUqFC/d15t06xN378OO0wByuHsBC43NANr3leqJW7AOr0YQ30ZmlavXu8kuYjYo7aPT15SzQNKJJla5KngngLb0r0W54eh/dkX2/iaFRp9ACD62F+mPVmiSWr8NuScvMc6oqeAcAUdZAkpwr+TjY3EXvqbrSUydnJiBcfc+ZCAcfLj1zpxmY4vl44isE/qFq2cRbo3+Wdal3i4LHZVuT1lR3usb2oKlIr1phyMcQR03He/S9l//ysMS6v+FaPWnM7rtxMOAQ6jgQeYjS6k72oXpjIpIbNKM9/K4EOENyK/SlRLhto1Vmp8AMfyA5QIDAQABoyQwIjALBgNVHQ8EBAMCBDAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQEFBQADggEBACwk4fpW6yPZJKtifdIP5kbCVS+JMw6/ROxt8QbWeQ37uEiexq6jfuunumEW3WtlUjgNcQ7gpSd1Sv6bIRS+KDgyFJAtxwiV1Mad8yYuutgJrXblX/6v6yQImg6d+Zru91Defef9Kg3LaJdJJCIqONolm9eDlAMrOIIEiKZY3tfnjfy5QeXAAdQjaHeQ9HUblyjLhbSjPypXvgcfMyD8pPXnRXg9jKQMkq+RxWZRWvW5YE5sexLsZEEOL21BV1aU2uE7epCf1+czJtSJkJpJhxRh17JYNZsYAU1XIai7oJbdkto2dzFl3VvULlfxdR0WoBw0I";
     var options = { thumbprint: thumbprint,
       audience: 'http://jnc8.azurewebsites.net/authenticate'
+
     };
     var claimsDetails = {};
     var randomHash = crypto.randomBytes(20).toString('hex');
@@ -169,7 +201,6 @@ module.exports = function(app) {
       var xml = new Buffer(b64Assertion, 'base64').toString('utf8');
       var xmlDoc = libxmljs.parseXmlString(xml);
       var assertionNode = xmlDoc.get('saml:Assertion', {saml: 'urn:oasis:names:tc:SAML:2.0:assertion'});
-
 
       // okay, so this is interesting: the XML namespacing in the SAML response throws all kinds of errors with this saml20 library. on line 168, there's a workaround with the libxmljs library, but nothing for saml20. i have a temporary, hacky solution built directly into the parser in node_modules/saml20/lib/saml20.js, but am planning to write it into the library and submit a pull request
       saml.parse(assertionNode, function(err, profile) {
@@ -195,6 +226,7 @@ module.exports = function(app) {
 
 
   //will handle post requests from unique urls that are given to people who sign up for the standalone app 
+  //todo- shouldn't this be a get? 
   app.post('/*',  function(req, res){
     // console.log("Serving app.post...");
 

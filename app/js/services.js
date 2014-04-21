@@ -1,27 +1,17 @@
 'use strict';
 
 angular.module('myApp.services', [])
-  .value('version', '0.1')
-
-  .service('orgId', ['$rootScope', function($rootScope){
-    return {
-      orgId: $rootScope.orgId
-    };
-  }])
-
 
   .service('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
     
     var ptData = {};
-    console.log($rootScope);
-    
-    var ptIdentifier = {
-      ptId: $rootScope.patientId || null, 
-      orgId: $rootScope.orgId || null
-    };
-
+    var ptIdentifier = {};
 
     var initializeMoxe = function(){
+      //stub ptId and orgId. Soon will be populated by SAML request from Moxe dashboard 
+      ptIdentifier.ptId = $rootScope.patientId;
+      ptIdentifier.orgId = $rootScope.orgId;
+
       console.log('initializeMoxe called');
       var sid = $location.$$search.sid;
       return $http({
@@ -44,9 +34,13 @@ angular.module('myApp.services', [])
     };
 
     var initializeReturning = function(){
-      console.log('initializeReturning called');
       // get the uid out of the query
       var uid = $location.$$search.uid;
+      
+      //only moxe users have an orgId
+      ptIdentifier.ptId = null;
+
+      console.log('initializeReturning called');
       
       var result = $q["all"]([db.getUserByHash(uid)]);
 
@@ -66,9 +60,9 @@ angular.module('myApp.services', [])
     };
   }])
 
-  .service('db', ['$http', function($http) {
+  .factory('db', ['$http', function($http) {
 
-    this.getEncounters = function(ptIdentifier, callback) {
+    var getEncounters = function(ptIdentifier, callback) {
       // ptIdentifier should be an object in the form {ptId: number[, orgId: orgIdentifier]}
 
       var result = $http({
@@ -85,7 +79,7 @@ angular.module('myApp.services', [])
       });
     };
 
-    this.getUserByHash = function(uid, callback) {
+    var getUserByHash = function(uid, callback) {
       var result = $http({
         url: '/db/returning',
         method: 'GET',
@@ -99,10 +93,11 @@ angular.module('myApp.services', [])
       })
     };
 
-    this.addEncounter = function(ptIdentifier, encounter, callback) {
+    var addEncounter = function(ptIdentifier, encounter, callback) {
 
       console.log('addEncounter called');
       console.log('ptEncounter', encounter);
+      console.log('ptIdentifier', ptIdentifier);
       return $http({
         url: '/db/encounters',
         method: 'POST',
@@ -112,7 +107,19 @@ angular.module('myApp.services', [])
           //encounter object expects multiple values: curBP, curMeds, curTargetBP
           encounter: encounter
         }
+      })
+      .success(function(data, status, headers, config){
+        console.log('data', data);
+      })
+      .error(function(data, status, headers, config) {
+        console.log('error data', data);
       });
+    };
+
+    return {
+      getEncounters: getEncounters,
+      getUserByHash: getUserByHash,
+      addEncounter: addEncounter
     };
   }])
 
@@ -188,7 +195,7 @@ angular.module('myApp.services', [])
 
   //parse substrate data to get necessary information for algorithm
   //used by 'pt' service
-  .service('substrateHelpers', function(){
+  .factory('substrateHelpers', function(){
     var getProblems = function(problemsArray){
       var problems = {};
 
@@ -291,6 +298,8 @@ angular.module('myApp.services', [])
 
     //todo - finish - this function uses the targetdoseRec property of each med object in 'meds_jnc8' to determine if medication is at max dose or not
     var medAtMax = function(medication, dose){
+      //look up recommended targetDose for drug name
+      //return dose >= targetDose[targetDose.length - 1]{ 
       return true;
     };
 
@@ -305,7 +314,7 @@ angular.module('myApp.services', [])
     };
   })
 
-  .service('dbHelpers', function(){
+  .factory('dbHelpers', function(){
 
     // 'attr' can either be targetBP or bp
     var getBPs = function(dbData, attr){
@@ -334,6 +343,12 @@ angular.module('myApp.services', [])
       return bps;
     };
 
+    var medAtMax = function(medication, dose){
+      //look up recommended targetDose for drug name
+      //return dose >= targetDose[targetDose.length - 1]{ 
+      return true;
+    };  
+
     var getMeds = function(dbData){
       var meds = [];
       var curMeds = dbData[dbData.length - 1].curMeds;
@@ -347,8 +362,7 @@ angular.module('myApp.services', [])
           units: curMeds[i].units,
           className: curMeds[i].className,
           atMax: medAtMax(),
-          targetDoseRecs: [50],
-          startDate: medications[i].startDate
+          targetDoseRecs: [50]
         }
         meds.push(medObj);
       }
@@ -366,7 +380,8 @@ angular.module('myApp.services', [])
       var dates = [];
 
       for(var i = 0; i < dbData.length; i++){
-        dates.push(dbData.encounterDate);
+        //convert date strings to date objects 
+        dates.push(new Date(dbData[i].encounterDate));
       }
       return dates;
     };
@@ -379,20 +394,6 @@ angular.module('myApp.services', [])
     };
   })
 
-  .factory('ptHelpers', ['pt', 'orgId', function(pt, orgId) {
-    var updatePt = function(pt){
-      //stand alone app user
-      if(!orgId){
-        pt.bps.push(pt.curBP);
-      }
-    }
-
-    return {
-      updatePt: updatePt
-    }
-  }])
-
-  //todo - refactor so that pt calls the 'startup' service only once, not 2x. Currently pt passed into both dataVizCtrl and dataEntryCtrl
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
   .factory('pt', ['startup', 'substrateHelpers', 'dbHelpers', function(startup, substrateHelpers, dbHelpers) {
 
@@ -412,6 +413,7 @@ angular.module('myApp.services', [])
 
     //get data from moxe user 
     if(startup.ptData.substrate){
+      console.log('substrate data');
       var substrateData = startup.ptData.substrate;
       var problems = substrateHelpers.getProblems(substrateData.problems);
 
@@ -426,7 +428,7 @@ angular.module('myApp.services', [])
       pt.curDate = pt.encounterDates[pt.encounterDates.length - 1];
 
       //'ids' needed to save information from session to the database 
-      pt.ids = startup.ptIdentifier;
+      pt.ids = startup.ptIdentifier || {};
       pt.emails = substrateData.demographics.EmailAddresses;
 
       pt.race = substrateData.demographics.Race.Text || null;
@@ -439,7 +441,6 @@ angular.module('myApp.services', [])
 
     //get data from current user of standalone app, or moxe user 
     if(startup.ptData.db && startup.ptData.db.length){
-      console.log("into the startup");
       console.log('Theoretical dbData: ', startup.ptData.db);
       var dbData = startup.ptData.db;
 
@@ -460,7 +461,8 @@ angular.module('myApp.services', [])
 
         //'ids' needed to save information from session to the database 
         pt.ids = startup.ptIdentifier;
-        pt.emails = dbData[dbData.length - 1].Emails
+        pt.emails = dbData[dbData.length - 1].emails;
+        pt.emailHash = dbData[dbData.length - 1].emailHash;
 
         pt.race = dbData[dbData.length - 1].race || null;
         //age is a string ending in "y"
@@ -468,19 +470,35 @@ angular.module('myApp.services', [])
         pt.hasCKD = dbData[dbData.length - 1].hasCKD;
         pt.hasDiabetes = dbData[dbData.length - 1].hasDiabetes;
       }
+    //first time user 
     }else{
       //app does not allow user to enter encounter date
+      console.log('first time user');
       pt.encounterDates = [new Date()];
+      pt.curDate = pt.encounterDates[pt.encounterDates.length - 1];
       pt.bps = [];
+      pt.emails = [];
       pt.targetBPs = [];
+      pt.ids = {
+        ptId: null
+      }
+
+      //hard code for testing
+      // pt.race = 'Black or African American';
+      // pt.age = 45;
+      // pt.hasCKD = true;
+      // pt.hasDiabetes = true;
+      // pt.curBP = { systolic: 155, diastolic: 55};
+      // pt.emails[0] = 'skeller88@gmail.com';
+      // pt.isOnMedication = false;
     }
     return pt;
   }])
 
-  .service('graphHelpers', [function() {
+  .factory('graphHelpers', [function() {
 
     //expects array of bp objects and string that is either 'systolic' or 'diastolic'
-    this.getBPExtreme = function(bpsArray, keyName) {
+    var getBPExtreme = function(bpsArray, keyName) {
       var bpValues = [];
 
       for(var i = 0; i < bpsArray.length; i++) {
@@ -499,7 +517,7 @@ angular.module('myApp.services', [])
 
     //expects result of 'pt' service, which is an object containing keys whose values are arrays
     //iterates through arrays  
-    this.parseBPData = function(pt) {
+    var parseBPData = function(pt) {
       var results = [];
 
       //use 'bps' to determine how many iterations
@@ -507,7 +525,7 @@ angular.module('myApp.services', [])
       for(var i = 0; i < pt.bps.length; i++) {
         var bp = pt.bps[i];
 
-        var targetBP = pt.targetBPs[i];
+        var curTargetBP = pt.targetBPs[i];
 
         var encounterDate = pt.encounterDates[i];
 
@@ -515,19 +533,23 @@ angular.module('myApp.services', [])
           encounterDate: encounterDate,
           systolic: bp.systolic,
           diastolic: bp.diastolic,
-          targetDias: targetBP.systolic,
-          targetSys: targetBP.diastolic
+          targetDias: curTargetBP.diastolic,
+          targetSys: curTargetBP.systolic
         });
       }
       return results;
     };
 
-    this.getTimeScale = function(dateOne, dateTwo) {
+    var getTimeScale = function(dateOne, dateTwo) {
+      console.log('dateOne', dateOne);
+      console.log('dateTwo', dateTwo)
       if(dateOne instanceof Date && dateTwo instanceof Date) {
         var dayLengthMs = 86400000;
         var timeDiffDays = (dateTwo.getTime() - dateOne.getTime())/dayLengthMs;
 
-        if(timeDiffDays <= 10) {
+        if(timeDiffDays < 1){
+          return 'hour';
+        } else if(timeDiffDays <= 10) {
           return 'day';
         } else if(45 >= timeDiffDays > 10) {
           return 'week';
@@ -542,17 +564,24 @@ angular.module('myApp.services', [])
       }
     };
 
-    this.removeFirstGraphChild = function() {
+    var removeFirstGraphChild = function() {
       var graph = document.getElementById('bp-graph');
       if(graph.children.length > 1){
         graph.removeChild(graph.firstChild);
       }
     };
 
+    return {
+      getBPExtreme: getBPExtreme, 
+      parseBPData: parseBPData,
+      getTimeScale: getTimeScale,
+      removeFirstGraphChild: removeFirstGraphChild
+    };
+
   }])
 
   .service('goodRx', ['$http', function($http) {
-    this.getPricing = function(name, dosage, callback) {
+    var getPricing = function(name, dosage, callback) {
       
       var params = {
         name: name
@@ -568,6 +597,10 @@ angular.module('myApp.services', [])
       }).error(function(data, status) {
         if(callback) callback(data);
       })
+    };
+
+    return {
+      getPricing: getPricing
     };
   }])
 ;

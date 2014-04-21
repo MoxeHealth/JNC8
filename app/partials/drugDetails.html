@@ -3,17 +3,18 @@
     <span class="rx-status contracted" ng-if="!err" ng-show="!showDetails"></span>
     <span class="rx-status expanded"  ng-if="!err" ng-show="showDetails"></span>
     <span class="rx-status rx-error right" ng-show="err" alt="There was an error getting the drug information from the GoodRx website."></span>
-    <span ng-if="!med.searchError">{{med.medicationName}}</span>
+    <span ng-if="!med.searchError" ng-model="med.medicationName">{{med.medicationName}}</span>
     <span ng-if="med.searchError">{{med.searchError}}</span>
     <div class="inline-info price right med-detail" ng-if="!goodRxErr">{{ price | currency }}</div> 
+    <span class="add-medication" ng-if="!med.searchError"><input class="add-med" type="checkbox" ng-model="med.addMed">Add Medication</span>
   </div> 
   <div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">
       <div class="inline-info left">
         <span class="med-detail">
-          <span class="label med-dose" ng-if="standAlone">dose:</span> <span class="dose" ng-if="standAlone">{{ med.initialdoseRecs[0] }}</span>
+          <span class="label med-dose" ng-model="med.maxDose" ng-if="standAlone">dose:</span> <span class="dose" ng-if="standAlone">{{ med.initialdoseRecs[0] }}</span>
         </span>
         <span class="med-detail">
-          <span class="label med-dose" ng-if="!standAlone">Current dose:</span> <span class="dose" ng-if="!standAlone">{{ med.dose }}{{med.units}}</span>
+          <span class="label med-dose" ng-model="med.dose" ng-if="!standAlone">Current dose:</span> <span class="dose" ng-if="!standAlone">{{ med.dose }}{{med.units}}</span>
         </span>
         <span class="med-detail"> 
           <span class="label">units:</span> {{ units }}

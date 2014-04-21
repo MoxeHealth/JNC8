@@ -5,9 +5,6 @@ var app = express();
 
 require('./route-handler')(app);
 
-app.use(express.static(__dirname));
-app.use(bodyParser({strict: false}));
-
 var port = process.env.PORT || 8000;
 
 app.listen(port);

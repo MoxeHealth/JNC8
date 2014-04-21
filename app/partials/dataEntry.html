@@ -1,7 +1,7 @@
 <form name="dataForm" class="data-form" novalidate ng-model="dataForm">
   <div class="section email-capture" ng-if="standAlone">
     <p><b>Optional: </b>If you're interested in using this application throughout your treatment, please enter your email so we can maintain a history of your treatment.</p>
-    <input type="email" placeholder="you@example.com" ng-model="pt.emails" />
+    <input type="email" placeholder="you@example.com" ng-model="pt.emails[0]" />
   </div>
   <div class="section">
     <label for="age">Patient's age:</label>

@@ -30,7 +30,8 @@ angular.module('myApp', [
     templateUrl: 'partials/dataEntry.html',
     resolve: {
       setUpApp: function(startup) {
-        // setUpApp isn't passed into the controller because the pt factory is updated with side effects
+        // setUpApp variable isn't passed into the dataEntry controller because the pt model properties are
+        // defined by side effects of startup.initializeReturning
         console.log("Set up app for returning user.");
         return startup.initializeReturning();
       }
@@ -53,9 +54,8 @@ angular.module('myApp', [
   });
 }])
 
-.run(['$rootScope', 'db', 'goodRx', 'orgId', function($rootScope, db, goodRx, orgId) {
-  console.log('run called');
+.run(['$rootScope', 'db', 'goodRx', function($rootScope, db, goodRx) {
   $rootScope.patientId = 3230000;
-  $rootScope.orgId = 3;
+  // $rootScope.orgId = 3;
 }]);
 

@@ -3,17 +3,23 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt', 'orgId',
-function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
+.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt',
+function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
+  console.log('dataEntry');
   $rootScope.showSplash = false;
 
-  // standalone users wo
-  $scope.standAlone = orgId.orgId ? false : true;
+  //visitors to stand alone website will not have an ordId 
+  $scope.standAlone = pt.ids.orgId ? false : true;
 
   $scope.goToDataViz = function() {
     //moxe user already has curBP stored in substrate database 
     if($scope.standAlone){
       pt.bps.push(pt.curBP);
+    }
+
+    //set ptId using email field 
+    if($scope.standAlone){
+      pt.ids.ptId = pt.emails[0];
     }
 
     //clear the meds in the meds array if they're empty
@@ -29,12 +35,8 @@ function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
     $location.path('/dataViz');
   };
 
-  //visitors to stand alone website will not have an ordId 
-  //todo- why not orgId.orgId?????
-  // $scope.standAlone = orgId ? false : true;
-  // $scope.standAlone = true;
   $scope.pt = pt;
-  console.log($scope);
+  console.log('scope', $scope);
 
   $scope.addDrugInput = function(){
     console.log("Adding drug field...");
@@ -57,18 +59,40 @@ function($rootScope, $scope, $q, $location, $compile, pt, orgId, drugInput) {
     }
     return false;
   };
-
 }])
 
-.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', 'orgId', function($scope, pt, startup, db, orgId) {
+.controller('dataVizCtrl', ['$scope', 'pt', 'startup', 'db', function($scope, pt, startup, db) {
+
+  //visitors to stand alone website will not have an ordId 
+  $scope.standAlone = pt.ids.orgId ? false : true;
+
+  console.log('scope', $scope);
+  console.log('pt', pt);
+  console.log('medRecs b4', $scope.medRecs);
 
   $scope.saveToDB = function(){
+
+    //add meds that were clicked
+
+    console.log('medRecs', $scope.medRecs);
+    for(var i = 0; i < $scope.medRecs.length; i++){
+      for(var k = 0; k < $scope.medRecs[i].meds.length; k++){
+        var med = $scope.medRecs[i].meds[k];
+        console.log('med', med);
+        if(med.addMed){
+          //don't want extra information on med object
+          //addMed only needed until med is added to pt.curMeds 
+          delete med['addMed'];
+          pt.curMeds.push(med);
+          console.log('ptcurMeds', pt.curMeds);
+        }
+      }
+    }
     
     $scope.clicked = true;
     console.log('saveToDB');
     if($scope.standAlone){
       var encounter = pt;
-
     } else {
       //other pt information is already saved in moxe substrate,
       //and moxe substrate should be single source of truth for 
