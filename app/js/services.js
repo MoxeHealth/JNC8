@@ -2,7 +2,7 @@
 
 angular.module('myApp.services', [])
 
-  .service('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
+  .factory('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
     
     var ptData = {};
     var ptIdentifier = {};
@@ -400,7 +400,7 @@ angular.module('myApp.services', [])
     //'pt' properties defined (or assigned null value) in this function:
     
       //from substrate or database if data exists: 
-        //age, race, hasDiabetes, hasCKD, onMedication, 
+        //ids, age, race, hasDiabetes, hasCKD, onMedication, 
         //most recent encounter object with current medications, current blood pressure, encounter date
 
       //from database if data exists: 
@@ -448,8 +448,7 @@ angular.module('myApp.services', [])
       pt.targetBPs = dbHelpers.getBPs(dbData, 'curTargetBP')
       pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
 
-
-      //user of stand alone app 
+      //user of stand alone app only  
       if(!startup.ptData.substrate){
         pt.bps = dbHelpers.getBPs(dbData, 'curBP');
         pt.targetBPs = dbHelpers.getBPs(dbData, 'curTargetBP');
@@ -492,6 +491,9 @@ angular.module('myApp.services', [])
       // pt.emails[0] = 'skeller88@gmail.com';
       // pt.isOnMedication = false;
     }
+    pt.hasNeededData = 
+      pt.ids && pt.encounterDates.length && pt.curDate && pt.bps.length && pt.emails.length 
+      && pt.age && pt.race && pt.hasCKD && pt.hasDiabetes;
     return pt;
   }])
 
