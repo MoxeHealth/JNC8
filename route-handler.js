@@ -33,11 +33,11 @@ module.exports = function(app) {
   app.use(bodyParser({strict: false}));
 
   app.get('/', function(req,res){
-    console.log('req', req);
     // check to see if there's a user id parameter
     // if there is, run a query through the DB to see if that user id exists; return with data if it does
     // send res.redirect to '/new with information'
     if(req.query.uid) {
+      console.log(req.query.uid);
       res.redirect('/app/#/returning?uid='+req.query.uid);
     } else {
       console.log("Serving a vanilla GET to '/'")
@@ -48,6 +48,7 @@ module.exports = function(app) {
   app.get('/db/returning', function(req, res) {
     console.log('get db/returning');
     var query = db.makeUserQuery(req.query.uid);
+    console.log('db returning query', query);
     db.queryHelper(query, function(err, rows) {
       if(err) {
         res.send(err);
@@ -148,7 +149,7 @@ module.exports = function(app) {
     }
 
     //first time user will have emailHash of 'NULL'
-    if(!emailHash){
+    if(emailHash === 'NULL'){
       emailHash = msString(emailHashString);
     }
 
@@ -162,7 +163,7 @@ module.exports = function(app) {
     //get user email in format that can be used in smtp request made
     //by sendNewUserEmail function
     var messageRecipient = req.body.encounter.emails[0];
-    var returnLink = "http://jnc8.azurewebsites.net?u=" + emailHashString;
+    var returnLink = "http://localhost:8000?uid=" + emailHashString;
     console.log('emailHash', emailHash)
     db.queryHelper(query, function(err, data){
       if(err) {

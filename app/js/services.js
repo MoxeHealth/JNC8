@@ -26,7 +26,7 @@ angular.module('myApp.services', [])
 
     var initializeReturning = function(){
       // get the uid out of the query
-      var uid = $location.$search.uid;
+      var uid = $location.$$search.uid;
       
       //only moxe users have an orgId
       ptIdentifier.ptId = null;
@@ -334,6 +334,12 @@ angular.module('myApp.services', [])
       return bps;
     };
 
+    var medAtMax = function(medication, dose){
+      //look up recommended targetDose for drug name
+      //return dose >= targetDose[targetDose.length - 1]{ 
+      return true;
+    };  
+
     var getMeds = function(dbData){
       var meds = [];
       var curMeds = dbData[dbData.length - 1].curMeds;
@@ -347,8 +353,7 @@ angular.module('myApp.services', [])
           units: curMeds[i].units,
           className: curMeds[i].className,
           atMax: medAtMax(),
-          targetDoseRecs: [50],
-          startDate: medications[i].startDate
+          targetDoseRecs: [50]
         }
         meds.push(medObj);
       }
@@ -366,7 +371,8 @@ angular.module('myApp.services', [])
       var dates = [];
 
       for(var i = 0; i < dbData.length; i++){
-        dates.push(dbData.encounterDate);
+        //convert date strings to date objects 
+        dates.push(new Date(dbData[i].encounterDate));
       }
       return dates;
     };
@@ -469,13 +475,13 @@ angular.module('myApp.services', [])
       }
 
       //hard code for testing
-      pt.race = 'Black or African American';
-      pt.age = 45;
-      pt.hasCKD = true;
-      pt.hasDiabetes = true;
-      pt.curBP = { systolic: 155, diastolic: 55};
-      pt.emails[0] = 'skeller88@gmail.com';
-      pt.isOnMedication = false;
+      // pt.race = 'Black or African American';
+      // pt.age = 45;
+      // pt.hasCKD = true;
+      // pt.hasDiabetes = true;
+      // pt.curBP = { systolic: 155, diastolic: 55};
+      // pt.emails[0] = 'skeller88@gmail.com';
+      // pt.isOnMedication = false;
     }
     return pt;
   }])
@@ -526,11 +532,15 @@ angular.module('myApp.services', [])
     };
 
     var getTimeScale = function(dateOne, dateTwo) {
+      console.log('dateOne', dateOne);
+      console.log('dateTwo', dateTwo)
       if(dateOne instanceof Date && dateTwo instanceof Date) {
         var dayLengthMs = 86400000;
         var timeDiffDays = (dateTwo.getTime() - dateOne.getTime())/dayLengthMs;
 
-        if(timeDiffDays <= 10) {
+        if(timeDiffDays < 1){
+          return 'hour';
+        } else if(timeDiffDays <= 10) {
           return 'day';
         } else if(45 >= timeDiffDays > 10) {
           return 'week';

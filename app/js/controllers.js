@@ -68,8 +68,26 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
 
   console.log('scope', $scope);
   console.log('pt', pt);
+  console.log('medRecs b4', $scope.medRecs);
 
   $scope.saveToDB = function(){
+
+    //add meds that were clicked
+
+    console.log('medRecs', $scope.medRecs);
+    for(var i = 0; i < $scope.medRecs.length; i++){
+      for(var k = 0; k < $scope.medRecs[i].meds.length; k++){
+        var med = $scope.medRecs[i].meds[k];
+        console.log('med', med);
+        if(med.addMed){
+          //don't want extra information on med object
+          //addMed only needed until med is added to pt.curMeds 
+          delete med['addMed'];
+          pt.curMeds.push(med);
+          console.log('ptcurMeds', pt.curMeds);
+        }
+      }
+    }
     
     $scope.clicked = true;
     console.log('saveToDB');
