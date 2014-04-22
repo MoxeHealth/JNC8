@@ -231,7 +231,7 @@ angular.module('myApp.directives', [
 
     return {
       restrict: 'AE',
-      template: '<div id="bp-graph" class="graph" style="position: relative"></div><img src="../app/img/bp-legend.gif" class="graph-legend">',
+      template: '<div id="bp-graph" class="graph" style="position: relative"></div><img src="../img/bp-legend.gif" class="graph-legend">',
       scope: {
         data: '=data',
         targetSys: '=targetSys',
