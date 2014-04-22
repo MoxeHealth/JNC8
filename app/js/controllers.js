@@ -3,10 +3,15 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt',
-function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
+.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt', 'ptHelpers',
+function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
   console.log('dataEntry');
   $rootScope.showSplash = false;
+
+  //don't move on to dataViz until necessary patient attributes are defined
+  $scope.$watchCollection('pt', function() {
+    pt.hasNeededData = ptHelpers.checkPtData(pt);
+  });
 
   //visitors to stand alone website will not have an ordId 
   $scope.standAlone = pt.ids.orgId ? false : true;
@@ -65,32 +70,25 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
 
   //visitors to stand alone website will not have an ordId 
   $scope.standAlone = pt.ids.orgId ? false : true;
-
-  console.log('scope', $scope);
-  console.log('pt', pt);
-  console.log('medRecs b4', $scope.medRecs);
+  $scope.saveToDBCalled = false;
 
   $scope.saveToDB = function(){
 
     //add meds that were clicked
-
-    console.log('medRecs', $scope.medRecs);
-    for(var i = 0; i < $scope.medRecs.length; i++){
-      for(var k = 0; k < $scope.medRecs[i].meds.length; k++){
-        var med = $scope.medRecs[i].meds[k];
-        console.log('med', med);
-        if(med.addMed){
-          //don't want extra information on med object
-          //addMed only needed until med is added to pt.curMeds 
-          delete med['addMed'];
-          pt.curMeds.push(med);
-          console.log('ptcurMeds', pt.curMeds);
+    if($scope.medRecs){
+      for(var i = 0; i < $scope.medRecs.length; i++){
+        for(var k = 0; k < $scope.medRecs[i].meds.length; k++){
+          var med = $scope.medRecs[i].meds[k];
+          if(med.addMed){
+            //don't want extra information on med object
+            //addMed only needed until med is added to pt.curMeds 
+            delete med['addMed'];
+            pt.curMeds.push(med);
+          }
         }
       }
     }
-    
-    $scope.clicked = true;
-    console.log('saveToDB');
+
     if($scope.standAlone){
       var encounter = pt;
     } else {
@@ -102,7 +100,11 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
         encounterDate: pt.curDate
       }
     }
-    db.addEncounter(pt.ids, encounter); 
+    db.addEncounter(pt.ids, encounter, function(data){
+      console.log(data);
+      $scope.returnLink = data;
+    }); 
+    $scope.saveToDBCalled = true;
   };
 
   var algoResults = algorithm.methods.runAlgorithm(pt);
@@ -113,15 +115,7 @@ function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
   $scope.medRecs = algoResults.recs.medRecs;
   $scope.showMeds = $scope.recs.medRecs.length ? true : false;
 
-  $scope.dbData = startup; // refactor to only expose db data and not substrate data
-  console.log(parseInt(pt.isOnMedication));
-
-  // if(typeof pt.isOnMedication === 'string') {
-  //   $scope.ptOnMeds = parseInt(pt.isOnMedication) ? true : false;
-  // } else {
-  //   $scope.ptOnMeds = pt.isOnMedication;
-  // }
-
+  //display div containing patient's current medications 
   $scope.ptOnMeds = pt.curMeds.length ? true : false;
 
 }]);

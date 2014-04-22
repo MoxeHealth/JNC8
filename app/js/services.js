@@ -2,7 +2,7 @@
 
 angular.module('myApp.services', [])
 
-  .service('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
+  .factory('startup', ['$http', '$q', '$rootScope', '$route', '$location', 'substrate', 'db', function($http, $q, $rootScope, $route, $location, substrate, db) {
     
     var ptData = {};
     var ptIdentifier = {};
@@ -109,7 +109,7 @@ angular.module('myApp.services', [])
         }
       })
       .success(function(data, status, headers, config){
-        console.log('data', data);
+        callback(data);
       })
       .error(function(data, status, headers, config) {
         console.log('error data', data);
@@ -394,19 +394,41 @@ angular.module('myApp.services', [])
     };
   })
 
+  .factory('ptHelpers', function(){
+    //check that pt has defined all of the necessary data before allowing user to transition to 'dataViz' route
+    //split up pt.curBP.systolic/diastolic so we don't have to perform deep-object-tree comparison in $watch expression
+    //todo - add && pt.curBP.systolic && pt.curBP.diastolic; currently can't use b/c curBP is not defined when 
+    //dataEntry controller is rendered
+    var checkPtData = function(pt){
+
+      var props = [pt.age, pt.race, pt.isOnMedication, pt.hasCKD, pt.hasDiabetes, pt.curBP];
+
+      for(var i = 0; i < props.length; i++){
+        console.log('check', props[i], props[i] === undefined);
+        if(props[i] === undefined){
+          return false;
+        }
+      }
+      return true;
+    }
+    return {
+      checkPtData: checkPtData
+    };
+  })
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
-  .factory('pt', ['startup', 'substrateHelpers', 'dbHelpers', function(startup, substrateHelpers, dbHelpers) {
+  .factory('pt', ['startup', 'substrateHelpers', 'dbHelpers', 'ptHelpers', function(startup, substrateHelpers, dbHelpers, ptHelpers) {
 
     //'pt' properties defined (or assigned null value) in this function:
     
       //from substrate or database if data exists: 
-        //age, race, hasDiabetes, hasCKD, onMedication, 
+        //ids, age, race, hasDiabetes, hasCKD, onMedication, 
         //most recent encounter object with current medications, current blood pressure, encounter date
 
       //from database if data exists: 
         //target blood pressure
 
     var pt = {};
+    pt.hasNeededData = false;
 
     //todo- where to get information on race choices available for standalone app? 
     pt.races =  ['Black or African American', 'Asian', 'Caucasian'];
@@ -448,8 +470,7 @@ angular.module('myApp.services', [])
       pt.targetBPs = dbHelpers.getBPs(dbData, 'curTargetBP')
       pt.curTargetBP = pt.targetBPs[pt.targetBPs.length - 1];
 
-
-      //user of stand alone app 
+      //user of stand alone app only  
       if(!startup.ptData.substrate){
         pt.bps = dbHelpers.getBPs(dbData, 'curBP');
         pt.targetBPs = dbHelpers.getBPs(dbData, 'curTargetBP');
@@ -467,8 +488,11 @@ angular.module('myApp.services', [])
         pt.race = dbData[dbData.length - 1].race || null;
         //age is a string ending in "y"
         pt.age = dbData[dbData.length - 1].age || null;
-        pt.hasCKD = dbData[dbData.length - 1].hasCKD;
-        pt.hasDiabetes = dbData[dbData.length - 1].hasDiabetes;
+
+        //need to make truthy/falsy because radio buttons can't be made boolean in angular: http://stackoverflow.com/questions/16048718/angularjs-ng-value-boolean-validation
+        //so this way, '1's and '0's sent back from server are made boolean 
+        pt.hasCKD = !!dbData[dbData.length - 1].hasCKD;
+        pt.hasDiabetes = !!dbData[dbData.length - 1].hasDiabetes;
       }
     //first time user 
     }else{

@@ -41,6 +41,16 @@ angular.module('myApp', [
 
   $routeProvider.when('/dataViz', {
     templateUrl: 'partials/dataViz.html',
+    //make sure that pt factory has information needed before it is passed as a parameter 
+    //to functions in dataViz which use pt, such as algorithm.methods.runAlgorithm
+    resolve: {
+      checkPtData: function(pt, $location){
+        //if needed pt data not set, then user has accessed '/dataViz' route prior to accessing '/dataEntry' route
+        if(!pt.hasNeededData){
+          $location.url('/');
+        }
+      }
+    },
     controller: 'dataVizCtrl'
   });
 

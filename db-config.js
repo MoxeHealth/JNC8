@@ -10,7 +10,7 @@ exports.config = {
 	server: 'hjk6ivqh8d.database.windows.net',
 	port: 1433,
 	options: {
-		database: 'JNC8DB',	
+		database: 'JNC8DB',		
 		encrypt: true,
 		rowCollectionOnRequestCompletion: true,
 		useColumnNames: true
