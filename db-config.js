@@ -51,7 +51,6 @@ var parseData = function(array) {
 }
 
 exports.queryHelper = function(query, callback) {
-
 	pool.requestConnection(function (err, connection) {
 		if(!err) {
 			  var request = new Request(query, function(err, rowCount, rows) {
