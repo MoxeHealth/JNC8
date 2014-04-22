@@ -75,18 +75,20 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
   $scope.saveToDB = function(){
 
     //add meds that were clicked
-    for(var i = 0; i < $scope.medRecs.length; i++){
-      for(var k = 0; k < $scope.medRecs[i].meds.length; k++){
-        var med = $scope.medRecs[i].meds[k];
-        if(med.addMed){
-          //don't want extra information on med object
-          //addMed only needed until med is added to pt.curMeds 
-          delete med['addMed'];
-          pt.curMeds.push(med);
+    if($scope.medRecs){
+      for(var i = 0; i < $scope.medRecs.length; i++){
+        for(var k = 0; k < $scope.medRecs[i].meds.length; k++){
+          var med = $scope.medRecs[i].meds[k];
+          if(med.addMed){
+            //don't want extra information on med object
+            //addMed only needed until med is added to pt.curMeds 
+            delete med['addMed'];
+            pt.curMeds.push(med);
+          }
         }
       }
     }
-  
+
     if($scope.standAlone){
       var encounter = pt;
     } else {

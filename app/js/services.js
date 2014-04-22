@@ -397,8 +397,19 @@ angular.module('myApp.services', [])
   .factory('ptHelpers', function(){
     //check that pt has defined all of the necessary data before allowing user to transition to 'dataViz' route
     //split up pt.curBP.systolic/diastolic so we don't have to perform deep-object-tree comparison in $watch expression
+    //todo - add && pt.curBP.systolic && pt.curBP.diastolic; currently can't use b/c curBP is not defined when 
+    //dataEntry controller is rendered
     var checkPtData = function(pt){
-      return !!(pt.age && pt.race && pt.isOnMedication && pt.hasCKD && pt.hasDiabetes && pt.curBP.systolic && pt.curBP.diastolic);
+
+      var props = [pt.age, pt.race, pt.isOnMedication, pt.hasCKD, pt.hasDiabetes, pt.curBP];
+
+      for(var i = 0; i < props.length; i++){
+        console.log('check', props[i], props[i] === undefined);
+        if(props[i] === undefined){
+          return false;
+        }
+      }
+      return true;
     }
     return {
       checkPtData: checkPtData
@@ -417,6 +428,7 @@ angular.module('myApp.services', [])
         //target blood pressure
 
     var pt = {};
+    pt.hasNeededData = false;
 
     //todo- where to get information on race choices available for standalone app? 
     pt.races =  ['Black or African American', 'Asian', 'Caucasian'];
@@ -476,8 +488,11 @@ angular.module('myApp.services', [])
         pt.race = dbData[dbData.length - 1].race || null;
         //age is a string ending in "y"
         pt.age = dbData[dbData.length - 1].age || null;
-        pt.hasCKD = dbData[dbData.length - 1].hasCKD;
-        pt.hasDiabetes = dbData[dbData.length - 1].hasDiabetes;
+
+        //need to make truthy/falsy because radio buttons can't be made boolean in angular: http://stackoverflow.com/questions/16048718/angularjs-ng-value-boolean-validation
+        //so this way, '1's and '0's sent back from server are made boolean 
+        pt.hasCKD = !!dbData[dbData.length - 1].hasCKD;
+        pt.hasDiabetes = !!dbData[dbData.length - 1].hasDiabetes;
       }
     //first time user 
     }else{
@@ -501,7 +516,6 @@ angular.module('myApp.services', [])
       // pt.emails[0] = 'skeller88@gmail.com';
       // pt.isOnMedication = false;
     }
-    pt.hasNeededData = ptHelpers.checkPtData(pt);
     return pt;
   }])
 
