@@ -1,12 +1,12 @@
 var request = require('request');
-var db = require('./db-config')
-var encrypt = require('./encrypt');
-var email = require('./email');
+var encrypt = require('./utility/encrypt');
+var email = require('./utility/email');
+var samlHelpers = require('./utility/saml.js');
 var saml = require('saml20');
 var bodyParser = require('body-parser');
 var db = require('./db-config');
-var libxmljs = require('libxmljs');
 var crypto = require('crypto');
+
 var localStorage = {};
 
 module.exports = function(app) {
@@ -154,7 +154,7 @@ module.exports = function(app) {
     var options = { thumbprint: thumbprint,
       audience: 'http://jnc8.azurewebsites.net/authenticate'
     };
-    var claimsDetails = {};
+
     var randomHash = crypto.randomBytes(20).toString('hex');
     
     // get the data
@@ -164,26 +164,15 @@ module.exports = function(app) {
     });
 
     req.on('end', function() {
-      var b64Assertion = body.split('=')[1];
-      b64Assertion = decodeURIComponent(b64Assertion);
-      var xml = new Buffer(b64Assertion, 'base64').toString('utf8');
-      var xmlDoc = libxmljs.parseXmlString(xml);
-      var assertionNode = xmlDoc.get('saml:Assertion', {saml: 'urn:oasis:names:tc:SAML:2.0:assertion'});
+      var assertionNode = samlHelpers.getSamlNode(body);
 
-
-      // okay, so this is interesting: the XML namespacing in the SAML response throws all kinds of errors with this saml20 library. on line 168, there's a workaround with the libxmljs library, but nothing for saml20. i have a temporary, hacky solution built directly into the parser in node_modules/saml20/lib/saml20.js, but am planning to write it into the library and submit a pull request
+      /* okay, so this is interesting: the XML namespacing in the SAML response throws all kinds of errors with this saml20 library. i have a temporary, hacky solution built directly into the parser in node_modules/saml20/lib/saml20.js, but am planning to write it into the library and submit a pull request */
       saml.parse(assertionNode, function(err, profile) {
-        if(err) console.log('saml parse error: ', err);
-        claimsDetails.userId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.userid']['#'];
-        claimsDetails.ptId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.patientid']['#'];
-        claimsDetails.orgId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.organizationcode']['#'].replace('ORG#', '');
-        claimsDetails.vendorId = profile.claims['urn:moxehealth:webapi:2013:saml.assertion.vendorid']['#'].replace('VEN#', '');
+        var claimsDetails = samlHelpers.getClaimsDetails(err, profile);
+        localStorage[randomHash] = claimsDetails;
       });
-    
-      localStorage[randomHash] = claimsDetails;
-      console.log(localStorage);
-    });
 
+    });
     res.redirect('/app/#/moxe?sid='+randomHash);
   });
 
@@ -196,17 +185,13 @@ module.exports = function(app) {
 
   //will handle post requests from unique urls that are given to people who sign up for the standalone app 
   app.post('/*',  function(req, res){
-    // console.log("Serving app.post...");
-
     //labs endpoint is now year2014
     if(req.url === '/patient/labs'){
       var url = api.moxe.baseUrl + api.moxe.year2014 + req.url;
-    //other endpoints are still year2013 but will be changed soon (comment 4/16/14)
+      //other endpoints are still year2013 but will be changed soon (comment 4/16/14)
     }else{
       var url = api.moxe.baseUrl + api.moxe.year2013 + req.url;
     }
-
-    // console.log("The url: " + url);
     req.pipe(request.post({uri: url, json: req.body, headers: api.moxe.headers})).pipe(res);
   });
 };
