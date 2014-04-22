@@ -110,36 +110,21 @@ module.exports = function(app) {
     console.log('post db/encounters');
 
     //convert each target into a string that can be inserted into the database 
-    var msString = function(target) {
-      if(typeof target === 'string') {
-        console.log('target string', target );
-        return '\'' + target + '\'';
-      } else if(target instanceof Date) {
-        console.log('target Date', target );
-        return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
-        //without the following conditional, the target will be stringified to 'undefined'
-      } else if(!target) {
-        return 'NULL';
-      } else {
-        return '\'' + JSON.stringify(target) + '\'';
-      }
-    };
+
 
     // there must be a better way to do this... pulling data from the req object and normalizing it
-    var ptId = msString(req.body.ptId);
-    var orgId = msString(req.body.orgId);
-    var emails = msString(req.body.encounter.emails);
-    var emailHash = msString(req.body.encounter.emailHash);
-    var encounterDate = msString(new Date());
-    var curBP = msString(req.body.encounter.curBP);
-    var curTargetBP = msString(req.body.encounter.curTargetBP);
-    var curMeds = msString(req.body.encounter.curMeds);
-    var age = msString(req.body.encounter.age);
-    var race = msString(req.body.encounter.race);
-    var hasCKD = msString(req.body.encounter.hasCKD);
-    var hasDiabetes = msString(req.body.encounter.hasDiabetes);
-
-    console.log('emailHash before encrypt', emailHash);
+    var ptId = db.msString(req.body.ptId);
+    var orgId = db.msString(req.body.orgId);
+    var emails = db.msString(req.body.encounter.emails);
+    var emailHash = db.msString(req.body.encounter.emailHash);
+    var encounterDate = db.msString(new Date());
+    var curBP = db.msString(req.body.encounter.curBP);
+    var curTargetBP = db.msString(req.body.encounter.curTargetBP);
+    var curMeds = db.msString(req.body.encounter.curMeds);
+    var age = db.msString(req.body.encounter.age);
+    var race = db.msString(req.body.encounter.race);
+    var hasCKD = db.msString(req.body.encounter.hasCKD);
+    var hasDiabetes = db.msString(req.body.encounter.hasDiabetes);
 
     if(!req.body.orgId && req.body.ptId) {
       //emailHashString is the same as emailHash, but not stringified

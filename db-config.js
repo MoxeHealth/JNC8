@@ -25,11 +25,16 @@ exports.poolconfig = {
 
 exports.msString = function(target) {
   if(typeof target === 'string') {
-    return target;
+    console.log('target string', target );
+    return '\'' + target + '\'';
   } else if(target instanceof Date) {
+    console.log('target Date', target );
     return '\'' + target.toISOString().slice(0, 19).replace('T', ' ') + '\'';
+    //without the following conditional, the target will be stringified to 'undefined'
+  } else if(!target) {
+    return 'NULL';
   } else {
-    return '\'' + JSON.stringify(target) + '\'' || 'NULL';
+    return '\'' + JSON.stringify(target) + '\'';
   }
 };
 
