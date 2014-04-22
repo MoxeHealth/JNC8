@@ -394,8 +394,18 @@ angular.module('myApp.services', [])
     };
   })
 
+  .factory('ptHelpers', function(){
+    //check that pt has defined all of the necessary data before allowing user to transition to 'dataViz' route
+    //split up pt.curBP.systolic/diastolic so we don't have to perform deep-object-tree comparison in $watch expression
+    var checkPtData = function(pt){
+      return !!(pt.age && pt.race && pt.isOnMedication && pt.hasCKD && pt.hasDiabetes && pt.curBP.systolic && pt.curBP.diastolic);
+    }
+    return {
+      checkPtData: checkPtData
+    };
+  })
   //purpose of pt is 1) to parse information gathered from db and substrate requests and store relevant information, 2) to share that information between the dataViz and dataEntry controllers, and 3) to update the database with newest patient information at the end of a session 
-  .factory('pt', ['startup', 'substrateHelpers', 'dbHelpers', function(startup, substrateHelpers, dbHelpers) {
+  .factory('pt', ['startup', 'substrateHelpers', 'dbHelpers', 'ptHelpers', function(startup, substrateHelpers, dbHelpers, ptHelpers) {
 
     //'pt' properties defined (or assigned null value) in this function:
     
@@ -491,9 +501,7 @@ angular.module('myApp.services', [])
       // pt.emails[0] = 'skeller88@gmail.com';
       // pt.isOnMedication = false;
     }
-    pt.hasNeededData = 
-      pt.ids && pt.encounterDates.length && pt.curDate && pt.bps.length && pt.emails.length 
-      && pt.age && pt.race && pt.hasCKD && pt.hasDiabetes;
+    pt.hasNeededData = ptHelpers.checkPtData(pt);
     return pt;
   }])
 

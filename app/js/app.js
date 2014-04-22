@@ -45,7 +45,7 @@ angular.module('myApp', [
     //to functions in dataViz which use pt, such as algorithm.methods.runAlgorithm
     resolve: {
       checkPtData: function(pt, $location){
-        //if pt.age not set, then user has accessed '/dataViz' route prior to accessing '/dataEntry' route
+        //if needed pt data not set, then user has accessed '/dataViz' route prior to accessing '/dataEntry' route
         if(!pt.hasNeededData){
           $location.url('/');
         }

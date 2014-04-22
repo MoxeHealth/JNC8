@@ -3,10 +3,15 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt',
-function($rootScope, $scope, $q, $location, $compile, pt, drugInput) {
+.controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt', 'ptHelpers',
+function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
   console.log('dataEntry');
   $rootScope.showSplash = false;
+
+  //don't move on to dataViz until necessary patient attributes are defined
+  $scope.$watchCollection('pt', function() {
+    pt.hasNeededData = ptHelpers.checkPtData(pt);
+  });
 
   //visitors to stand alone website will not have an ordId 
   $scope.standAlone = pt.ids.orgId ? false : true;

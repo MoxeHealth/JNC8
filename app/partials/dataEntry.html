@@ -122,5 +122,5 @@
     </table>
     <a href="#" ng-click="addDrugInput()" ng-if="standAlone">+ Add a medication</a>
   </div>
-<button class="submit-button" ng-click="goToDataViz()" ng-disabled="dataForm.$invalid || !buttonsSelected() || !pt.race">Get Treatment Recommendations</button>
+<button class="submit-button" ng-click="goToDataViz()" ng-disabled="dataForm.$invalid || !pt.hasNeededData">Get Treatment Recommendations</button>
 </form>
