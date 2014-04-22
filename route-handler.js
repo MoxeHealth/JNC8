@@ -164,7 +164,8 @@ module.exports = function(app) {
     //get user email in format that can be used in smtp request made
     //by sendNewUserEmail function
     var messageRecipient = req.body.encounter.emails[0];
-    var returnLink = "http://jnc8app.azurewebsites.net?uid=" + emailHashString;
+    // var returnLink = "http://jnc8app.azurewebsites.net?uid=" + emailHashString;
+    var returnLink = "http://localhost:8000?uid=" + emailHashString;
     console.log('emailHash', emailHash)
     db.queryHelper(query, function(err, data){
       if(err) {

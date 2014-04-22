@@ -109,7 +109,7 @@ angular.module('myApp.services', [])
         }
       })
       .success(function(data, status, headers, config){
-        console.log('data', data);
+        callback(data);
       })
       .error(function(data, status, headers, config) {
         console.log('error data', data);

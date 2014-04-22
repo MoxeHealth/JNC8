@@ -70,6 +70,8 @@
 
 <div class="footer">
   <!-- <button ng-if="!standAlone" ng-click="saveToDB()">Save patient information</button> -->
-  <button ng-click="saveToDB()">Save entered patient information</button>
+  <button ng-hide="saveToDBCalled" ng-click="saveToDB()">Save entered patient information</button>
+  <div "return-link-msg" ng-show="saveToDBCalled">Information successfully saved. Save the following link to access your patient history during your next appointment:</div>
+  <div class="return-link" ng-show="saveToDBCalled">{{ returnLink }}</div>
 </div>
 

@@ -31,7 +31,7 @@
     <div class="blood-pressure" id="blood-pressure">
       <div class="input-wrapper">
         <span class="field-label">systolic:</span>
-        <input type="text" required name="systolicBP" ng-model="pt.curBP.systolic" id="blood-pressure-syst" min="50" max="400"/>    
+        <input type="number" required name="systolicBP" ng-model="pt.curBP.systolic" id="blood-pressure-syst" min="50" max="400"/>    
       </div>
       <div ng-show="dataForm.systolicBP.$dirty && dataForm.systolicBP.$invalid">
         <span class="error" ng-show="dataForm.systolicBP.$error.required">
@@ -44,7 +44,7 @@
 
       <div class="input-wrapper">
         <span class="field-label">diastolic:</span>
-        <input type="text" required name="diastolicBP" ng-model="pt.curBP.diastolic" id="blood-pressure-diast" min="0" max="200"/>
+        <input type="number" required name="diastolicBP" ng-model="pt.curBP.diastolic" id="blood-pressure-diast" min="0" max="200"/>
       </div>
       <div ng-show="dataForm.diastolicBP.$dirty && dataForm.diastolicBP.$invalid">
         <span class="error" ng-show="dataForm.diastolicBP.$error.required">
@@ -112,7 +112,7 @@
           <input type="number" value="{{ med.dose }}" class="med-dose" ng-disabled="!standAlone">
         </td>
         <td width="20%" class="info-column">
-          <input type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name" ng-disabled="!standAlone">
+          <input  type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name" ng-disabled="!standAlone">
         </td>
         <td width="15%" class="info-column">
           <input type="checkbox" checked="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
