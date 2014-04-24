@@ -5,7 +5,6 @@
 angular.module('myApp.controllers', [])
 .controller('dataEntryCtrl', ['$rootScope', '$scope', '$q','$location', '$compile','pt', 'ptHelpers',
 function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
-  console.log('dataEntry');
   $rootScope.showSplash = false;
 
   //don't move on to dataViz until necessary patient attributes are defined
@@ -41,10 +40,8 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
   };
 
   $scope.pt = pt;
-  console.log('scope', $scope);
 
   $scope.addDrugInput = function(){
-    console.log("Adding drug field...");
     pt.curMeds.push({
       //in case user doesn't click 'at max dose' checkbox
       atMax: false
@@ -70,6 +67,7 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
 
   //visitors to stand alone website will not have an ordId 
   $scope.standAlone = pt.ids.orgId ? false : true;
+
   $scope.saveToDBCalled = false;
 
   $scope.saveToDB = function(){
@@ -88,6 +86,12 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
         }
       }
     }
+    //remove any meds that were removed 
+    for (var i = 0; i < pt.curMeds.length; i++) {
+        if(pt.curMeds[i].removeMed){
+          pt.curMeds.splice(i, 1);
+        }
+    }
 
     if($scope.standAlone){
       var encounter = pt;
@@ -102,7 +106,6 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
     }
     db.addEncounter(pt.ids, encounter, function(data){
       console.log(data);
-      $scope.returnLink = data;
     }); 
     $scope.saveToDBCalled = true;
   };

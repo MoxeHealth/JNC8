@@ -51,22 +51,29 @@ angular.module('myApp.directives', [
       restrict: 'EA',
       scope: {
         med: '=med',
+        isPtMed: '@isPtMed',
         goodRxErr: '@'
       },
       link: function(scope, element, attrs) {
+        //need to convert string to boolean
+        scope.isPtMed = scope.isPtMed === 'true' ? true : false;
+
         // get the pricing for this drug
         goodRx.getPricing(scope.med.medicationName, scope.med.initialdoseRecs, function(res) {
           scope.err = false;
           if(!res.errors.length && !res.errors.sig){
             scope.med.searchError = false;
             if(res.data) {
-              scope.price = res.data.price[0] || "No price found.";
+              scope.med.price = res.data.price[0] || "No price found.";
             } else {
-              scope.price = "No price found.";
+              scope.med.price = "No price found.";
             }
             scope.drugInfo = res.data;
-            scope.dose = res.data.dose;
-            scope.units = res.data.quantity;
+
+            //Assume GoodRx 'dosage' property is a string with 'mg' at the end 
+            var dosage = res.data.dosage;
+            scope.med.dose = parseInt(dosage.substring(0, dosage.length - 2), 10);
+            scope.med.units = res.data.quantity;
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           } else {
             scope.err = true;
@@ -75,7 +82,7 @@ angular.module('myApp.directives', [
             scope.med.searchError = 'Medication lookup error: "' + searchedMedName + '" was not found on GoodRx\'s website.';
 
             if(res.errors[0].candidates.length) {
-              scope.med.searchError += ' Choose from these alternatives: ';
+              scope.med.searchError += ' Click here to choose from the other drugs listed in this class, or search for ' + searchedMedName + ' on GoodRx\'s website.';
             } else {
               scope.med.searchError += ' No alternatives were found.';
             }

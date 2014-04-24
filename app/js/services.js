@@ -508,13 +508,14 @@ angular.module('myApp.services', [])
       }
 
       //hard code for testing
-      // pt.race = 'Black or African American';
-      // pt.age = 45;
-      // pt.hasCKD = true;
-      // pt.hasDiabetes = true;
-      // pt.curBP = { systolic: 155, diastolic: 55};
-      // pt.emails[0] = 'skeller88@gmail.com';
-      // pt.isOnMedication = false;
+      pt.race = 'Black or African American';
+      pt.age = 45;
+      pt.hasCKD = true;
+      pt.hasDiabetes = true;
+      pt.curBP = { systolic: 155, diastolic: 55};
+      pt.curMeds = [{medicationName: 'lisinopril', className: 'ACEI', dose: 45, units: 'mg', atMax: true}];
+      pt.emails[0] = 'skeller89@gmail.com';
+      pt.isOnMedication = true;
     }
     return pt;
   }])

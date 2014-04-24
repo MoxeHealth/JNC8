@@ -157,12 +157,15 @@ div.medications tr td {
 
 /* Medication recommendation styling */
 
-span.add-medication {
+span.add-medication,
+span.remove-medication {
   font-size: 12px;
   display: block;
 }
-span.add-medication input {
-  padding-right: 13px;
+
+span.add-medication input,
+span.remove-medication input {
+  margin-right: 10px;
 }
 
 div.medication {
@@ -218,8 +221,12 @@ div.inline-info span {
   display: block;
 }
 
-div.inline-info span.dose{
+div.inline-info span.dose-input{
   display: inline;
+}
+
+.dose-input {
+  width: 32px;
 }
 
 div.medication ul.single li div.med-name,

@@ -1,0 +1,5 @@
+todo - form validation for data entry inputs
+- This patient isn’t currently on an medication from any of the JNC8-recommended medication classes. 
+
+
+If you click a medication, it will be added to pt.curMeds 
