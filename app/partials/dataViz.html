@@ -8,7 +8,7 @@
 
 <div class="medication">
   <h2>Medication</h2>
-<!--   <ul class="single" ng-if="ptOnMeds">
+  <ul class="single" ng-if="ptOnMeds">
     <lh><h3>Patient's current medications</h3></lh>
     <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.curMeds">
       <ul>
@@ -16,7 +16,7 @@
           <div drug-details med="medObj"></div>
       </ul>
     </li>
-  </ul> -->
+  </ul>
   <p ng-if="!ptOnMeds" style="font-weight: bold;">This patient isn't currently on any medication.</p>
   <ul class="multi" ng-if="showMeds">
     <lh><h3>Prescribe one of the following medications:</h3></lh>

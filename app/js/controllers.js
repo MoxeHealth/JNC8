@@ -70,6 +70,7 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
 
   //visitors to stand alone website will not have an ordId 
   $scope.standAlone = pt.ids.orgId ? false : true;
+
   $scope.saveToDBCalled = false;
 
   $scope.saveToDB = function(){
