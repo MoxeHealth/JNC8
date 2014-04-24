@@ -449,6 +449,15 @@ a {
   color: #606D7B;
 }
 
+img.logo {
+  margin: 0 auto;
+  max-width: 90%;
+}
+
+p a {
+  font-size: inherit;
+}
+
 /* Form validation */
 
 .data-form input.ng-invalid.ng-dirty {

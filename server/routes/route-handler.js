@@ -14,8 +14,7 @@ var localStorage = {};
 
 module.exports = function(app) {
   
-  var loc = __dirname + '/../../app';
-  app.use(express.static(loc));
+  app.use(express.static(__dirname + '/../../app'));
   app.use(bodyParser({strict: false}));
 
   app.get('/', function(req,res){
@@ -23,11 +22,9 @@ module.exports = function(app) {
     // if there is, run a query through the DB to see if that user id exists; return with data if it does
     // send res.redirect to '/new with information'
     if(req.query.uid) {
-      console.log(req.query.uid);
       res.redirect('/#/returning?uid='+req.query.uid);
     } else {
-      console.log("Serving a vanilla GET to '/'")
-      res.redirect('/');
+      res.send('/index.html');
     }
   });
 
@@ -44,11 +41,11 @@ module.exports = function(app) {
     });
   });
 
-  //The SQL database stores any information that must be persisted but cannot be written back to the EMR
   app.get('/db/encounters',  function(req, res){
-    console.log('get db/encounters');
     var ptId = req.query.ptId;
     var orgIdString;
+
+    v
 
     // handle the possibility that orgId is undefined
     if(req.query.orgId) {
@@ -70,19 +67,9 @@ module.exports = function(app) {
   });
 
   app.get('/goodrx/low-price', function(req, res) {
-    var name = req.query.name;
-    var queryString = 'name=' + name;
-    
-    if(req.query.dosage) {
-      var dosage = req.query.dosage;
-      queryString += '&dosage=' + dosage;
-    }
-    
-    queryString += '&api_key=' + apis.goodRx.key;
-
+    var queryString = dbHelp.makeQueryString(req.query, apis.goodRx.key);
     // make and base64 encode the hash
     var encodedString = encrypt.signUrl(queryString, apis.goodRx.secret);
-
     // append the base64 encoding onto the string
     var urlString = apis.goodRx.url + '?' + queryString + '&sig=' + encodedString;
     req.pipe(request.get(urlString)).pipe(res);
@@ -91,15 +78,14 @@ module.exports = function(app) {
   // standalone users and moxe users at the end of a patient encounter 
   app.post('/db/encounters', function(req, res){
     console.log('post db/encounters');
-
-    //convert each target into a string that can be inserted into the database 
-
-
     // there must be a better way to do this... pulling data from the req object and normalizing it
+    var stringifyParams = function(params) {
+      
+    };
+    var emailHash = dbHelp.msString(req.body.encounter.emailHash);
     var ptId = dbHelp.msString(req.body.ptId);
     var orgId = dbHelp.msString(req.body.orgId);
     var emails = dbHelp.msString(req.body.encounter.emails);
-    var emailHash = dbHelp.msString(req.body.encounter.emailHash);
     var encounterDate = dbHelp.msString(new Date());
     var curBP = dbHelp.msString(req.body.encounter.curBP);
     var curTargetBP = dbHelp.msString(req.body.encounter.curTargetBP);
@@ -183,7 +169,6 @@ module.exports = function(app) {
 
 
   //will handle post requests from unique urls that are given to people who sign up for the standalone app 
-  //todo- shouldn't this be a get? 
   app.post('/*',  function(req, res){
     //labs endpoint is now year2014
     if(req.url === '/patient/labs'){

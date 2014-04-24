@@ -59,6 +59,10 @@ angular.module('myApp', [
     controller: 'dataEntryCtrl'
   })
 
+  $routeProvider.when('/about', {
+    templateUrl: 'partials/about.html'
+  })
+
   $routeProvider.otherwise({
     redirectTo: '/'
   });

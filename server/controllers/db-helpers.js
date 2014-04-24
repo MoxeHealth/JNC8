@@ -56,7 +56,19 @@ exports.queryHelper = function(query, callback) {
 			console.log(err);
 		}
 	});
+};
 
+exports.makeQueryString = function(reqQuery, apiKey) {
+  var queryString = '';
+  var count = 0;
+  for(var key in reqQuery) {
+    if(count > 0) {
+      queryString += '&';
+    }
+    queryString += key + '=' + reqQuery[key];
+  }
+  queryString += '&api_key=' + apiKey;
+  return queryString;
 };
 
 // takes a UID and constructs a db query with it
