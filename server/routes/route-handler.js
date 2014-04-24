@@ -115,18 +115,17 @@ module.exports = function(app) {
 
     console.log('query', query);
 
-    //get user email in format that can be used in smtp request made
-    //by sendNewUserEmail function
     var messageRecipient = req.body.encounter.emails[0];
-    var returnLink = "http://jnc8app.azurewebsites.net?uid=" + emailHashString;
+    console.log('Sending an email to ' + messageRecipient);
+    email.sendNewUserMail(messageRecipient, emailHashString);
+
+
     dbHelp.queryHelper(query, function(err, data){
       if(err) {
         console.log(err);
-        res.send(err);
+        res.send("There was an error:" + err);
       } else {
-        //currently getting '[Error: Authentication required, invalid details provided]'
-        // email.sendNewUserEmail(messageRecipient, emailHashString);
-        res.send(returnLink);
+        res.send("We successfully saved your information to the database and sent you an email with a link for follow-up visits.");
       }
     });
   });
