@@ -1,5 +1,4 @@
 !/node_modules/libxmljs
-!/node_modules/express/*
 /node_modules/*
 .DS_Store
 ._*
