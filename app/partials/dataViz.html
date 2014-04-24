@@ -1,6 +1,6 @@
 
 <div class="cf viz">
-  <h2>Treatment overview</h2>
+  <h2>Recommended Treatment by JNC8</h2>
   <div class="top-div patient-status {{ recs.recStatus }}">
     <b class="title">{{ recs.recMsg }}
   </div>
@@ -13,7 +13,7 @@
     <li class="med-class cf" ng-model="medObj" ng-repeat="medObj in pt.curMeds">
       <ul>
         <lh>{{ medObj.className }}</lh>
-          <div drug-details med="medObj"></div>
+          <div drug-details is-pt-med="true" med="medObj"></div>
       </ul>
     </li>
   </ul>
@@ -24,7 +24,7 @@
       <ul>
         <lh>{{ medClass.className }}</lh>
         <li class="cf" ng-model="med" ng-repeat="med in medClass.meds">
-          <div drug-details med="med"></div>
+          <div drug-details is-pt-med="false" med="med"></div>
         </li>
       </ul>
     </li>
@@ -71,7 +71,6 @@
 <div class="footer">
   <!-- <button ng-if="!standAlone" ng-click="saveToDB()">Save patient information</button> -->
   <button ng-hide="saveToDBCalled" ng-click="saveToDB()">Save entered patient information</button>
-  <div "return-link-msg" ng-show="saveToDBCalled">Information successfully saved. Save the following link to access your patient history during your next appointment:</div>
-  <div class="return-link" ng-show="saveToDBCalled">{{ returnLink }}</div>
+  <div "return-link-msg" ng-show="saveToDBCalled">{{ data }}</div>
 </div>
 

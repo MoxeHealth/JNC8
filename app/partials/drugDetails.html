@@ -3,10 +3,12 @@
     <span class="rx-status contracted" ng-if="!err" ng-show="!showDetails"></span>
     <span class="rx-status expanded"  ng-if="!err" ng-show="showDetails"></span>
     <span class="rx-status rx-error right" ng-show="err" alt="There was an error getting the drug information from the GoodRx website."></span>
-    <span ng-if="!med.searchError" ng-model="med.medicationName">{{med.medicationName}}</span>
-    <span ng-if="med.searchError">{{med.searchError}}</span>
+    <span ng-if="!med.searchError" ng-model="med.medicationName">{{ med.medicationName }}</span>
+    <span ng-if="med.searchError">{{ med.searchError }}</span>
     <div class="inline-info price right med-detail" ng-if="!goodRxErr">{{ med.price | currency }}</div> 
-    <span class="add-medication" ng-if="!med.searchError"><input class="add-med" type="checkbox" ng-model="med.addMed">Add Medication</span>
+    <span class="add-medication" ng-if="!med.searchError && isPtMed === 'false'"><input class="add-med" type="checkbox" ng-model="med.addMed">Add Medication</span>
+    <!-- <span ng-if="!isPtMed">Not a pt med</span> -->
+    <span class="remove-medication" ng-if="!med.searchError && isPtMed === 'true'"><input class="remove-med" type="checkbox" ng-model="med.removeMed">Remove Medication</span>
   </div> 
   <div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">
       <div class="inline-info left">
