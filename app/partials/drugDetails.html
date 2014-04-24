@@ -10,12 +10,13 @@
   </div> 
   <div class="med-details cf" ng-if="!goodRxErr" ng-show="showDetails">
       <div class="inline-info left">
-        <span class="med-detail" ng-if="!standAlone">
-          <span class="label med-dose" ng-model="med.dose" ng-if="!standAlone">Dose:</span> <span class="dose" ng-if="!standAlone">{{ med.dose }}mg</span>
+        <span class="med-detail">
+          <span class="label med-dose" ng-model="med.dose">Dose:</span> 
+          <input class="dose-input" type="number" maxlength="4" value="{{ med.dose }}" ng-model="med.dose">mg
         </span>
       </div>
       <div class="inline-info right"><span class="med-detail"><a href="{{ drugInfo.url }}" target="_blank">More pricing information</a></span>
-      <span class="med-detail"><a href="{{emailsLink}}" title="Email pricing information for {{med.medicationName}}" target="_blank">Email pricing details</a></span></div>
+      <span class="med-detail"><a href="{{ emailsLink }}" title="Email pricing information for {{med.medicationName}}" target="_blank">Email pricing details</a></span></div>
   </div>
  
   <div class="goodRxAlts cf inline-info" ng-show="showDetails" ng-model="goodRxAlts" ng-if="goodRxErr">

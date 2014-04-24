@@ -162,7 +162,7 @@ span.add-medication {
   display: block;
 }
 span.add-medication input {
-  padding-right: 13px;
+  margin-right: 10px;
 }
 
 div.medication {
@@ -218,8 +218,12 @@ div.inline-info span {
   display: block;
 }
 
-div.inline-info span.dose{
+div.inline-info span.dose-input{
   display: inline;
+}
+
+.dose-input {
+  width: 32px;
 }
 
 div.medication ul.single li div.med-name,

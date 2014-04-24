@@ -66,12 +66,9 @@ angular.module('myApp.directives', [
             }
             scope.drugInfo = res.data;
 
-            //GoodRx 'dosage' property is a string with 'mg' at the end 
-            //Note that if drug doesn't have two letters at the end, the following
-            //logic will incorrectly parse the drug dosage information
+            //Assume GoodRx 'dosage' property is a string with 'mg' at the end 
             var dosage = res.data.dosage;
             scope.med.dose = parseInt(dosage.substring(0, dosage.length - 2), 10);
-            console.log(scope.dose)
             scope.med.units = res.data.quantity;
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           } else {
