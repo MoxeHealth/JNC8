@@ -3,7 +3,7 @@ var crypto = require('crypto');
 
 
 exports.sendNewUserMail = function(userEmail, emailHash) {
-	var returnLink = "http://jnc8.azurewebsites.net?u=" + emailHash;	
+	var returnLink = "http://jnc8.azurewebsites.net/#/returning?uid=" + emailHash;	
 	
 	var transport = nodemailer.createTransport("SMTP", {
 	        auth: {
