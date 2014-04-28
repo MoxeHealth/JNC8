@@ -2,8 +2,8 @@ var nodemailer = require('nodemailer');
 var crypto = require('crypto');
 
 var emailAuth = {
-	user: 'ianlyo@gmail.com',
-	pass: '4nd1am0!!'
+	user: 'jnc8app@gmail.com',
+	pass: 'M0x3Health!!'
 };
 
 var smtpTransport = nodemailer.createTransport('SMTP', {
@@ -15,7 +15,7 @@ var smtpTransport = nodemailer.createTransport('SMTP', {
 });
 
 exports.sendNewUserMail = function(userEmail, emailHash) {
-	var returnLink = "http://jnc8.azurewebsites.net?u=" + emailHash;	
+	var returnLink = "http://jnc8.azurewebsites.net/#/returning?uid=" + emailHash;	
 
 	var emailOptions = {
 		from: emailAuth.user,

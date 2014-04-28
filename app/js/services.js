@@ -42,7 +42,7 @@ angular.module('myApp.services', [])
 
       console.log('initializeReturning called');
       
-      var result = $q["all"]([db.getUserByHash(uid)]);
+      var result = $q["all"]([db.getUserByHash(encodeURIComponent(uid))]);
 
       return result.then(function(response) {
         $rootScope.showSplash = false;
