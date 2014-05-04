@@ -105,7 +105,7 @@ function($rootScope, $scope, $q, $location, $compile, pt, ptHelpers) {
       }
     }
     db.addEncounter(pt.ids, encounter, function(data){
-      console.log(data);
+      $scope.data = data;
     }); 
     $scope.saveToDBCalled = true;
   };
