@@ -12,8 +12,8 @@ angular.module('myApp.directives', [
       templateUrl: 'partials/drugInput.html',
       restrict: 'EA',
       scope: {
-        curMeds: '=curmeds',
-        possibleMeds: '=possiblemeds'
+        curMeds: '=',
+        possibleMeds: '='
       },
       replace: true,
       link: function(scope, element) {
@@ -57,7 +57,7 @@ angular.module('myApp.directives', [
       link: function(scope, element, attrs) {
         //need to convert string to boolean
         scope.isPtMed = scope.isPtMed === 'true' ? true : false;
-        var dose = med.dose || scope.med.initialdoseRecs;
+        var dose = scope.med.dose || scope.med.initialdoseRecs;
         // get the pricing for this drug
         goodRx.getPricing(scope.med.medicationName, scope.med.initialdoseRecs, function(res) {
           scope.err = false;
@@ -242,9 +242,9 @@ angular.module('myApp.directives', [
       restrict: 'AE',
       template: '<div id="bp-graph" class="graph" style="position: relative"></div><img src="../img/bp-legend.gif" class="graph-legend">',
       scope: {
-        data: '=data',
-        targetSys: '=targetSys',
-        targetDias: '=targetDias'
+        data: '=',
+        targetSys: '=',
+        targetDias: '='
       },
       link: function (scope, element, attrs) {
         // because we need to run to 
