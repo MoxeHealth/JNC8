@@ -57,9 +57,10 @@ angular.module('myApp.directives', [
       link: function(scope, element, attrs) {
         //need to convert string to boolean
         scope.isPtMed = scope.isPtMed === 'true' ? true : false;
-
+        var dose = med.dose || scope.med.initialdoseRecs;
+        
         // get the pricing for this drug
-        goodRx.getPricing(scope.med.medicationName, scope.med.initialdoseRecs, function(res) {
+        goodRx.getPricing(scope.med.medicationName, dose, function(res) {
           scope.err = false;
           if(!res.errors.length && !res.errors.sig){
             scope.med.searchError = false;
@@ -73,12 +74,8 @@ angular.module('myApp.directives', [
             //Assume GoodRx 'dosage' property is a string with 'mg' at the end 
             var dosage = res.data.dosage;
 
-            //patient medication already has dose set 
-            if(scope.isPtMed){
-              scope.med.dose = med.dose  
-            }else{
               scope.med.dose = parseInt(dosage.substring(0, dosage.length - 2), 10);
-            }
+                          }
             scope.med.units = res.data.quantity;
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           } else {

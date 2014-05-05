@@ -99,7 +99,6 @@
         <td width="25%">Med Class</td>
         <td class="info-column" width="15%">Dose</td>
         <!-- todo - logic for JNC8 target dose so that it is only displayed for a Moxe user -->
-        <!-- <td class="info-column" width="20%">JNC8 target dose</td> -->
         <td class="info-column" width="15%">At max dose?</td>
       </tr>
       <tr class="med-entry" drug-input curmeds="pt.curMeds" possiblemeds="possibleMeds">
@@ -112,9 +111,6 @@
         <td width="15%" class="info-column">
           <input type="number" value="{{ med.dose }}" class="med-dose" ng-disabled="!standAlone">
         </td>
-     <!--    <td width="20%" class="info-column">
-          <input ng-if="!standAlone" type="text" value="{{ med.targetDoseRecs | numTargetDoses }} {{ med.units }}" class="med-name" ng-disabled="!standAlone">
-        </td> -->
         <td width="15%" class="info-column">
           <input type="checkbox" checked="{{ med.atMax }}" class="med-max" ng-disabled="!standAlone">
         </td>
