@@ -40,21 +40,21 @@
       <tr class="header">
         <td>&nbsp;</td>
         <td class="info-column" width="35%" height="15">
-            <span class="field-label">Current Blood Pressure:</span>
+            <span class="field-label">Current Blood Pressure</span>
         </td>
         <td class="info-column" width="35%" height="15">
-            <span class="field-label">Target Blood Pressure:</span>
+            <span class="field-label">Target Blood Pressure</span>
         </td>
       </tr>
       <tr class="info-row systolic">
-        <td>systolic:</td>
+        <td>Systolic</td>
         <td class="info-column current">{{ pt.curBP.systolic }}</td>
         <td class="info-column goal" width="35%">
             <input type="number" ng-model="pt.curTargetBP.systolic" id="goal-systolic">
         </td>
       </tr>
       <tr class="info-row diastolic">
-        <td>diastolic:</td>
+        <td>Diastolic</td>
         <td class="info-column current">{{ pt.curBP.diastolic }}</td>
         <td class="info-column goal" width="35%">
             <input type="number" id="goal-diastolic" ng-model="pt.curTargetBP.diastolic">

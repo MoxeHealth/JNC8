@@ -4,7 +4,7 @@
     <input type="email" placeholder="you@example.com" ng-model="pt.emails[0]" />
   </div>
   <div class="section">
-    <label for="age">Patient's age:</label>
+    <label for="age">Age</label>
     <div class="input-wrapper">
       <input type="number" ng-model="pt.age" id="age" required name="age" min="18" max="200" />
     </div>   
@@ -18,7 +18,7 @@
     </div> 
   </div>
   <div class="section">
-    <label for="race">Patient's race:</label>
+    <label for="race">Race</label>
     <div class="input-wrapper">
       <select name="race" required ng-model="pt.race" ng-options="race for race in pt.races">
       <option style="display:none" value="">Select a Race</option>
@@ -27,10 +27,10 @@
   </div>
 
   <div class="section">
-    <label for="blood-pressure">Patient's blood pressure:</label>
+    <label for="blood-pressure">Blood pressure</label>
     <div class="blood-pressure" id="blood-pressure">
       <div class="input-wrapper">
-        <span class="field-label">systolic:</span>
+        <span class="field-label">Systolic</span>
         <input type="number" required name="systolicBP" ng-model="pt.curBP.systolic" id="blood-pressure-syst" min="50" max="400"/>    
       </div>
       <div ng-show="dataForm.systolicBP.$dirty && dataForm.systolicBP.$invalid">
@@ -43,7 +43,7 @@
       </div> 
 
       <div class="input-wrapper">
-        <span class="field-label">diastolic:</span>
+        <span class="field-label">Diastolic</span>
         <input type="number" required name="diastolicBP" ng-model="pt.curBP.diastolic" id="blood-pressure-diast" min="0" max="200"/>
       </div>
       <div ng-show="dataForm.diastolicBP.$dirty && dataForm.diastolicBP.$invalid">
@@ -58,7 +58,7 @@
   </div>
 
   <div class="section">
-    <label for="diabetes">Does the patient have diabetes?</label>
+    <label for="diabetes">Has diabetes?</label>
     <div class="input-wrapper">
       <span class="radio-wrapper">
         <input type="radio" ng-model="pt.hasDiabetes" name="diabetes" value="1"> Yes
@@ -70,7 +70,7 @@
   </div>
 
   <div class="section">
-    <label for="blood-pressure">Does the patient have CKD?</label>
+    <label for="blood-pressure">Has CKD?</label>
     <div class="input-wrapper">
       <span class="radio-wrapper">
         <input type="radio" ng-model="pt.hasCKD" name="ckd" value="1"> Yes
@@ -82,7 +82,7 @@
   </div>
 
   <div class="section">
-    <label for="meds">Is the patient on medication?</label>
+    <label for="meds">On medication?</label>
     <div class="input-wrapper">
       <span class="radio-wrapper">
         <input type="radio" name="meds" value="1" ng-model="pt.isOnMedication"> Yes</span>
@@ -93,7 +93,7 @@
   </div>
 
   <div class="section medications" ng-show="pt.isOnMedication">
-  <table id="medications" ng-model="medications" width="100%">
+  <table id="medications" ng-model="medications" width="80%">
       <tr class="header">
         <td width="25%">Medication</td>
         <td width="25%">Med Class</td>

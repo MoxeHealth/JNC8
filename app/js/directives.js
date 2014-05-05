@@ -51,7 +51,7 @@ angular.module('myApp.directives', [
       restrict: 'EA',
       scope: {
         med: '=med',
-        isPtMed: '@isPtMed',
+        isPtMed: '@',
         goodRxErr: '@'
       },
       link: function(scope, element, attrs) {
@@ -72,7 +72,13 @@ angular.module('myApp.directives', [
 
             //Assume GoodRx 'dosage' property is a string with 'mg' at the end 
             var dosage = res.data.dosage;
-            scope.med.dose = parseInt(dosage.substring(0, dosage.length - 2), 10);
+
+            //patient medication already has dose set 
+            if(scope.isPtMed){
+              scope.med.dose = med.dose  
+            }else{
+              scope.med.dose = parseInt(dosage.substring(0, dosage.length - 2), 10);
+            }
             scope.med.units = res.data.quantity;
             scope.emailsLink = generateEmailsLink(pt.emails, scope.drugInfo);
           } else {
