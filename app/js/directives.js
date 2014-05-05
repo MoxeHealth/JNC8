@@ -12,8 +12,8 @@ angular.module('myApp.directives', [
       templateUrl: 'partials/drugInput.html',
       restrict: 'EA',
       scope: {
-        curMeds: '=',
-        possibleMeds: '='
+        curMeds: '=curmeds',
+        possibleMeds: '=possiblemeds'
       },
       replace: true,
       link: function(scope, element) {
